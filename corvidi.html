@@ -1,0 +1,2379 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0d1b2a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Corvidi">
+<title>Controllo Corvidi</title>
+<style>
+:root{--blu:#0d1b2a;--blu2:#1b263b;--oro:#e8c547;--oro2:#f0d060;--crema:#e0e1dd;--verde:#52b788;--rosso:#e63946;--grigio:rgba(255,255,255,0.08);--bordo:rgba(255,255,255,0.12);}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);max-width:520px;margin:0 auto;min-height:100vh;}
+.header{background:linear-gradient(135deg,var(--blu2),#050d15);padding:13px 16px 10px;border-bottom:2px solid var(--oro);text-align:center;position:sticky;top:0;z-index:10;}
+.header-icon{font-size:22px;line-height:1;}
+.header h1{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;color:var(--crema);line-height:1;}
+.header h1 span{color:var(--oro2);}
+.header p{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(224,225,221,0.4);text-transform:uppercase;}
+.screen{display:none;padding:16px;}
+.screen.active{display:block;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:18px;margin-top:12px;}
+.stat-card{background:var(--grigio);border:1px solid var(--bordo);border-radius:10px;padding:10px 4px;text-align:center;}
+.stat-card .num{font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;color:var(--oro2);}
+.stat-card .label{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(224,225,221,0.45);margin-top:2px;font-family:'Barlow Condensed',sans-serif;}
+.stat-card.total{border-color:var(--oro2);background:rgba(240,208,96,0.1);}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(224,225,221,0.35);margin-bottom:10px;}
+.btn-main{display:flex;align-items:center;gap:14px;padding:18px 16px;border:none;border-radius:14px;cursor:pointer;text-align:left;width:100%;background:linear-gradient(135deg,#1b263b,#0d1b2a);border:1px solid rgba(240,208,96,0.4);margin-bottom:14px;transition:opacity 0.15s;}
+.btn-main:hover{opacity:0.85;}
+.btn-main-icon{font-size:34px;flex-shrink:0;}
+.btn-main-text strong{display:block;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;line-height:1;color:var(--crema);}
+.btn-main-text span{font-size:11px;color:rgba(224,225,221,0.45);font-family:'Barlow Condensed',sans-serif;}
+.btn-main-arrow{margin-left:auto;font-size:20px;opacity:0.35;}
+.btn-report{width:100%;padding:13px;background:rgba(240,208,96,0.1);border:1px solid rgba(240,208,96,0.3);border-radius:10px;color:var(--oro2);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:10px;display:block;}
+.btn-report:hover{background:rgba(240,208,96,0.2);}
+.btn-sheet{width:100%;padding:13px;background:rgba(82,183,136,0.08);border:1px solid rgba(82,183,136,0.3);border-radius:10px;color:#7dcfaa;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:block;}
+.btn-sheet:hover{background:rgba(82,183,136,0.18);}
+.install-banner{display:none;margin-bottom:14px;padding:12px 14px;background:rgba(240,208,96,0.1);border:1px solid var(--oro2);border-radius:10px;align-items:center;gap:10px;margin-top:12px;}
+.install-banner.show{display:flex;}
+.install-banner span{font-family:'Barlow Condensed',sans-serif;font-size:13px;flex:1;}
+.install-banner button{padding:8px 14px;background:var(--oro2);border:none;border-radius:6px;color:#0d1b2a;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.form-header{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-top:12px;}
+.btn-back{background:var(--grigio);border:1px solid var(--bordo);border-radius:8px;color:var(--crema);width:38px;height:38px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.form-header-title{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;line-height:1.1;}
+.form-header-title span{display:block;font-family:'Barlow',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(224,225,221,0.35);font-weight:300;}
+.form-group{margin-bottom:12px;position:relative;}
+.form-label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(224,225,221,0.45);margin-bottom:4px;}
+.form-label .req{color:var(--oro);}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--grigio);border:1px solid var(--bordo);border-radius:8px;color:var(--crema);font-family:'Barlow',sans-serif;font-size:15px;padding:10px 12px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--oro2);}
+.form-select option{background:#0d1b2a;}
+.form-textarea{resize:none;height:70px;}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
+/* AGENTI */
+.agenti-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;}
+.agente-btn{padding:9px 6px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(224,225,221,0.45);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;text-align:center;}
+.agente-btn.sel{background:rgba(240,208,96,0.2);border-color:var(--oro2);color:var(--oro2);}
+.btn-gestisci{width:100%;padding:9px;background:rgba(240,208,96,0.06);border:1px dashed rgba(240,208,96,0.25);border-radius:8px;color:rgba(224,225,221,0.4);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:4px;}
+.btn-gestisci:hover{background:rgba(240,208,96,0.12);color:var(--oro2);}
+/* SPECIE / QUALIFICA */
+.specie-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.qualifica-grid{display:flex;flex-direction:column;gap:6px;}
+.specie-btn,.qual-btn{padding:10px 6px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(224,225,221,0.45);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-align:center;}
+.specie-btn.active{background:rgba(240,208,96,0.2);border-color:var(--oro2);color:var(--oro2);}
+.qual-btn{text-align:left;padding:9px 10px;}
+.qual-btn.active{background:rgba(82,183,136,0.2);border-color:var(--verde);color:#7dcfaa;}
+.gps-row{display:flex;gap:8px;align-items:center;}
+.gps-row .form-input{flex:1;font-size:13px;}
+.btn-gps{padding:10px 14px;background:rgba(82,183,136,0.15);border:1px solid rgba(82,183,136,0.4);border-radius:8px;color:#7dcfaa;font-family:'Barlow Condensed',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.gps-status{font-size:11px;color:rgba(224,225,221,0.4);margin-top:4px;font-family:'Barlow Condensed',sans-serif;}
+.capi-row{display:flex;align-items:center;gap:10px;}
+.capi-row .form-input{flex:1;font-size:22px;text-align:center;font-family:'Bebas Neue',sans-serif;color:var(--oro2);}
+.capi-btn{width:44px;height:44px;border:1px solid var(--bordo);background:var(--grigio);border-radius:8px;color:var(--crema);font-size:24px;cursor:pointer;flex-shrink:0;}
+.form-divider{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(224,225,221,0.3);margin:14px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--bordo);}
+.btn-submit{width:100%;padding:15px;border:none;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;margin-top:16px;margin-bottom:30px;background:linear-gradient(135deg,#415a77,var(--oro));color:#0d1b2a;font-weight:bold;}
+.btn-submit:hover{opacity:0.85;}
+/* REPORT */
+.report-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.tab-btn{padding:10px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(224,225,221,0.4);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;}
+.tab-btn.active{background:rgba(240,208,96,0.12);border-color:var(--oro2);color:var(--oro2);}
+.report-section{margin-bottom:20px;}
+.report-month-title{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:var(--oro2);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--bordo);}
+.report-card{background:var(--grigio);border:1px solid var(--bordo);border-radius:10px;padding:12px;margin-bottom:8px;}
+.report-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.report-nome{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:600;}
+.report-data{font-size:10px;color:rgba(224,225,221,0.4);text-align:right;}
+.report-detail{font-size:12px;color:rgba(224,225,221,0.55);line-height:1.7;}
+.specie-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;margin-top:5px;margin-right:4px;}
+.badge-cornacchia{background:rgba(100,100,100,0.3);color:#bbb;}
+.badge-gazza{background:rgba(65,90,119,0.4);color:#90b4d4;}
+.badge-piccione{background:rgba(139,90,43,0.3);color:#d4a870;}
+.badge-ibis{background:rgba(82,183,136,0.25);color:#7dcfaa;}
+.capi-badge{background:rgba(240,208,96,0.2);color:var(--oro2);}
+.totale-box{background:rgba(240,208,96,0.08);border:1px solid rgba(240,208,96,0.3);border-radius:10px;padding:14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+.totale-box .t-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(224,225,221,0.5);}
+.totale-box .t-num{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--oro2);line-height:1;}
+.empty-state{text-align:center;padding:40px 20px;color:rgba(224,225,221,0.25);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;}
+.empty-state div{font-size:38px;margin-bottom:10px;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--verde);color:white;padding:11px 22px;border-radius:30px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;z-index:1000;transition:transform 0.3s;white-space:nowrap;pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.toast.error{background:var(--rosso);}
+.loading-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
+.loading-overlay.show{display:flex;}
+.spinner{width:42px;height:42px;border:3px solid rgba(255,255,255,0.1);border-top-color:var(--oro2);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:12px;color:rgba(255,255,255,0.6);text-transform:uppercase;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:#0d1b2a;border:1px solid var(--oro2);border-radius:16px;padding:24px;max-width:300px;width:100%;}
+.modal-box.large{max-width:340px;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--oro2);margin-bottom:12px;}
+.modal-text{font-size:13px;color:rgba(224,225,221,0.6);margin-bottom:14px;}
+.modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+.modal-btn{padding:11px;border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
+.modal-btn.cancel{background:var(--grigio);border:1px solid var(--bordo);color:var(--crema);}
+.modal-btn.confirm{background:var(--oro2);color:#0d1b2a;font-weight:700;}
+.agenti-manager-list{max-height:200px;overflow-y:auto;margin:10px 0;}
+.agenti-manager-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:13px;}
+.agenti-manager-item:last-child{border-bottom:none;}
+.btn-del{background:rgba(230,57,70,0.2);border:1px solid rgba(230,57,70,0.4);border-radius:6px;color:#f07080;cursor:pointer;font-size:12px;padding:3px 8px;font-family:'Barlow Condensed',sans-serif;}
+.agenti-add-row{display:flex;gap:8px;margin-top:10px;}
+.btn-add{padding:9px 12px;background:rgba(82,183,136,0.2);border:1px solid rgba(82,183,136,0.5);border-radius:8px;color:#7dcfaa;font-family:'Barlow Condensed',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;}
+
+.autocomplete-wrap{position:relative;}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;z-index:100;background:#0d1b2a;border:1px solid var(--oro2);border-top:none;border-radius:0 0 8px 8px;max-height:200px;overflow-y:auto;display:none;}
+.autocomplete-list.show{display:block;}
+.autocomplete-item{padding:10px 12px;font-size:14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05);}
+.autocomplete-item:hover{background:rgba(240,208,96,0.1);}
+.autocomplete-item strong{color:var(--oro2);}
+.autocomplete-item small{display:block;font-size:11px;color:rgba(224,225,221,0.4);}
+.nuovo-cac-box{display:none;padding:12px;background:rgba(82,183,136,0.06);border:1px solid rgba(82,183,136,0.25);border-radius:8px;margin-top:8px;}
+.nuovo-cac-box.show{display:block;}
+.nuovo-cac-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7dcfaa;margin-bottom:8px;}
+
+.modal-istruzioni{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:8888;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;}
+.modal-istruzioni.show{display:flex;}
+.modal-istr-box{background:#0d1b2a;border:1px solid rgba(240,208,96,0.4);border-radius:16px;padding:24px 20px;max-width:480px;width:100%;margin:auto;}
+.modal-istr-box h2{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:#f0d060;margin-bottom:2px;}
+.modal-istr-box h3{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(240,208,96,0.6);margin-bottom:16px;text-transform:uppercase;}
+.istr-section{margin-bottom:16px;}
+.istr-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#52b788;margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid rgba(82,183,136,0.2);}
+.istr-text{font-size:16px;color:rgba(224,225,221,0.7);line-height:1.7;}
+.istr-text strong{color:#f0d060;}
+.istr-firma{font-size:13px;color:rgba(224,225,221,0.4);margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);line-height:1.7;}
+.btn-istr-close{width:100%;padding:12px;border:none;border-radius:10px;background:#f0d060;color:#0d1b2a;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:12px;}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<!-- MODAL LOGIN GOOGLE — mostrato finché l'account non è verificato -->
+<div id="modalLoginGoogle" style="display: none; position: fixed; inset: 0px; z-index: 99999; background: rgba(13, 27, 42, 0.97); align-items: center; justify-content: center; flex-direction: column; padding: 24px; text-align: center;">
+  <div style="font-size:40px;margin-bottom:12px;">🔒</div>
+  <h2 style="color:#f0d060;font-family:Arial,sans-serif;font-size:20px;margin-bottom:8px;">Accesso riservato</h2>
+  <p style="color:#ccc;font-size:13px;max-width:320px;margin-bottom:20px;">Accedi con un account Google autorizzato per usare Controllo Corvidi.</p>
+  <div id="googleSignInButton"></div>
+  <p id="loginGoogleErrore" style="color:#ff6b6b;font-size:12px;margin-top:16px;max-width:300px;"></p>
+</div>
+
+
+<div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div class="loading-text">Salvataggio...</div></div>
+<div class="toast" id="toast">👤 Benvenuto, BORRINI</div>
+
+<!-- MODAL GOOGLE SHEET -->
+<div class="modal-overlay" id="modalSheet">
+  <div class="modal-box">
+    <div class="modal-title">🔒 Accesso protetto</div>
+    <div class="modal-text">Inserisci la password per accedere al Google Sheet</div>
+    <input type="password" class="form-input" id="pwdSheet" placeholder="Password..." style="margin-bottom:6px;">
+    <div id="errSheet" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="chiudiModal(&#39;modalSheet&#39;)">Annulla</button>
+      <button class="modal-btn confirm" onclick="verificaSheet()">Accedi</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL LOGIN OPERATORE -->
+<!-- MODAL STATISTICHE SPECIE -->
+<div class="modal-overlay" id="modalStatSpecie" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-title">🦅 Statistiche per Specie</div>
+    <div id="statSpecieContenuto" style="font-family:var(--sans);font-size:13px;">
+      <div style="text-align:center;color:var(--muted);padding:16px;">⏳ Caricamento...</div>
+    </div>
+    <div class="modal-btns" style="margin-top:12px;">
+      <button class="modal-btn confirm" onclick="document.getElementById(&#39;modalStatSpecie&#39;).style.display=&#39;none&#39;">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CAMBIA PIN -->
+<div class="modal-overlay" id="modalCambiaPin" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-title">🔑 Cambia PIN</div>
+    <div class="modal-text">Scegli un PIN personale salvato solo su questo dispositivo.</div>
+    <div style="font-size:11px;color:rgba(245,240,232,0.5);margin-bottom:6px;">PIN attuale</div>
+    <input type="text" class="form-input" id="cp-attuale" placeholder="PIN attuale" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
+    <div style="font-size:11px;color:rgba(245,240,232,0.5);margin-bottom:6px;">Nuovo PIN</div>
+    <input type="text" class="form-input" id="cp-nuovo" placeholder="Nuovo PIN (4 cifre)" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
+    <div style="font-size:11px;color:rgba(245,240,232,0.5);margin-bottom:6px;">Conferma nuovo PIN</div>
+    <input type="text" class="form-input" id="cp-conferma" placeholder="Ripeti nuovo PIN" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:8px;">
+    <div id="cp-err" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:8px;"></div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="document.getElementById(&#39;modalCambiaPin&#39;).style.display=&#39;none&#39;">Annulla</button>
+      <button class="modal-btn confirm" onclick="salvaNuovoPin()">Salva PIN</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalLogin" style="z-index:10000;">
+  <div class="modal-box">
+    <div class="modal-title">👤 Identificazione</div>
+    <div class="modal-text">Inserisci il tuo codice operatore (4 cifre) per identificarti. Verrà richiesto solo questa volta su questo dispositivo.</div>
+    <input type="text" class="form-input" id="pinLogin" placeholder="es. 1234" inputmode="numeric" maxlength="4" style="margin-bottom:6px;text-align:center;font-size:22px;letter-spacing:8px;font-family:&#39;Bebas Neue&#39;,sans-serif;">
+    <div style="font-size:11px;color:rgba(245,240,232,0.5);margin:6px 0 4px;">Parola segreta</div>
+    <input type="text" class="form-input" id="parolaLogin" placeholder="PAROLA" maxlength="5" style="margin-bottom:6px;text-align:center;font-size:20px;letter-spacing:6px;text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
+    <div id="errLogin" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
+    <div class="modal-btns" style="grid-template-columns:1fr;">
+      <button class="modal-btn confirm" onclick="verificaPinLogin()">Conferma</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GESTIONE AGENTI -->
+<div class="modal-overlay" id="modalAgenti">
+  <div class="modal-box large">
+    <div class="modal-title">🔒 Gestione Operatori</div>
+    <div class="modal-text">Inserisci la password per modificare gli operatori</div>
+    <div id="agentiPwdSection">
+      <input type="password" class="form-input" id="pwdAgenti" placeholder="Password..." style="margin-bottom:6px;">
+      <div id="errAgenti" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
+      <div class="modal-btns">
+        <button class="modal-btn cancel" onclick="chiudiModal(&#39;modalAgenti&#39;)">Annulla</button>
+        <button class="modal-btn confirm" onclick="verificaAgenti()">Accedi</button>
+      </div>
+    </div>
+    <div id="agentiManagerSection" style="display:none;">
+      <div class="agenti-manager-list" id="agentiManagerList"></div>
+      <div class="agenti-add-row" style="flex-direction:column;gap:8px;">
+        <div style="display:flex;gap:8px;">
+          <input type="text" class="form-input" id="nuovoAgente" placeholder="Nome operatore..." style="font-size:13px;padding:8px 10px;flex:2;">
+          <input type="text" class="form-input" id="nuovoAgentePin" placeholder="PIN (vuoto se già noto)" inputmode="numeric" maxlength="4" style="font-size:13px;padding:8px 10px;flex:1;">
+        </div>
+        <div id="errPinAgente" style="font-size:11px;color:#e74c3c;min-height:14px;"></div>
+        <button class="btn-add" onclick="aggiungiAgente()" style="width:100%;">+ Aggiungi operatore con PIN</button>
+      </div>
+      <button class="modal-btn cancel" style="width:100%;margin-top:12px;" onclick="chiudiModal(&#39;modalAgenti&#39;)">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<div class="header">
+  <div class="header-icon">🐦‍⬛</div>
+  <h1>CONTROLLO <span>CORVIDI</span></h1>
+  <p>Polizia Provinciale di Cremona</p>
+</div>
+
+<!-- HOME -->
+<div class="screen active" id="screenHome">
+  <div class="install-banner" id="installBanner">
+    <span>📲 Installa l'app sulla schermata home</span>
+    <button onclick="installApp()">INSTALLA</button>
+  </div>
+  <button onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.add(&#39;show&#39;)" style="width:100%;padding:11px;background:rgba(240,208,96,0.08);border:1px solid rgba(240,208,96,0.3);border-radius:10px;color:#f0d060;font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
+<div class="stats-row">
+    <div class="stat-card"><div class="num" id="statMese">—</div><div class="label">Mese</div></div>
+    <div class="stat-card"><div class="num" id="statAnno">—</div><div class="label">Anno</div></div>
+    <div class="stat-card"><div class="num" id="statInterventi">—</div><div class="label">Interventi</div></div>
+    <div class="stat-card total"><div class="num" id="statTot">—</div><div class="label">Totale</div></div>
+  </div>
+  <div class="section-title">Nuovo intervento</div>
+  <button class="btn-main" onclick="vai(&#39;screenForm&#39;)">
+    <span class="btn-main-icon">🐦‍⬛</span>
+    <div class="btn-main-text"><strong>Cornacchia / Gazza / Piccione</strong><span>Controllo corvidi e piccioni</span></div>
+    <span class="btn-main-arrow">›</span>
+  </button>
+  <button class="btn-main" onclick="vai(&#39;screenIbis&#39;)" style="border-color:rgba(82,183,136,0.4);">
+    <span class="btn-main-icon">🦢</span>
+    <div class="btn-main-text"><strong>Ibis Sacro</strong><span>Scheda controllo Ibis</span></div>
+    <span class="btn-main-arrow">›</span>
+  </button>
+  <button class="btn-main" onclick="vai(&#39;screenCormorano&#39;)" style="border-color:rgba(65,90,119,0.5);">
+    <span class="btn-main-icon">🦅</span>
+    <div class="btn-main-text"><strong>Cormorano</strong><span>Scheda controllo Cormorano</span></div>
+    <span class="btn-main-arrow">›</span>
+  </button>
+  <button class="btn-main" onclick="vai(&#39;screenDaino&#39;)" style="border-color:rgba(139,90,43,0.5);">
+    <span class="btn-main-icon">🦌</span>
+    <div class="btn-main-text"><strong>Daino</strong><span>Scheda controllo Daino</span></div>
+    <span class="btn-main-arrow">›</span>
+  </button>
+  <button class="btn-main" onclick="vai(&#39;screenMinilepre&#39;)" style="border-color:rgba(168,85,247,0.4);">
+    <span class="btn-main-icon">🐇</span>
+    <div class="btn-main-text"><strong>Minilepre / Coniglio / Volpe</strong><span>Scheda controllo</span></div>
+    <span class="btn-main-arrow">›</span>
+  </button>
+  <button class="btn-main" onclick="vai(&#39;screenScoiattolo&#39;)" style="border-color:rgba(220,38,38,0.4);">
+    <span class="btn-main-icon">🐿️</span>
+    <div class="btn-main-text"><strong>Scoiattolo di Pallas</strong><span>Scheda controllo Scoiattolo</span></div>
+    <span class="btn-main-arrow">›</span>
+  </button>
+  <div class="section-title">Statistiche</div>
+  <button class="btn-report" onclick="vai(&#39;screenReport&#39;)">📊 &nbsp;Report mensile / annuale</button>
+  <button class="btn-report" onclick="mostraStatSpecie()" style="margin-top:8px;background:rgba(125,207,170,0.08);border-color:rgba(125,207,170,0.3);color:#7dcfaa;">🦅 &nbsp;Statistiche per specie</button>
+  <button class="btn-report" onclick="vai(&#39;screenEsenzione&#39;)" style="color:#7dcfaa;border-color:rgba(39,174,96,0.3);background:rgba(39,174,96,0.08);margin-top:8px;">📄 &nbsp;Stampa Esenzione Tassa</button>
+</div>
+
+<!-- FORM -->
+<div class="screen" id="screenForm">
+  <div class="form-header">
+    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <div class="form-header-title"><span>Registrazione</span>Nuovo Intervento</div>
+  </div>
+  <div class="form-divider">📋 Dati generali</div>
+  <div class="form-group">
+    <label class="form-label">Data intervento <span class="req">*</span></label>
+    <input type="date" class="form-input" id="fData">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Cognome operatore <span class="req">*</span></label>
+    <div class="autocomplete-wrap">
+      <input type="text" class="form-input" id="fCognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaCacciatore(this.value)" onblur="setTimeout(function(){chiudiLista();},200)">
+      <div class="autocomplete-list" id="autocompleteList"></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Nome</label>
+    <input type="text" class="form-input" id="fNome" placeholder="Nome operatore">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Codice Fiscale</label>
+    <input type="text" class="form-input" id="fCF" placeholder="Codice fiscale">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input type="text" class="form-input" id="fEmail" placeholder="Email">
+  </div>
+  <div class="nuovo-cac-box" id="nuovoCacBox">
+    <div class="nuovo-cac-label">✨ Nuovo operatore</div>
+    <div class="form-group" style="margin-bottom:8px;">
+      <label class="form-label">Nome <span class="req">*</span></label>
+      <input type="text" class="form-input" id="fNuovoNome" placeholder="Nome">
+    </div>
+    <div class="form-group" style="margin-bottom:8px;">
+      <label class="form-label">Codice Fiscale</label>
+      <input type="text" class="form-input" id="fNuovoCF" placeholder="Codice fiscale">
+    </div>
+    <div class="form-group" style="margin-bottom:0;">
+      <label class="form-label">Email</label>
+      <input type="text" class="form-input" id="fNuovaEmail" placeholder="Email">
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Qualifica operatore <span class="req">*</span></label>
+    <div class="qualifica-grid">
+      <button class="qual-btn" id="qCacc" onclick="setQualifica(&#39;Cacciatori e/o Operatori abilitati&#39;)">🎯 Cacciatori / Operatori abilitati</button>
+      <button class="qual-btn" id="qGuar" onclick="setQualifica(&#39;Guardie Venatorie e/o Agenti Venatori&#39;)">🦺 Guardie Venatorie / Agenti Venatori</button>
+      <button class="qual-btn" id="qProv" onclick="setQualifica(&#39;Polizia Provinciale/Metropolitana&#39;)">👮 Polizia Provinciale / Metropolitana</button>
+    </div>
+  </div>
+  <div class="form-divider">📍 Luogo intervento</div>
+  <div class="form-group">
+    <label class="form-label">Comune <span class="req">*</span></label>
+    <input type="text" class="form-input" id="fComune" placeholder="Nome comune">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Ubicazione / Località</label>
+    <input type="text" class="form-input" id="fUbicazione" placeholder="Es. Via Bergamo, cascina Rossi...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Coordinate GPS</label>
+    <div class="gps-row">
+      <input type="text" class="form-input" id="fGpsLat" placeholder="Latitudine">
+      <input type="text" class="form-input" id="fGpsLon" placeholder="Longitudine">
+      <button class="btn-gps" onclick="rilevaPosizione()">📍 Rileva</button>
+    </div>
+    <div class="gps-status" id="gpsStatus">Tocca "Rileva" per acquisire la posizione</div>
+  </div>
+  <div class="form-divider">🎯 Dati intervento</div>
+  <div class="form-group">
+    <label class="form-label">Specie <span class="req">*</span></label>
+    <div class="specie-grid" style="grid-template-columns:1fr 1fr 1fr;">
+      <button class="specie-btn" id="sCorn" onclick="setSpecie(&#39;CORNACCHIA GRIGIA&#39;)">🐦‍⬛ Cornacchia grigia</button>
+      <button class="specie-btn" id="sGazz" onclick="setSpecie(&#39;GAZZA&#39;)">🐦 Gazza</button>
+      <button class="specie-btn" id="sPicc" onclick="setSpecie(&#39;PICCIONE&#39;)">🕊️ Piccione</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Scopo dell'intervento <span class="req">*</span></label>
+    <select class="form-select" id="fScopo">
+      <option value="">— Seleziona —</option>
+      <option>per la protezione della flora e della fauna</option>
+      <option>per prevenire danni alle colture</option>
+      <option>nell'interesse della salute e della sicurezza pubblica</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Uso del suolo</label>
+    <input type="text" class="form-input" id="fUsoSuolo" placeholder="Es. Mais, Cereali, Prato...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Mezzi di cattura / abbattimento <span class="req">*</span></label>
+    <select class="form-select" id="fMezzi" onchange="toggleGabbia()">
+      <option value="">— Seleziona —</option>
+      <option>Abbattimento diretto con fucile con canna ad anima liscia</option>
+      <option>Abbattimento diretto con carabina ad aria compressa</option>
+      <option>Reti o gabbie-trappola selettive di cattura in vivo</option>
+    </select>
+  </div>
+  <div class="form-group" id="codiceGabbiaGroup" style="display:none;">
+    <label class="form-label">Codice rete / gabbia</label>
+    <input type="text" class="form-input" id="fCodiceGabbia" placeholder="Codice identificativo">
+  </div>
+  <div class="form-group">
+    <label class="form-label">N° soggetti rilevati a vista</label>
+    <input type="number" class="form-input" id="fVisti" placeholder="0" min="0">
+  </div>
+  <div class="form-group">
+    <label class="form-label">N° soggetti abbattuti / catturati <span class="req">*</span></label>
+    <div class="capi-row">
+      <button class="capi-btn" onclick="cambiaCapi(-1)">−</button>
+      <input type="number" class="form-input" id="fCapi" placeholder="0" min="0">
+      <button class="capi-btn" onclick="cambiaCapi(1)">+</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Destinazione carcasse <span class="req">*</span></label>
+    <select class="form-select" id="fDestinazione">
+      <option value="">— Seleziona —</option>
+      <option>Infossamento</option>
+      <option>Impianto di smaltimento e/o utilizzo</option>
+      <option>IZSLER Cremona</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Note</label>
+    <textarea class="form-textarea" id="fNote" placeholder="Osservazioni..."></textarea>
+  </div>
+  <button class="btn-submit" onclick="submitForm()">🐦‍⬛ Invia Intervento</button>
+</div>
+
+<!-- FORM IBIS SACRO -->
+<div class="screen" id="screenIbis">
+  <div class="form-header">
+    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <div class="form-header-title"><span>Registrazione</span>Ibis Sacro</div>
+  </div>
+
+  <div class="form-divider">📋 Dati generali</div>
+  <div class="form-group">
+    <label class="form-label">Data <span class="req">*</span></label>
+    <input type="date" class="form-input" id="iData">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Ora <span class="req">*</span></label>
+    <input type="time" class="form-input" id="iOra">
+  </div>
+
+  <div class="form-divider">📍 Luogo</div>
+  <div class="form-group">
+    <label class="form-label">Comune <span class="req">*</span></label>
+    <input type="text" class="form-input" id="iComune" placeholder="Nome comune">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Località</label>
+    <input type="text" class="form-input" id="iLocalita" placeholder="Es. via Bergamo, S.P. 86...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Coordinate GPS</label>
+    <div class="gps-row">
+      <input type="text" class="form-input" id="iGpsLat" placeholder="Latitudine">
+      <input type="text" class="form-input" id="iGpsLon" placeholder="Longitudine">
+      <button class="btn-gps" onclick="rilevaPosizioneIbis()">📍 Rileva</button>
+    </div>
+    <div class="gps-status" id="iGpsStatus">Tocca "Rileva" per acquisire la posizione</div>
+  </div>
+
+  <div class="form-divider">🎯 Dati abbattimento</div>
+  <div class="form-group">
+    <label class="form-label">Metodo di abbattimento <span class="req">*</span></label>
+    <select class="form-select" id="iMetodo" onchange="toggleArmaIbis()">
+      <option value="">— Seleziona —</option>
+      <option value="arma da fuoco">Arma da fuoco</option>
+      <option value="carabina ad aria compressa">Carabina ad aria compressa</option>
+      <option value="entrambe">Entrambe</option>
+    </select>
+  </div>
+  <div class="form-group" id="iArmaGroup">
+    <label class="form-label">Tipo di arma da fuoco</label>
+    <input type="text" class="form-input" id="iTipoArma" placeholder="Es. Fucile cal. 12">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Munizionamento <span class="req">*</span></label>
+    <select class="form-select" id="iMunizionamento">
+      <option value="">— Seleziona —</option>
+      <option value="piombo">Piombo</option>
+      <option value="atossico">Atossico</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">N° individui osservati</label>
+    <input type="text" class="form-input" id="iOsservati" placeholder="Es. 50 CIRCA">
+  </div>
+  <div class="form-group">
+    <label class="form-label">N° individui abbattuti <span class="req">*</span></label>
+    <div class="capi-row">
+      <button class="capi-btn" onclick="cambiaCapiIbis(-1)">−</button>
+      <input type="number" class="form-input" id="iAbbattuti" placeholder="0" min="0">
+      <button class="capi-btn" onclick="cambiaCapiIbis(1)">+</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Età abbattuti</label>
+    <div class="qualifica-grid" style="flex-direction:row;gap:6px;">
+      <button class="qual-btn" id="eGiov" style="flex:1;text-align:center;" onclick="setEtaIbis(&#39;giovani&#39;)">Giovane</button>
+      <button class="qual-btn" id="eAdul" style="flex:1;text-align:center;" onclick="setEtaIbis(&#39;adulti&#39;)">Adulto</button>
+      <button class="qual-btn" id="eIndet" style="flex:1;text-align:center;" onclick="setEtaIbis(&#39;indeterminati&#39;)">Indet.</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Ambiente</label>
+    <select class="form-select" id="iAmbiente">
+      <option value="">— Seleziona —</option>
+      <option>terreno agricolo</option>
+      <option>prato stabile</option>
+      <option>lago artificiale</option>
+      <option>lago naturale</option>
+      <option>lanca/stagno, palude</option>
+      <option>fiume</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Utilizzo stampi</label>
+    <div class="qualifica-grid" style="flex-direction:row;gap:6px;">
+      <button class="qual-btn" id="stSi" style="flex:1;text-align:center;" onclick="setStampiIbis(&#39;SI&#39;)">Sì</button>
+      <button class="qual-btn" id="stNo" style="flex:1;text-align:center;" onclick="setStampiIbis(&#39;NO&#39;)">No</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Destinazione carcasse <span class="req">*</span></label>
+    <select class="form-select" id="iDestinazione">
+      <option value="">— Seleziona —</option>
+      <option value="IZSLER">IZSLER</option>
+      <option value="Università dell&#39;insubria">Università dell'Insubria</option>
+      <option value="interramento">Interramento / Infossamento</option>
+      <option value="smaltimento come rifiuto">Smaltimento come rifiuto</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Codice anello metallo</label>
+    <input type="text" class="form-input" id="iAnelloMetallo" placeholder="Se individuo inanellato">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Codice anello colorato</label>
+    <input type="text" class="form-input" id="iAnelloColorato" placeholder="Se individuo inanellato">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Note</label>
+    <textarea class="form-textarea" id="iNote" placeholder="Osservazioni..."></textarea>
+  </div>
+
+  <div class="form-divider">👤 Operatore 1 <span class="req">*</span></div>
+  <div class="form-group">
+    <label class="form-label">Qualifica</label>
+    <select class="form-select" id="iOp1Qual">
+      <option value="">— Seleziona —</option>
+      <option value="polizia provinciale">Polizia Provinciale</option>
+      <option value="operatori abilitati">Operatori abilitati</option>
+      <option value="Agenti venatori volontari">Agenti venatori volontari</option>
+      <option value="agenti venatori dipendenti delle aziende faunistico-venatorie e agri-turistico venatorie">Agenti venatori aziende faunistico-venatorie</option>
+      <option value="altro">Altro</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Cognome</label>
+    <div class="autocomplete-wrap">
+      <input type="text" class="form-input" id="iOp1Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreIbis(1,this.value)" onblur="setTimeout(function(){chiudiListaIbis(1);},200)">
+      <div class="autocomplete-list" id="autocompleteListIbis1"></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Nome</label>
+    <input type="text" class="form-input" id="iOp1Nome" placeholder="Nome operatore">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Codice Fiscale</label>
+    <input type="text" class="form-input" id="iOp1CF" placeholder="Codice fiscale">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input type="text" class="form-input" id="iOp1Email" placeholder="Email">
+  </div>
+
+  <div class="form-divider">👤 Operatore 2</div>
+  <div class="form-group">
+    <label class="form-label">Qualifica</label>
+    <select class="form-select" id="iOp2Qual">
+      <option value="">— Seleziona —</option>
+      <option value="polizia provinciale">Polizia Provinciale</option>
+      <option value="operatori abilitati">Operatori abilitati</option>
+      <option value="Agenti venatori volontari">Agenti venatori volontari</option>
+      <option value="agenti venatori dipendenti delle aziende faunistico-venatorie e agri-turistico venatorie">Agenti venatori aziende faunistico-venatorie</option>
+      <option value="altro">Altro</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Cognome</label>
+    <div class="autocomplete-wrap">
+      <input type="text" class="form-input" id="iOp2Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreIbis(2,this.value)" onblur="setTimeout(function(){chiudiListaIbis(2);},200)">
+      <div class="autocomplete-list" id="autocompleteListIbis2"></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Nome</label>
+    <input type="text" class="form-input" id="iOp2Nome" placeholder="Nome operatore">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Codice Fiscale</label>
+    <input type="text" class="form-input" id="iOp2CF" placeholder="Codice fiscale">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input type="text" class="form-input" id="iOp2Email" placeholder="Email">
+  </div>
+
+  <div class="form-divider">👤 Operatore 3</div>
+  <div class="form-group">
+    <label class="form-label">Qualifica</label>
+    <select class="form-select" id="iOp3Qual">
+      <option value="">— Seleziona —</option>
+      <option value="polizia provinciale">Polizia Provinciale</option>
+      <option value="operatori abilitati">Operatori abilitati</option>
+      <option value="Agenti venatori volontari">Agenti venatori volontari</option>
+      <option value="agenti venatori dipendenti delle aziende faunistico-venatorie e agri-turistico venatorie">Agenti venatori aziende faunistico-venatorie</option>
+      <option value="altro">Altro</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Cognome</label>
+    <div class="autocomplete-wrap">
+      <input type="text" class="form-input" id="iOp3Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreIbis(3,this.value)" onblur="setTimeout(function(){chiudiListaIbis(3);},200)">
+      <div class="autocomplete-list" id="autocompleteListIbis3"></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Nome</label>
+    <input type="text" class="form-input" id="iOp3Nome" placeholder="Nome operatore">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Codice Fiscale</label>
+    <input type="text" class="form-input" id="iOp3CF" placeholder="Codice fiscale">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input type="text" class="form-input" id="iOp3Email" placeholder="Email">
+  </div>
+
+  <div class="form-divider">👤 Operatore 4</div>
+  <div class="form-group">
+    <label class="form-label">Qualifica</label>
+    <select class="form-select" id="iOp4Qual">
+      <option value="">— Seleziona —</option>
+      <option value="polizia provinciale">Polizia Provinciale</option>
+      <option value="operatori abilitati">Operatori abilitati</option>
+      <option value="Agenti venatori volontari">Agenti venatori volontari</option>
+      <option value="agenti venatori dipendenti delle aziende faunistico-venatorie e agri-turistico venatorie">Agenti venatori aziende faunistico-venatorie</option>
+      <option value="altro">Altro</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Cognome</label>
+    <div class="autocomplete-wrap">
+      <input type="text" class="form-input" id="iOp4Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreIbis(4,this.value)" onblur="setTimeout(function(){chiudiListaIbis(4);},200)">
+      <div class="autocomplete-list" id="autocompleteListIbis4"></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Nome</label>
+    <input type="text" class="form-input" id="iOp4Nome" placeholder="Nome operatore">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Codice Fiscale</label>
+    <input type="text" class="form-input" id="iOp4CF" placeholder="Codice fiscale">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input type="text" class="form-input" id="iOp4Email" placeholder="Email">
+  </div>
+
+  <button class="btn-submit" onclick="submitIbis()">🦢 Invia Scheda Ibis</button>
+</div>
+
+<!-- FORM DAINO -->
+<div class="screen" id="screenDaino">
+  <div class="form-header">
+    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <div class="form-header-title"><span>Registrazione</span>Daino</div>
+  </div>
+
+  <div class="form-divider">📋 Dati generali</div>
+  <div class="form-group">
+    <label class="form-label">Data intervento <span class="req">*</span></label>
+    <input type="date" class="form-input" id="dData">
+  </div>
+
+  <div class="form-divider">📍 Luogo</div>
+  <div class="form-group">
+    <label class="form-label">Comune <span class="req">*</span></label>
+    <input type="text" class="form-input" id="dComune" placeholder="Nome comune">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Località</label>
+    <input type="text" class="form-input" id="dLocalita" placeholder="Es. Cascina Rossi...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Zona (ATC/ZRC)</label>
+    <input type="text" class="form-input" id="dZona" placeholder="Es. ATC CR1, ZRC...">
+  </div>
+
+  <div class="form-divider">🎯 Dati abbattimento</div>
+  <div class="form-group">
+    <label class="form-label">Animali stimati</label>
+    <input type="text" class="form-input" id="dStimati" placeholder="Numero stimato">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Animali abbattuti <span class="req">*</span></label>
+    <div class="capi-row">
+      <button class="capi-btn" onclick="cambiaCapiDaino(-1)">−</button>
+      <input type="number" class="form-input" id="dAbbattuti" placeholder="0" min="0">
+      <button class="capi-btn" onclick="cambiaCapiDaino(1)">+</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Sesso</label>
+    <input type="text" class="form-input" id="dSesso" placeholder="Es. Maschio, Femmina...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Classe d'età</label>
+    <input type="text" class="form-input" id="dClasseEta" placeholder="Es. Adulto, Giovane, Piccolo...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Metodo</label>
+    <input type="text" class="form-input" id="dMetodo" placeholder="Es. Tiro selettivo, Girata, Braccata...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Note</label>
+    <textarea class="form-textarea" id="dNote" placeholder="Osservazioni..."></textarea>
+  </div>
+
+  <button class="btn-submit" onclick="submitDaino()">🦌 Invia Scheda Daino</button>
+</div>
+
+<!-- FORM CORMORANO -->
+<div class="screen" id="screenCormorano">
+  <div class="form-header">
+    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <div class="form-header-title"><span>Registrazione</span>Cormorano</div>
+  </div>
+
+  <div class="form-divider">📋 Dati generali</div>
+  <div class="form-group">
+    <label class="form-label">Data <span class="req">*</span></label>
+    <input type="date" class="form-input" id="cmData">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Ora</label>
+    <input type="time" class="form-input" id="cmOra">
+  </div>
+
+  <div class="form-divider">📍 Luogo</div>
+  <div class="form-group">
+    <label class="form-label">Comune <span class="req">*</span></label>
+    <input type="text" class="form-input" id="cmComune" placeholder="Nome comune">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Località</label>
+    <input type="text" class="form-input" id="cmLocalita" placeholder="Es. argine sinistro...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Corpo idrico</label>
+    <input type="text" class="form-input" id="cmCorpoIdrico" placeholder="Es. Fiume, Canale, Lago...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Nome corpo idrico</label>
+    <input type="text" class="form-input" id="cmNomeCorpoIdrico" placeholder="Es. Po, Adda, Oglio...">
+  </div>
+
+  <div class="form-divider">🎯 Dati intervento</div>
+  <div class="form-group">
+    <label class="form-label">Meteo</label>
+    <input type="text" class="form-input" id="cmMeteo" placeholder="Es. Sereno, Nuvoloso, Pioggia...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Intervento da</label>
+    <select class="form-select" id="cmInterventoDa">
+      <option value="">— Seleziona —</option>
+      <option value="barca">Barca</option>
+      <option value="terra">Terra</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">N° individui</label>
+    <input type="text" class="form-input" id="cmNIndividui" placeholder="Numero individui">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Posizione cormorano</label>
+    <select class="form-select" id="cmPosizione">
+      <option value="">— Seleziona —</option>
+      <option value="1">1 = in pianta</option>
+      <option value="2">2 = da altro posatoio</option>
+      <option value="3">3 = in acqua</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Attività cormorano</label>
+    <select class="form-select" id="cmAttivita">
+      <option value="">— Seleziona —</option>
+      <option value="0">0 = nessuna attività</option>
+      <option value="1">1 = volo di fuga</option>
+      <option value="2">2 = volo di spostamento</option>
+      <option value="3">3 = attività di foraggiamento</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">N° abbattuti</label>
+    <div class="capi-row">
+      <button class="capi-btn" onclick="cambiaCapiCormorano(-1)">−</button>
+      <input type="number" class="form-input" id="cmAbbattuti" placeholder="0" min="0">
+      <button class="capi-btn" onclick="cambiaCapiCormorano(1)">+</button>
+    </div>
+  </div>
+
+  <div class="form-divider">👤 Agente 1 <span class="req">*</span></div>
+  <div class="form-group">
+    <label class="form-label">Cognome</label>
+    <div class="autocomplete-wrap">
+      <input type="text" class="form-input" id="cmAg1Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreCormorano(1,this.value)" onblur="setTimeout(function(){chiudiListaCormorano(1);},200)">
+      <div class="autocomplete-list" id="autocompleteListCorm1"></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Nome</label>
+    <input type="text" class="form-input" id="cmAg1Nome" placeholder="Nome agente">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Codice Fiscale</label>
+    <input type="text" class="form-input" id="cmAg1CF" placeholder="Codice fiscale">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input type="text" class="form-input" id="cmAg1Email" placeholder="Email">
+  </div>
+
+  <div class="form-divider">👤 Agente 2</div>
+  <div class="form-group">
+    <label class="form-label">Cognome</label>
+    <div class="autocomplete-wrap">
+      <input type="text" class="form-input" id="cmAg2Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreCormorano(2,this.value)" onblur="setTimeout(function(){chiudiListaCormorano(2);},200)">
+      <div class="autocomplete-list" id="autocompleteListCorm2"></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Nome</label>
+    <input type="text" class="form-input" id="cmAg2Nome" placeholder="Nome agente">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Codice Fiscale</label>
+    <input type="text" class="form-input" id="cmAg2CF" placeholder="Codice fiscale">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input type="text" class="form-input" id="cmAg2Email" placeholder="Email">
+  </div>
+
+  <button class="btn-submit" onclick="submitCormorano()">🦅 Invia Scheda Cormorano</button>
+</div>
+
+<!-- FORM MINILEPRE / CONIGLIO / VOLPE -->
+<div class="screen" id="screenMinilepre">
+  <div class="form-header">
+    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <div class="form-header-title"><span>Registrazione</span>Minilepre / Coniglio / Volpe</div>
+  </div>
+
+  <div class="form-divider">📋 Dati generali</div>
+  <div class="form-group">
+    <label class="form-label">Data intervento <span class="req">*</span></label>
+    <input type="date" class="form-input" id="mlData">
+  </div>
+
+  <div class="form-divider">📍 Luogo</div>
+  <div class="form-group">
+    <label class="form-label">Comune <span class="req">*</span></label>
+    <input type="text" class="form-input" id="mlComune" placeholder="Nome comune">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Località</label>
+    <input type="text" class="form-input" id="mlLocalita" placeholder="Es. Cascina Rossi...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Zona (ATC/ZRC)</label>
+    <input type="text" class="form-input" id="mlZona" placeholder="Es. ATC CR1, ZRC...">
+  </div>
+
+  <div class="form-divider">🎯 Dati abbattimento</div>
+  <div class="form-group">
+    <label class="form-label">Specie <span class="req">*</span></label>
+    <div class="specie-grid" style="grid-template-columns:1fr 1fr 1fr;">
+      <button class="specie-btn" id="mlSpMini" onclick="setSpecieMinilepre(&#39;MINILEPRE&#39;)">🐰 Minilepre</button>
+      <button class="specie-btn" id="mlSpConi" onclick="setSpecieMinilepre(&#39;CONIGLIO&#39;)">🐇 Coniglio</button>
+      <button class="specie-btn" id="mlSpVolp" onclick="setSpecieMinilepre(&#39;VOLPE&#39;)">🦊 Volpe</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Animali abbattuti <span class="req">*</span></label>
+    <div class="capi-row">
+      <button class="capi-btn" onclick="cambiaCapiMinilepre(-1)">−</button>
+      <input type="number" class="form-input" id="mlAbbattuti" placeholder="0" min="0">
+      <button class="capi-btn" onclick="cambiaCapiMinilepre(1)">+</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Animali stimati</label>
+    <input type="text" class="form-input" id="mlStimati" placeholder="Numero stimato">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Metodo</label>
+    <input type="text" class="form-input" id="mlMetodo" placeholder="Es. Tiro, Girata, Braccata...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Note</label>
+    <textarea class="form-textarea" id="mlNote" placeholder="Osservazioni..."></textarea>
+  </div>
+
+  <button class="btn-submit" onclick="submitMinilepre()">🐇 Invia Scheda</button>
+</div>
+
+<!-- FORM SCOIATTOLO DI PALLAS -->
+<div class="screen" id="screenScoiattolo">
+  <div class="form-header">
+    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <div class="form-header-title"><span>Registrazione</span>Scoiattolo di Pallas</div>
+  </div>
+
+  <div class="form-divider">📋 Dati generali</div>
+  <div class="form-group">
+    <label class="form-label">Numero scheda abbattimento</label>
+    <input type="text" class="form-input" id="scNumeroScheda" placeholder="Numero scheda">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Data <span class="req">*</span></label>
+    <input type="date" class="form-input" id="scData">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Ora inizio</label>
+    <input type="time" class="form-input" id="scOraInizio">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Ora fine</label>
+    <input type="time" class="form-input" id="scOraFine">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Ore</label>
+    <input type="text" class="form-input" id="scOre" placeholder="Ore impiegate">
+  </div>
+
+  <div class="form-divider">👤 Incaricato del controllo 1 <span class="req">*</span></div>
+  <div class="form-group">
+    <label class="form-label">Cognome</label>
+    <div class="autocomplete-wrap">
+      <input type="text" class="form-input" id="scInc1Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreScoiattolo(1,this.value)" onblur="setTimeout(function(){chiudiListaScoiattolo(1);},200)">
+      <div class="autocomplete-list" id="autocompleteListSco1"></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Nome</label>
+    <input type="text" class="form-input" id="scInc1Nome" placeholder="Nome incaricato">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Codice Fiscale</label>
+    <input type="text" class="form-input" id="scInc1CF" placeholder="Codice fiscale">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input type="text" class="form-input" id="scInc1Email" placeholder="Email">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Qualifica</label>
+    <select class="form-select" id="scQual1">
+      <option value="">— Seleziona —</option>
+      <option value="POLIZIA PROVINCIALE">Polizia Provinciale</option>
+      <option value="OPERATORE FAUNISTICO">Operatore Faunistico</option>
+      <option value="G.G.V.V.">G.G.V.V.</option>
+      <option value="PROPRIETARIO/CONDUTTORE">Proprietario/Conduttore</option>
+    </select>
+  </div>
+
+  <div class="form-divider">👤 Incaricato del controllo 2</div>
+  <div class="form-group">
+    <label class="form-label">Cognome</label>
+    <div class="autocomplete-wrap">
+      <input type="text" class="form-input" id="scInc2Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreScoiattolo(2,this.value)" onblur="setTimeout(function(){chiudiListaScoiattolo(2);},200)">
+      <div class="autocomplete-list" id="autocompleteListSco2"></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Nome</label>
+    <input type="text" class="form-input" id="scInc2Nome" placeholder="Nome incaricato">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Codice Fiscale</label>
+    <input type="text" class="form-input" id="scInc2CF" placeholder="Codice fiscale">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Email</label>
+    <input type="text" class="form-input" id="scInc2Email" placeholder="Email">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Qualifica</label>
+    <select class="form-select" id="scQual2">
+      <option value="">— Seleziona —</option>
+      <option value="POLIZIA PROVINCIALE">Polizia Provinciale</option>
+      <option value="OPERATORE FAUNISTICO">Operatore Faunistico</option>
+      <option value="G.G.V.V.">G.G.V.V.</option>
+      <option value="PROPRIETARIO/CONDUTTORE">Proprietario/Conduttore</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Numero operatori</label>
+    <input type="text" class="form-input" id="scNumeroOperatori" placeholder="Numero totale operatori">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Ore totali</label>
+    <input type="text" class="form-input" id="scOreTot" placeholder="Ore totali impiegate">
+  </div>
+
+  <div class="form-divider">📍 Luogo / Meteo</div>
+  <div class="form-group">
+    <label class="form-label">Comune <span class="req">*</span></label>
+    <input type="text" class="form-input" id="scComune" placeholder="Nome comune">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Località</label>
+    <input type="text" class="form-input" id="scLocalita" placeholder="Località">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Coordinate GPS</label>
+    <div class="gps-row">
+      <input type="text" class="form-input" id="scGpsN" placeholder="GPS N">
+      <input type="text" class="form-input" id="scGpsE" placeholder="GPS E">
+      <button class="btn-gps" onclick="rilevaPosizioneScoiattolo()">📍 Rileva</button>
+    </div>
+    <div class="gps-status" id="scGpsStatus">Tocca "Rileva" per acquisire la posizione</div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">Meteo</label>
+    <input type="text" class="form-input" id="scMeteo" placeholder="Es. Sereno, Nuvoloso...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Vento</label>
+    <input type="text" class="form-input" id="scVento" placeholder="Es. Assente, Debole, Forte...">
+  </div>
+
+  <div class="form-divider">🎯 Dati abbattimento</div>
+  <div class="form-group">
+    <label class="form-label">Specie <span class="req">*</span></label>
+    <select class="form-select" id="scSpecie">
+      <option value="">— Seleziona —</option>
+      <option value="CALLOSCIURUS E.">Callosciurus E.</option>
+      <option value="SCIURUS CAROLINENSIS (GRIGIO)">Sciurus Carolinensis (grigio)</option>
+    </select>
+  </div>
+  <div class="form-group">
+    <label class="form-label">N° abbattuti con arma da fuoco</label>
+    <input type="number" class="form-input" id="scAbbattutiArma" placeholder="0" min="0">
+  </div>
+  <div class="form-group">
+    <label class="form-label">N° catturati con trappola</label>
+    <input type="number" class="form-input" id="scCatturatiTrappola" placeholder="0" min="0">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Totale individui abbattuti <span class="req">*</span></label>
+    <div class="capi-row">
+      <button class="capi-btn" onclick="cambiaCapiScoiattolo(-1)">−</button>
+      <input type="number" class="form-input" id="scTotaleAbbattuti" placeholder="0" min="0">
+      <button class="capi-btn" onclick="cambiaCapiScoiattolo(1)">+</button>
+    </div>
+  </div>
+  <div class="form-group">
+    <label class="form-label">N° smaltiti regolamento 1069</label>
+    <input type="number" class="form-input" id="scSmaltiti1069" placeholder="0" min="0">
+  </div>
+  <div class="form-group">
+    <label class="form-label">N° infossati</label>
+    <input type="number" class="form-input" id="scInfossati" placeholder="0" min="0">
+  </div>
+  <div class="form-group">
+    <label class="form-label">N° non recuperati</label>
+    <input type="number" class="form-input" id="scNonRecuperati" placeholder="0" min="0">
+  </div>
+
+  <div class="form-divider">👁️ Avvistamenti</div>
+  <div class="form-group">
+    <label class="form-label">Visti N° Callosciurus</label>
+    <input type="number" class="form-input" id="scVistiCallosciurus" placeholder="0" min="0">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Visti N° Carolinensis (grigio)</label>
+    <input type="number" class="form-input" id="scVistiCarolinensis" placeholder="0" min="0">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Visti scoiattoli rossi</label>
+    <input type="number" class="form-input" id="scVistiRossi" placeholder="0" min="0">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Note</label>
+    <textarea class="form-textarea" id="scNote" placeholder="Osservazioni..."></textarea>
+  </div>
+
+  <button class="btn-submit" onclick="submitScoiattolo()">🐿️ Invia Scheda Scoiattolo</button>
+</div>
+
+<!-- REPORT -->
+<div class="screen" id="screenReport">
+  <div class="form-header">
+    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <div class="form-header-title"><span>Statistiche</span>Report Interventi</div>
+  </div>
+  <div class="report-tabs">
+    <button class="tab-btn active" id="tabMensile" onclick="switchReport(&#39;mensile&#39;)">📅 Mensile</button>
+    <button class="tab-btn" id="tabAnnuale" onclick="switchReport(&#39;annuale&#39;)">📆 Annuale</button>
+  </div>
+  <div id="reportContent"><div class="empty-state"><div>📊</div>Caricamento...</div></div>
+</div>
+
+
+<!-- SCREEN ESENZIONE TASSA CORVIDI -->
+<div class="screen" id="screenEsenzione">
+  <div class="form-header">
+    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <div class="form-header-title"><span>Report</span>Esenzione Tassa Caccia</div>
+  </div>
+  <div class="form-group" style="margin-top:16px;">
+    <label class="form-label">Anno <span class="req">*</span></label>
+    <select class="form-select" id="esenzioneAnnoCorvidi" style="font-size:16px;"></select>
+  </div>
+  <div style="background:rgba(82,183,136,0.08);border:1px solid rgba(82,183,136,0.25);border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:rgba(224,225,221,0.7);line-height:1.6;">
+    📄 Genera elenco operatori che hanno partecipato ad abbattimenti nell'anno selezionato.<br>
+    🗂️ Crea anche il foglio <strong>Esenzione Tassa ANNO</strong> nel Google Sheet.
+  </div>
+  <button class="btn-submit" onclick="generaStampaEsenzioneCorvidi()">📄 Genera Report Esenzione</button>
+  <div id="anteprimaEsenzioneCorvidi" style="margin-top:16px;"></div>
+</div>
+
+
+<!-- MODAL ISTRUZIONI CORVIDI -->
+<div class="modal-istruzioni" id="modalIstruzioni">
+  <div class="modal-istr-box">
+    <h2>🐦‍⬛ Controllo Corvidi</h2>
+    <h3>Istruzioni — Polizia Provinciale di Cremona</h3>
+
+    <div class="istr-section">
+      <div class="istr-title">Cos'è e a cosa serve</div>
+      <div class="istr-text">Il Controllo Corvidi sostituisce completamente le schede cartacee per la registrazione di tutti gli interventi di controllo faunistico sul territorio provinciale. Gestisce sei tipologie di intervento: <strong>Cornacchia / Gazza / Piccione, Ibis Sacro, Cormorano, Daino, Minilepre / Coniglio / Volpe</strong> e <strong>Scoiattolo di Pallas</strong>.</div>
+    </div>
+
+    <div class="istr-section">
+      <div class="istr-title">🔒 Accesso sicuro</div>
+      <div class="istr-text">L'app è protetta: solo gli account Google autorizzati dall'amministratore possono accedere e inserire dati. Al primo utilizzo tocca <strong>Accedi con Google</strong> e scegli il tuo account personale — il tuo nome viene riconosciuto automaticamente e usato per ogni intervento che registri, senza bisogno di PIN o password aggiuntive.</div>
+    </div>
+
+    <div class="istr-section">
+      <div class="istr-title">Accesso ricordato dal dispositivo</div>
+      <div class="istr-text">Una volta effettuato l'accesso, il dispositivo lo ricorda in automatico: alle aperture successive dell'app non ti verrà richiesto nulla, l'accesso avviene da solo in pochi istanti. Ti verrà richiesto di nuovo solo se cancelli i dati/cookie del browser oppure esci esplicitamente dal tuo account Google su quel dispositivo.</div>
+    </div>
+
+    <div class="istr-section">
+      <div class="istr-title">Se un account non è autorizzato</div>
+      <div class="istr-text">Se accedi con un account Google non ancora abilitato, l'app mostrerà "Account non autorizzato". In questo caso contatta l'amministratore, che dovrà aggiungere la tua email Gmail nell'elenco degli operatori autorizzati.</div>
+    </div>
+
+    <div class="istr-section">
+      <div class="istr-title">Come si registra un intervento</div>
+      <div class="istr-text">
+        1. Seleziona la tipologia di intervento dalla home<br>
+        2. Compila i dati: data, qualifica, comune, ubicazione, GPS, specie, scopo, mezzi e capi abbattuti<br>
+        3. Per operatori già in archivio digita le prime lettere del cognome — il sistema compila automaticamente i dati<br>
+        4. Per un nuovo operatore seleziona "Aggiungi nuovo" — verrà salvato per i prossimi inserimenti<br>
+        5. Tocca <strong>Invia</strong> — dati inviati immediatamente
+      </div>
+    </div>
+
+    <div class="istr-section">
+      <div class="istr-title">Coordinate GPS</div>
+      <div class="istr-text">Tocca <strong>📍 Rileva</strong> per acquisire automaticamente la posizione nel punto esatto dell'intervento.</div>
+    </div>
+
+    <div class="istr-section">
+      <div class="istr-title">Report Disponibili</div>
+      <div class="istr-text">
+        📅 <strong>Report Mensile</strong> — interventi del mese con riepilogo capi per specie<br>
+        📆 <strong>Report Annuale</strong> — totali per anno e per specie<br>
+        📄 <strong>Stampa Esenzione Tassa</strong> — elenco ufficiale nominativi per esenzione tassa regionale caccia con creazione automatica foglio Excel
+      </div>
+    </div>
+
+    <div class="istr-section">
+      <div class="istr-title">Quanto lavoro si risparmia</div>
+      <div class="istr-text">Il vero vantaggio è nell'eliminazione di tutta la gestione successiva: raccolta fogli cartacei, verifica dati, archiviazione fisica e trascrizione per i report statistici. Tutti i dati sono immediatamente disponibili e consultabili da qualsiasi dispositivo. I documenti ufficiali vengono generati in pochi secondi — operazioni che prima richiedevano ore di lavoro d'ufficio. Il cartaceo rimane sempre disponibile all'occorrenza premendo il tasto stampa.</div>
+    </div>
+
+    <div class="istr-firma">
+      Borrini Riccardo — Assistente Scelto di Polizia Locale<br>
+      Polizia Provinciale di Cremona<br>
+      📧 riccardo.borrini@provincia.cremona.it
+    </div>
+
+    <button class="btn-istr-close" onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.remove(&#39;show&#39;)">Chiudi</button>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// PONTE verso lo script Google — chiamate fetch autenticate con token
+// ============================================================
+// ============================================================
+// LOGIN GOOGLE — verifica reale, funziona con qualsiasi account Google.
+// L'app resta ospitata qui (GitHub Pages) e chiama lo script Google
+// tramite fetch(), passando ad ogni richiesta il token di accesso.
+// ============================================================
+var URL_GS = 'https://script.google.com/macros/s/AKfycbxL49RBHln0W11KTM90AeJblxpsu4vigg7H_mnzKBw4tdLEfS1wIWkCR4LU9AOStOpIJQ/exec';
+var idTokenCorrente = null;
+var nomeOperatoreGoogle = null;
+
+function gsGet(action, params) {
+  var url = URL_GS + '?action=' + encodeURIComponent(action);
+  if (idTokenCorrente) url += '&idToken=' + encodeURIComponent(idTokenCorrente);
+  if (params) {
+    Object.keys(params).forEach(function(k){
+      url += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+    });
+  }
+  return fetch(url).then(function(r){ return r.json(); }).then(function(res){
+    if (res && res.status === 'error' && res.message === 'Accesso non autorizzato') {
+      mostraLoginGoogle();
+      throw res;
+    }
+    return res;
+  });
+}
+
+function gsPost(payload) {
+  payload = payload || {};
+  payload.idToken = idTokenCorrente;
+  return fetch(URL_GS, {method:'POST', body: JSON.stringify(payload)})
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if (res && res.status === 'error' && res.message === 'Accesso non autorizzato') {
+        mostraLoginGoogle();
+        throw res;
+      }
+      return res;
+    });
+}
+
+function mostraLoginGoogle() {
+  var modal = document.getElementById('modalLoginGoogle');
+  if (modal) modal.style.display = 'flex';
+}
+
+function handleGoogleCredentialResponse(response) {
+  idTokenCorrente = response.credential;
+  fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(idTokenCorrente))
+    .then(function(r){ return r.json(); })
+    .then(function(verifica){
+      if (verifica.ok) {
+        // Il nome arriva direttamente dall'account Google verificato:
+        // non serve più nessun PIN o parola segreta separati.
+        nomeOperatoreGoogle = verifica.nome;
+        operatoreCorrente = verifica.nome;
+        try { localStorage.setItem('corvidi_operatore_v1', verifica.nome); } catch(e) {}
+        var hU = document.getElementById('headerUtente');
+        if (hU) hU.textContent = verifica.nome;
+
+        document.getElementById('modalLoginGoogle').style.display = 'none';
+        document.getElementById('loginGoogleErrore').textContent = '';
+
+        // Ricarica tutti i dati che prima erano falliti (venivano
+        // chiamati prima del login)
+        syncPinMapDaSheet();
+        loadStats();
+        caricaCacciatoriDalFoglio();
+      } else {
+        document.getElementById('loginGoogleErrore').textContent = '❌ ' + verifica.message;
+        idTokenCorrente = null;
+      }
+    })
+    .catch(function(){
+      document.getElementById('loginGoogleErrore').textContent = '❌ Errore di verifica, riprova.';
+    });
+}
+
+window.onload = function(){
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.initialize({
+      client_id: '226909521211-tk40j8dfcr6dr428uqb4sd4s2lt5qbi6.apps.googleusercontent.com',
+      callback: handleGoogleCredentialResponse,
+      auto_select: true // rientra in automatico se il browser ricorda l'account
+    });
+    google.accounts.id.renderButton(
+      document.getElementById('googleSignInButton'),
+      { theme: 'outline', size: 'large', text: 'signin_with', width: 280 }
+    );
+    google.accounts.id.prompt();
+
+    // Rinnova il token in automatico ogni 45 minuti, senza mai
+    // interrompere l'agente con una richiesta di accesso ripetuta
+    // (finché il browser ricorda l'account Google usato)
+    setInterval(function(){
+      try { google.accounts.id.prompt(); } catch(e) {}
+    }, 45 * 60 * 1000);
+  }
+};
+
+var URL_TURNI = 'https://script.google.com/macros/s/AKfycbyVBPIGRRJigXuoQsHialZiFugbN-jKRM-rB6jUnKHw7w52AE_H9rVr20TYxE-sazMs/exec';
+var SHEET_URL = 'https://docs.google.com/spreadsheets/d/1IWnLG_n0LDiOgZ4YKIlY67vwVSLDax2COs7p3WGcPbM/edit';
+var PWD = '12345611';
+
+var DEFAULT_AGENTI = ['ARISI','BANDERA','BORRINI','CAMBIATI','CHIODA','COLLA','FUSARI','GUARNERI','PREANI','RIZZI','TRENTAROSSI','VIVIANI'];
+var agenti = (function(){
+  var saved = localStorage.getItem('corvidi_agenti_v1');
+  if (saved) {
+    try { var arr = JSON.parse(saved); if (Array.isArray(arr) && arr.length) return arr; } catch(e){}
+  }
+  return DEFAULT_AGENTI.slice();
+})();
+function salvaAgentiCorvidi() { localStorage.setItem('corvidi_agenti_v1', JSON.stringify(agenti)); }
+
+var DEFAULT_PIN_MAP = {'7342':'ARISI','2916':'BANDERA','5483':'BORRINI','8751':'CAMBIATI','3629':'COLLA','3688':'FUSARI','4817':'GUARNERI','9364':'PREANI','6193':'RIZZI','2748':'TRENTAROSSI','2766':'VIVIANI','5522':'CHIODA','1013':'TORTINI','1014':'MARIOTTI'};
+localStorage.removeItem('corvidi_pinmap_v1');
+localStorage.removeItem('corvidi_operatore_v1');
+var PIN_MAP = Object.assign({}, DEFAULT_PIN_MAP);
+function salvaPinMapCorvidi() { localStorage.setItem('corvidi_pinmap_v1', JSON.stringify(PIN_MAP)); }
+
+async function syncPinMapDaSheet() {
+  try {
+    var d = await gsGet('pinmap');
+    if (d.pinMap && typeof d.pinMap === 'object') {
+      PIN_MAP = Object.assign({}, DEFAULT_PIN_MAP, d.pinMap);
+      salvaPinMapCorvidi();
+    }
+  } catch(e) {}
+}
+
+var operatoreCorrente = localStorage.getItem('corvidi_operatore_v1') || '';
+function checkLogin() {
+  // Il login ora avviene solo tramite l'account Google (vedi
+  // handleGoogleCredentialResponse) — il PIN/parola non serve più.
+}
+function mostraCambiaPin() {
+  if (!operatoreCorrente) { toast('Devi prima accedere', true); return; }
+  document.getElementById('cp-attuale').value = '';
+  document.getElementById('cp-nuovo').value = '';
+  document.getElementById('cp-conferma').value = '';
+  document.getElementById('cp-err').textContent = '';
+  document.getElementById('modalCambiaPin').style.display = 'flex';
+}
+
+function salvaNuovoPin() {
+  var attuale = document.getElementById('cp-attuale').value.trim();
+  var nuovo = document.getElementById('cp-nuovo').value.trim();
+  var conferma = document.getElementById('cp-conferma').value.trim();
+  var err = document.getElementById('cp-err');
+  var pinLocale = null;
+  try { pinLocale = localStorage.getItem('corvidi_pin_personale_' + operatoreCorrente); } catch(e) {}
+  var valido = (pinLocale && attuale === pinLocale) || PIN_MAP[attuale] === operatoreCorrente;
+  if (!valido) { err.textContent = '❌ PIN attuale non corretto'; return; }
+  if (nuovo.length !== 4 || isNaN(nuovo)) { err.textContent = '❌ Il nuovo PIN deve essere 4 cifre'; return; }
+  if (nuovo !== conferma) { err.textContent = '❌ I PIN non coincidono'; return; }
+  try { localStorage.setItem('corvidi_pin_personale_' + operatoreCorrente, nuovo); } catch(e) {}
+  document.getElementById('modalCambiaPin').style.display = 'none';
+  toast('✅ PIN cambiato! Nuovo PIN: ' + nuovo);
+}
+
+function verificaPinLogin() {
+  var pin = document.getElementById('pinLogin').value.trim();
+  var parola = document.getElementById('parolaLogin') ? document.getElementById('parolaLogin').value.trim().toUpperCase() : '';
+  fetch(URL_TURNI + '?anno=2026&mese=6')
+    .then(function(r){return r.json();})
+    .then(function(data){
+      var pm = data.pinMap || {};
+      var entry = pm[pin];
+      var nome = null;
+      if (entry && typeof entry === 'object') {
+        if (entry.parola && entry.parola === parola) nome = entry.nome;
+      } else if (entry && typeof entry === 'string') {
+        nome = entry;
+      }
+      if (!nome) {
+        try {
+          var keys = Object.keys(localStorage);
+          for (var ki = 0; ki < keys.length; ki++) {
+            if (keys[ki].indexOf('corvidi_pin_personale_') === 0) {
+              if (localStorage.getItem(keys[ki]) === pin) { nome = keys[ki].replace('corvidi_pin_personale_', ''); break; }
+            }
+          }
+        } catch(e) {}
+      }
+      if (nome) {
+    operatoreCorrente = nome;
+    localStorage.setItem('corvidi_operatore_v1', nome);
+    document.getElementById('modalLogin').classList.remove('show');
+    toast('👤 Benvenuto, ' + nome);
+  } else {
+      document.getElementById('errLogin').textContent = '❌ PIN o parola segreta non validi';
+      document.getElementById('pinLogin').value = '';
+      if(document.getElementById('parolaLogin')) document.getElementById('parolaLogin').value = '';
+    }
+    }).catch(function(){
+      document.getElementById('errLogin').textContent = '❌ Errore connessione — riprova';
+    });
+}
+
+var corvidiSel = [];
+var specie = '';
+var qualifica = '';
+var reportTab = 'mensile';
+var reportData = [];
+
+// PWA
+var manifest={name:'Controllo Corvidi',short_name:'Corvidi',start_url:'.',display:'standalone',background_color:'#0d1b2a',theme_color:'#0d1b2a',orientation:'portrait',icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230d1b2a'/><text y='.9em' font-size='70' x='10'>🐦‍⬛</text></svg>",sizes:'192x192',type:'image/svg+xml'}]};
+document.head.appendChild(Object.assign(document.createElement('link'),{rel:'manifest',href:URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:'application/json'}))}));
+var swCode='self.addEventListener(\'install\',e=>self.skipWaiting());self.addEventListener(\'activate\',e=>clients.claim());self.addEventListener(\'fetch\',e=>{if(e.request.method===\'GET\')e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});';
+if('serviceWorker' in navigator) navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode],{type:'application/javascript'}))).catch(function(){});
+var deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredPrompt=e;document.getElementById('installBanner').classList.add('show');});
+window.addEventListener('appinstalled',function(){document.getElementById('installBanner').classList.remove('show');deferredPrompt=null;});
+function installApp(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;document.getElementById('installBanner').classList.remove('show');});}}
+
+function toast(msg,isErr){var t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(isErr?' error':'')+' show';setTimeout(function(){t.className='toast'+(isErr?' error':'');},3000);}
+function loading(v){document.getElementById('loadingOverlay').className='loading-overlay'+(v?' show':'');}
+function chiudiModal(id){document.getElementById(id).classList.remove('show');}
+
+function vai(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='screenHome') loadStats();
+  if(id==='screenForm') initForm();
+  if(id==='screenIbis') initFormIbis();
+  if(id==='screenDaino') initFormDaino();
+  if(id==='screenCormorano') initFormCormorano();
+  if(id==='screenMinilepre') initFormMinilepre();
+  if(id==='screenScoiattolo') initFormScoiattolo();
+  if(id==='screenReport') loadReport();
+  if(id==='screenEsenzione') initEsenzioneCorvidi();
+}
+
+
+function initForm(){
+  var oggi=new Date();
+  var loc=new Date(oggi.getTime()-oggi.getTimezoneOffset()*60000);
+  document.getElementById('fData').value=loc.toISOString().slice(0,10);
+}
+
+// AGENTI
+function renderAgenti(){
+  var grid=document.getElementById('corvidiAgentiGrid');
+  if(!grid) return;
+  grid.innerHTML='';
+  agenti.forEach(function(a){
+    var btn=document.createElement('button');
+    btn.className='agente-btn'+(corvidiSel.indexOf(a)>=0?' sel':'');
+    btn.textContent=a;
+    btn.onclick=(function(nome){return function(){
+      var idx=corvidiSel.indexOf(nome);
+      if(idx>=0){corvidiSel.splice(idx,1);}else{corvidiSel.push(nome);}
+      renderAgenti();
+    };})(a);
+    grid.appendChild(btn);
+  });
+}
+
+function apriGestioneAgenti(){
+  document.getElementById('pwdAgenti').value='';
+  document.getElementById('errAgenti').textContent='';
+  document.getElementById('agentiPwdSection').style.display='block';
+  document.getElementById('agentiManagerSection').style.display='none';
+  document.getElementById('modalAgenti').classList.add('show');
+}
+
+function verificaAgenti(){
+  if(document.getElementById('pwdAgenti').value===PWD){
+    document.getElementById('agentiPwdSection').style.display='none';
+    document.getElementById('agentiManagerSection').style.display='block';
+    renderAgentiManager();
+  } else {
+    document.getElementById('errAgenti').textContent='❌ Password errata';
+    document.getElementById('pwdAgenti').value='';
+  }
+}
+
+function renderAgentiManager(){
+  var list=document.getElementById('agentiManagerList');
+  list.innerHTML='';
+  agenti.forEach(function(a){
+    var div=document.createElement('div');div.className='agenti-manager-item';
+    var sp=document.createElement('span');sp.textContent=a;
+    var btn=document.createElement('button');btn.className='btn-del';btn.textContent='Rimuovi';
+    btn.onclick=(function(nome){return function(){
+      rimuoviAgenteCorvidi(nome);
+      renderAgentiManager();
+    };})(a);
+    div.appendChild(sp);div.appendChild(btn);list.appendChild(div);
+  });
+}
+
+function rimuoviAgenteCorvidi(nome){
+  var idx=agenti.indexOf(nome);if(idx>=0)agenti.splice(idx,1);
+  if(corvidiSel===nome) corvidiSel=[];
+  var hadPin = false;
+  Object.keys(PIN_MAP).forEach(function(pin){ if(PIN_MAP[pin]===nome){ delete PIN_MAP[pin]; hadPin=true; } });
+  salvaPinMapCorvidi();
+  salvaAgentiCorvidi();
+  if (hadPin) {
+    gsPost({tipo:'PIN_REMOVE', nome:nome}).catch(function(){});
+  }
+  renderAgenti();
+}
+
+function aggiungiAgente(){
+  var input=document.getElementById('nuovoAgente');
+  var pinInput=document.getElementById('nuovoAgentePin');
+  var errEl=document.getElementById('errPinAgente');
+  var nome=input.value.trim().toUpperCase();
+  var pin=pinInput.value.trim();
+  errEl.textContent='';
+
+  if(!nome){errEl.textContent='⚠️ Inserisci il nome dell\'operatore';return;}
+  if(agenti.indexOf(nome)>=0){errEl.textContent='⚠️ Operatore già presente';return;}
+
+  var pinEsistente = Object.keys(PIN_MAP).find(function(p){return PIN_MAP[p]===nome;});
+
+  if (pin === '') {
+    if (!pinEsistente) { errEl.textContent='⚠️ Inserisci un PIN di 4 cifre per questo operatore'; return; }
+    agenti.push(nome);agenti.sort();
+    salvaAgentiCorvidi();
+    input.value='';pinInput.value='';
+    renderAgenti();renderAgentiManager();
+    alert('✅ Operatore "'+nome+'" aggiunto!\n\nIl suo codice operatore esiste già: '+pinEsistente);
+    return;
+  }
+
+  if(!/^\d{4}$/.test(pin)){errEl.textContent='⚠️ Inserisci un PIN di 4 cifre, oppure lascia vuoto se ' + nome + ' ha già un codice';return;}
+  if(PIN_MAP[pin] && PIN_MAP[pin] !== nome){errEl.textContent='⚠️ PIN già usato da ' + PIN_MAP[pin];return;}
+
+  agenti.push(nome);agenti.sort();
+  salvaAgentiCorvidi();
+  PIN_MAP[pin]=nome;
+  salvaPinMapCorvidi();
+
+  gsPost({tipo:'PIN', pin:pin, nome:nome}).catch(function(){});
+
+  input.value='';pinInput.value='';
+  renderAgenti();renderAgentiManager();
+  alert('✅ Operatore "'+nome+'" aggiunto!\n\nIl suo codice operatore è: '+pin+'\n\nComunicaglielo: lo inserirà al primo accesso dell\'app sul suo dispositivo.\n\n📋 Il PIN è stato salvato anche sul foglio Google "PIN Agenti" — puoi consultarlo in qualsiasi momento.');
+}
+
+// FORM CORVIDI
+function setSpecie(val){
+  specie=val;
+  ['sCorn','sGazz','sPicc'].forEach(function(id){document.getElementById(id).classList.remove('active');});
+  var map={'CORNACCHIA GRIGIA':'sCorn','GAZZA':'sGazz','PICCIONE':'sPicc'};
+  if(map[val]) document.getElementById(map[val]).classList.add('active');
+}
+
+function setQualifica(val){
+  qualifica=val;
+  ['qCacc','qGuar','qProv'].forEach(function(id){document.getElementById(id).classList.remove('active');});
+  if(val.includes('Cacciatori')) document.getElementById('qCacc').classList.add('active');
+  else if(val.includes('Guardie')) document.getElementById('qGuar').classList.add('active');
+  else if(val.includes('Polizia')) document.getElementById('qProv').classList.add('active');
+}
+
+function toggleGabbia(){
+  var v=document.getElementById('fMezzi').value;
+  document.getElementById('codiceGabbiaGroup').style.display=(v.includes('gabbie')||v.includes('Reti'))?'block':'none';
+}
+
+function rilevaPosizione(){
+  var st=document.getElementById('gpsStatus');st.textContent='📡 Acquisizione...';
+  if(!navigator.geolocation){st.textContent='GPS non disponibile';return;}
+  navigator.geolocation.getCurrentPosition(function(pos){
+    document.getElementById('fGpsLat').value=pos.coords.latitude.toFixed(6);
+    document.getElementById('fGpsLon').value=pos.coords.longitude.toFixed(6);
+    st.textContent='✅ Posizione acquisita (±'+Math.round(pos.coords.accuracy)+'m)';
+  },function(){st.textContent='⚠️ Impossibile rilevare la posizione';},{enableHighAccuracy:true,timeout:10000});
+}
+
+function cambiaCapi(delta){var el=document.getElementById('fCapi');el.value=Math.max(0,(parseInt(el.value)||0)+delta);}
+
+function fmt(val){if(!val)return'';var d=new Date(val+'T00:00:00');return d.toLocaleDateString('it-IT');}
+
+async function submitForm(){
+  var data=document.getElementById('fData').value;
+  var cognome=document.getElementById('fCognome').value.trim();
+  var comune=document.getElementById('fComune').value.trim();
+  var scopo=document.getElementById('fScopo').value;
+  var mezzi=document.getElementById('fMezzi').value;
+  var destinazione=document.getElementById('fDestinazione').value;
+  var capi=document.getElementById('fCapi').value;
+  if(!data||!cognome||!comune||!specie||!qualifica||!scopo||!mezzi||!destinazione){toast('Seleziona operatore e compila tutti i campi obbligatori',true);return;}
+  if(!capi||parseInt(capi)<1){toast('Inserisci il numero di capi abbattuti',true);return;}
+  var nome=nuovoCacciatore?document.getElementById('fNuovoNome').value.trim():document.getElementById('fNome').value.trim();
+  var cf=nuovoCacciatore?document.getElementById('fNuovoCF').value.trim():document.getElementById('fCF').value.trim();
+  var emailOp=nuovoCacciatore?(document.getElementById('fNuovaEmail')?document.getElementById('fNuovaEmail').value.trim():''):(document.getElementById('fEmail')?document.getElementById('fEmail').value.trim():'');
+  if(nuovoCacciatore&&nome){
+    cacciatori.push({cognome:cognome,nome:nome,cf:cf,email:emailOp});
+    cacciatori.sort(function(a,b){return a.cognome.localeCompare(b.cognome);});
+    // Salva nuovo operatore sul foglio
+    gsPost({tipo:'NUOVO_OPERATORE',cognome:cognome,nome:nome,cf:cf,email:emailOp}).catch(function(){});
+  }
+  var payload={
+    tipo:'CORVIDI',data:fmt(data),cognome,nome,cf,qualifica,comune,
+    ubicazione:document.getElementById('fUbicazione').value.trim(),
+    gpsLat:document.getElementById('fGpsLat').value,gpsLon:document.getElementById('fGpsLon').value,
+    specie,scopo,usoSuolo:document.getElementById('fUsoSuolo').value.trim(),
+    mezzi,codiceGabbia:document.getElementById('fCodiceGabbia').value.trim(),
+    visti:document.getElementById('fVisti').value||'',
+    capi:parseInt(capi),destinazione,note:document.getElementById('fNote').value.trim()
+  };
+  loading(true);
+  try{var d=await gsPost(payload);if(d.status==='ok')toast('✅ Intervento registrato!');else toast('Errore: '+(d.message||'?'),true);}
+  catch(e){toast('Errore di connessione',true);}finally{loading(false);}
+  resetForm();vai('screenHome');
+}
+
+function resetForm(){
+  ['fCognome','fNome','fCF','fEmail','fNuovoNome','fNuovoCF','fNuovaEmail','fComune','fUbicazione','fGpsLat','fGpsLon','fUsoSuolo','fCodiceGabbia','fVisti','fNote'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('nuovoCacBox').classList.remove('show');
+  nuovoCacciatore=false;
+  document.getElementById('fCapi').value='';document.getElementById('fScopo').value='';document.getElementById('fMezzi').value='';document.getElementById('fDestinazione').value='';
+  document.getElementById('gpsStatus').textContent='Tocca "Rileva" per acquisire la posizione';document.getElementById('codiceGabbiaGroup').style.display='none';
+  ['sCorn','sGazz','sPicc','qCacc','qGuar','qProv'].forEach(function(id){document.getElementById(id).classList.remove('active');});
+  specie='';qualifica='';corvidiSel=[];renderAgenti();
+}
+
+// ============================================================
+//  FORM IBIS SACRO
+// ============================================================
+var etaIbis = '';
+var stampiIbis = '';
+
+function initFormIbis(){
+  var oggi=new Date();
+  var loc=new Date(oggi.getTime()-oggi.getTimezoneOffset()*60000);
+  document.getElementById('iData').value=loc.toISOString().slice(0,10);
+  document.getElementById('iOra').value=loc.toISOString().slice(11,16);
+}
+
+function toggleArmaIbis(){
+  var v=document.getElementById('iMetodo').value;
+  document.getElementById('iArmaGroup').style.display=(v==='arma da fuoco'||v==='entrambe')?'block':'none';
+}
+
+function setEtaIbis(val){
+  etaIbis=val;
+  ['eGiov','eAdul','eIndet'].forEach(function(id){document.getElementById(id).classList.remove('active');});
+  var map={giovani:'eGiov',adulti:'eAdul',indeterminati:'eIndet'};
+  if(map[val]) document.getElementById(map[val]).classList.add('active');
+}
+
+function setStampiIbis(val){
+  stampiIbis=val;
+  ['stSi','stNo'].forEach(function(id){document.getElementById(id).classList.remove('active');});
+  document.getElementById(val==='SI'?'stSi':'stNo').classList.add('active');
+}
+
+function cambiaCapiIbis(delta){
+  var el=document.getElementById('iAbbattuti');
+  el.value=Math.max(0,(parseInt(el.value)||0)+delta);
+}
+
+function rilevaPosizioneIbis(){
+  var st=document.getElementById('iGpsStatus');st.textContent='📡 Acquisizione...';
+  if(!navigator.geolocation){st.textContent='GPS non disponibile';return;}
+  navigator.geolocation.getCurrentPosition(function(pos){
+    document.getElementById('iGpsLat').value=pos.coords.latitude.toFixed(6);
+    document.getElementById('iGpsLon').value=pos.coords.longitude.toFixed(6);
+    st.textContent='✅ Posizione acquisita (±'+Math.round(pos.coords.accuracy)+'m)';
+  },function(){st.textContent='⚠️ Impossibile rilevare la posizione';},{enableHighAccuracy:true,timeout:10000});
+}
+
+// Autocomplete per i 4 operatori IBIS - usa la stessa lista cacciatori
+function cercaOperatoreIbis(n,val){
+  var lista=document.getElementById('autocompleteListIbis'+n);
+  var q=val.trim().toUpperCase();
+  if(q.length<2){lista.classList.remove('show');return;}
+  var trovati=cacciatori.filter(function(c){return c.cognome.toUpperCase().startsWith(q);}).slice(0,8);
+  lista.innerHTML='';
+  window['_trovatiIbis'+n]=trovati;
+  trovati.forEach(function(c,i){
+    var div=document.createElement('div');
+    div.className='autocomplete-item';
+    div.innerHTML='<strong>'+c.cognome+'</strong> '+c.nome+'<small>'+(c.cf||'')+'</small>';
+    div.setAttribute('data-idx',i);
+    div.addEventListener('mousedown',function(e){
+      e.preventDefault();
+      var idx=parseInt(this.getAttribute('data-idx'));
+      var cc=window['_trovatiIbis'+n][idx];
+      document.getElementById('iOp'+n+'Cognome').value=cc.cognome||'';
+      document.getElementById('iOp'+n+'Nome').value=cc.nome||'';
+      var cfEl=document.getElementById('iOp'+n+'CF');if(cfEl)cfEl.value=cc.cf||'';
+      var emEl=document.getElementById('iOp'+n+'Email');if(emEl)emEl.value=cc.email||'';
+      lista.classList.remove('show');
+    });
+    lista.appendChild(div);
+  });
+  lista.classList.add('show');
+}
+
+function selezionaOperatoreIbis(n,cognome,nome,cf){
+  document.getElementById('iOp'+n+'Cognome').value=cognome;
+  document.getElementById('iOp'+n+'Nome').value=nome;
+  var cfEl=document.getElementById('iOp'+n+'CF');if(cfEl)cfEl.value=cf||'';
+  chiudiListaIbis(n);
+}
+
+function chiudiListaIbis(n){
+  document.getElementById('autocompleteListIbis'+n).classList.remove('show');
+}
+
+function fmtOraIbis(val){
+  return val || '';
+}
+
+async function submitIbis(){
+  var data=document.getElementById('iData').value;
+  var ora=document.getElementById('iOra').value;
+  var comune=document.getElementById('iComune').value.trim();
+  var metodo=document.getElementById('iMetodo').value;
+  var munizionamento=document.getElementById('iMunizionamento').value;
+  var abbattuti=document.getElementById('iAbbattuti').value;
+  var destinazione=document.getElementById('iDestinazione').value;
+  var op1Cognome=document.getElementById('iOp1Cognome').value.trim();
+  var op1Nome=document.getElementById('iOp1Nome').value.trim();
+  var op1Qual=document.getElementById('iOp1Qual').value;
+
+  if(!data||!comune||!metodo||!munizionamento||!destinazione){toast('Compila tutti i campi obbligatori',true);return;}
+  if(!abbattuti||parseInt(abbattuti)<0){toast('Inserisci il numero di individui abbattuti',true);return;}
+  if(!op1Cognome||!op1Nome||!op1Qual){toast('Operatore 1 obbligatorio (qualifica, cognome, nome)',true);return;}
+
+  var dd=new Date(data+'T00:00:00');
+  var giorno=dd.getDate(), mese=dd.getMonth()+1, anno=dd.getFullYear();
+
+  // Aggiungi eventuali nuovi operatori alla lista cacciatori
+  for(var n=1;n<=4;n++){
+    var cog=document.getElementById('iOp'+n+'Cognome').value.trim();
+    var nom=document.getElementById('iOp'+n+'Nome').value.trim();
+    if(cog && nom){
+      var exists=cacciatori.some(function(c){return c.cognome.toUpperCase()===cog.toUpperCase()&&c.nome.toUpperCase()===nom.toUpperCase();});
+      if(!exists){cacciatori.push({cognome:cog.toUpperCase(),nome:nom.toUpperCase(),cf:'',email:''});}
+    }
+  }
+  cacciatori.sort(function(a,b){return a.cognome.localeCompare(b.cognome);});
+
+  var payload={
+    tipo:'IBIS', prov:'CR', anno:anno, mese:mese, giorno:giorno, ora:ora,
+    comune:comune.toUpperCase(), localita:document.getElementById('iLocalita').value.trim(),
+    gpsLat:document.getElementById('iGpsLat').value, gpsLon:document.getElementById('iGpsLon').value,
+    metodo:metodo, tipoArma:document.getElementById('iTipoArma').value.trim(), munizionamento:munizionamento,
+    osservati:document.getElementById('iOsservati').value.trim(), abbattuti:parseInt(abbattuti),
+    giovani:etaIbis==='giovani'?'X':'', adulti:etaIbis==='adulti'?'X':'', indeterminati:etaIbis==='indeterminati'?'X':'',
+    ambiente:document.getElementById('iAmbiente').value, note:document.getElementById('iNote').value.trim(),
+    stampi:stampiIbis, destinazione:destinazione,
+    anelloMetallo:document.getElementById('iAnelloMetallo').value.trim(), anelloColorato:document.getElementById('iAnelloColorato').value.trim(),
+    op1Qual:op1Qual, op1Nome:op1Nome.toUpperCase(), op1Cognome:op1Cognome.toUpperCase(),
+    op2Qual:document.getElementById('iOp2Qual').value, op2Nome:document.getElementById('iOp2Nome').value.trim().toUpperCase(), op2Cognome:document.getElementById('iOp2Cognome').value.trim().toUpperCase(),
+    op3Qual:document.getElementById('iOp3Qual').value, op3Nome:document.getElementById('iOp3Nome').value.trim().toUpperCase(), op3Cognome:document.getElementById('iOp3Cognome').value.trim().toUpperCase(),
+    op4Qual:document.getElementById('iOp4Qual').value, op4Nome:document.getElementById('iOp4Nome').value.trim().toUpperCase(), op4Cognome:document.getElementById('iOp4Cognome').value.trim().toUpperCase(),
+    inseritoDa:operatoreCorrente
+  };
+
+  loading(true);
+  try{
+    var d=await gsPost(payload);
+    if(d.status==='ok')toast('✅ Scheda Ibis registrata! ('+(d.codice||'')+')');
+    else toast('Errore: '+(d.message||'?'),true);
+  } catch(e){toast('Errore di connessione',true);} finally{loading(false);}
+  resetFormIbis();vai('screenHome');
+}
+
+function resetFormIbis(){
+  ['iLocalita','iGpsLat','iGpsLon','iTipoArma','iOsservati','iAbbattuti','iAnelloMetallo','iAnelloColorato','iNote',
+   'iOp1Cognome','iOp1Nome','iOp2Cognome','iOp2Nome','iOp3Cognome','iOp3Nome','iOp4Cognome','iOp4Nome','iComune'
+  ].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  ['iMetodo','iMunizionamento','iAmbiente','iDestinazione','iOp1Qual','iOp2Qual','iOp3Qual','iOp4Qual'].forEach(function(id){document.getElementById(id).value='';});
+  ['eGiov','eAdul','eIndet','stSi','stNo'].forEach(function(id){document.getElementById(id).classList.remove('active');});
+  document.getElementById('iArmaGroup').style.display='none';
+  document.getElementById('iGpsStatus').textContent='Tocca "Rileva" per acquisire la posizione';
+  etaIbis='';stampiIbis='';
+}
+
+// ============================================================
+//  FORM DAINO
+// ============================================================
+function initFormDaino(){
+  var oggi=new Date();
+  var loc=new Date(oggi.getTime()-oggi.getTimezoneOffset()*60000);
+  document.getElementById('dData').value=loc.toISOString().slice(0,10);
+}
+function cambiaCapiDaino(delta){
+  var el=document.getElementById('dAbbattuti');
+  el.value=Math.max(0,(parseInt(el.value)||0)+delta);
+}
+async function submitDaino(){
+  var data=document.getElementById('dData').value;
+  var comune=document.getElementById('dComune').value.trim();
+  var abbattuti=document.getElementById('dAbbattuti').value;
+  if(!data||!comune){toast('Compila Data e Comune',true);return;}
+  if(!abbattuti||parseInt(abbattuti)<0){toast('Inserisci il numero di animali abbattuti',true);return;}
+  var payload={
+    tipo:'DAINO', prov:'CR', data:fmt(data),
+    comune:comune.toUpperCase(), localita:document.getElementById('dLocalita').value.trim(),
+    zona:document.getElementById('dZona').value.trim(),
+    stimati:document.getElementById('dStimati').value.trim(), abbattuti:parseInt(abbattuti),
+    sesso:document.getElementById('dSesso').value.trim(), classeEta:document.getElementById('dClasseEta').value.trim(),
+    metodo:document.getElementById('dMetodo').value.trim(), note:document.getElementById('dNote').value.trim(),
+    inseritoDa:operatoreCorrente
+  };
+  loading(true);
+  try{
+    var d=await gsPost(payload);
+    if(d.status==='ok')toast('✅ Scheda Daino registrata!');
+    else toast('Errore: '+(d.message||'?'),true);
+  } catch(e){toast('Errore di connessione',true);} finally{loading(false);}
+  resetFormDaino();vai('screenHome');
+}
+function resetFormDaino(){
+  ['dComune','dLocalita','dZona','dStimati','dAbbattuti','dSesso','dClasseEta','dMetodo','dNote'].forEach(function(id){document.getElementById(id).value='';});
+}
+
+// ============================================================
+//  FORM CORMORANO
+// ============================================================
+function initFormCormorano(){
+  var oggi=new Date();
+  var loc=new Date(oggi.getTime()-oggi.getTimezoneOffset()*60000);
+  document.getElementById('cmData').value=loc.toISOString().slice(0,10);
+  document.getElementById('cmOra').value=loc.toISOString().slice(11,16);
+}
+function cambiaCapiCormorano(delta){
+  var el=document.getElementById('cmAbbattuti');
+  el.value=Math.max(0,(parseInt(el.value)||0)+delta);
+}
+function cercaOperatoreCormorano(n,val){
+  var lista=document.getElementById('autocompleteListCorm'+n);
+  var q=val.trim().toUpperCase();
+  if(q.length<2){lista.classList.remove('show');return;}
+  var trovati=cacciatori.filter(function(c){return c.cognome.toUpperCase().startsWith(q);}).slice(0,8);
+  lista.innerHTML='';
+  window['_trovatiCorm'+n]=trovati;
+  trovati.forEach(function(c,i){
+    var div=document.createElement('div');
+    div.className='autocomplete-item';
+    div.innerHTML='<strong>'+c.cognome+'</strong> '+c.nome+'<small>'+(c.cf||'')+'</small>';
+    div.setAttribute('data-idx',i);
+    div.addEventListener('mousedown',function(e){
+      e.preventDefault();
+      var idx=parseInt(this.getAttribute('data-idx'));
+      var cc=window['_trovatiCorm'+n][idx];
+      document.getElementById('cmAg'+n+'Cognome').value=cc.cognome||'';
+      document.getElementById('cmAg'+n+'Nome').value=cc.nome||'';
+      var cfEl=document.getElementById('cmAg'+n+'CF');if(cfEl)cfEl.value=cc.cf||'';
+      var emEl=document.getElementById('cmAg'+n+'Email');if(emEl)emEl.value=cc.email||'';
+      lista.classList.remove('show');
+    });
+    lista.appendChild(div);
+  });
+  lista.classList.add('show');
+}
+
+function selezionaOperatoreCormorano(n,cognome,nome,cf){
+  document.getElementById('cmAg'+n+'Cognome').value=cognome;
+  document.getElementById('cmAg'+n+'Nome').value=nome;
+  var cfEl=document.getElementById('cmAg'+n+'CF');if(cfEl)cfEl.value=cf||'';
+  chiudiListaCormorano(n);
+}
+function chiudiListaCormorano(n){
+  document.getElementById('autocompleteListCorm'+n).classList.remove('show');
+}
+async function submitCormorano(){
+  var data=document.getElementById('cmData').value;
+  var comune=document.getElementById('cmComune').value.trim();
+  var ag1Cognome=document.getElementById('cmAg1Cognome').value.trim();
+  var ag1Nome=document.getElementById('cmAg1Nome').value.trim();
+  if(!data||!comune){toast('Compila Data e Comune',true);return;}
+  if(!ag1Cognome||!ag1Nome){toast('Agente 1 obbligatorio (cognome e nome)',true);return;}
+
+  // Aggiungi eventuali nuovi operatori
+  for(var n=1;n<=2;n++){
+    var cog=document.getElementById('cmAg'+n+'Cognome').value.trim();
+    var nom=document.getElementById('cmAg'+n+'Nome').value.trim();
+    if(cog && nom){
+      var exists=cacciatori.some(function(c){return c.cognome.toUpperCase()===cog.toUpperCase()&&c.nome.toUpperCase()===nom.toUpperCase();});
+      if(!exists){cacciatori.push({cognome:cog.toUpperCase(),nome:nom.toUpperCase(),cf:'',email:''});}
+    }
+  }
+  cacciatori.sort(function(a,b){return a.cognome.localeCompare(b.cognome);});
+
+  var payload={
+    tipo:'CORMORANO', prov:'CR', data:fmt(data),
+    comune:comune.toUpperCase(), localita:document.getElementById('cmLocalita').value.trim(),
+    corpoIdrico:document.getElementById('cmCorpoIdrico').value.trim(), nomeCorpoIdrico:document.getElementById('cmNomeCorpoIdrico').value.trim(),
+    meteo:document.getElementById('cmMeteo').value.trim(), interventoDa:document.getElementById('cmInterventoDa').value,
+    ora:document.getElementById('cmOra').value, nIndividui:document.getElementById('cmNIndividui').value.trim(),
+    posizione:document.getElementById('cmPosizione').value, attivita:document.getElementById('cmAttivita').value,
+    abbattuti:parseInt(document.getElementById('cmAbbattuti').value)||0,
+    agente1:(ag1Cognome+' '+ag1Nome).toUpperCase(),
+    agente2:(document.getElementById('cmAg2Cognome').value.trim()+' '+document.getElementById('cmAg2Nome').value.trim()).trim().toUpperCase(),
+    inseritoDa:operatoreCorrente
+  };
+  loading(true);
+  try{
+    var d=await gsPost(payload);
+    if(d.status==='ok')toast('✅ Scheda Cormorano registrata!');
+    else toast('Errore: '+(d.message||'?'),true);
+  } catch(e){toast('Errore di connessione',true);} finally{loading(false);}
+  resetFormCormorano();vai('screenHome');
+}
+function resetFormCormorano(){
+  ['cmComune','cmLocalita','cmCorpoIdrico','cmNomeCorpoIdrico','cmMeteo','cmNIndividui','cmAbbattuti','cmAg1Cognome','cmAg1Nome','cmAg2Cognome','cmAg2Nome'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('cmInterventoDa').value='';
+  document.getElementById('cmPosizione').value='';
+  document.getElementById('cmAttivita').value='';
+}
+
+// ============================================================
+//  FORM MINILEPRE / CONIGLIO / VOLPE
+// ============================================================
+var specieMinilepre='';
+function initFormMinilepre(){
+  var oggi=new Date();
+  var loc=new Date(oggi.getTime()-oggi.getTimezoneOffset()*60000);
+  document.getElementById('mlData').value=loc.toISOString().slice(0,10);
+}
+function setSpecieMinilepre(val){
+  specieMinilepre=val;
+  ['mlSpMini','mlSpConi','mlSpVolp'].forEach(function(id){document.getElementById(id).classList.remove('active');});
+  var map={MINILEPRE:'mlSpMini',CONIGLIO:'mlSpConi',VOLPE:'mlSpVolp'};
+  if(map[val]) document.getElementById(map[val]).classList.add('active');
+}
+function cambiaCapiMinilepre(delta){
+  var el=document.getElementById('mlAbbattuti');
+  el.value=Math.max(0,(parseInt(el.value)||0)+delta);
+}
+async function submitMinilepre(){
+  var data=document.getElementById('mlData').value;
+  var comune=document.getElementById('mlComune').value.trim();
+  var abbattuti=document.getElementById('mlAbbattuti').value;
+  if(!data||!comune){toast('Compila Data e Comune',true);return;}
+  if(!specieMinilepre){toast('Seleziona la specie',true);return;}
+  if(!abbattuti||parseInt(abbattuti)<0){toast('Inserisci il numero di animali abbattuti',true);return;}
+  var payload={
+    tipo:'MINILEPRE', prov:'CR', data:fmt(data),
+    comune:comune.toUpperCase(), localita:document.getElementById('mlLocalita').value.trim(),
+    zona:document.getElementById('mlZona').value.trim(), specie:specieMinilepre,
+    abbattuti:parseInt(abbattuti), stimati:document.getElementById('mlStimati').value.trim(),
+    metodo:document.getElementById('mlMetodo').value.trim(), note:document.getElementById('mlNote').value.trim(),
+    inseritoDa:operatoreCorrente
+  };
+  loading(true);
+  try{
+    var d=await gsPost(payload);
+    if(d.status==='ok')toast('✅ Scheda registrata!');
+    else toast('Errore: '+(d.message||'?'),true);
+  } catch(e){toast('Errore di connessione',true);} finally{loading(false);}
+  resetFormMinilepre();vai('screenHome');
+}
+function resetFormMinilepre(){
+  ['mlComune','mlLocalita','mlZona','mlAbbattuti','mlStimati','mlMetodo','mlNote'].forEach(function(id){document.getElementById(id).value='';});
+  ['mlSpMini','mlSpConi','mlSpVolp'].forEach(function(id){document.getElementById(id).classList.remove('active');});
+  specieMinilepre='';
+}
+
+// ============================================================
+//  FORM SCOIATTOLO DI PALLAS
+// ============================================================
+function initFormScoiattolo(){
+  var oggi=new Date();
+  var loc=new Date(oggi.getTime()-oggi.getTimezoneOffset()*60000);
+  document.getElementById('scData').value=loc.toISOString().slice(0,10);
+}
+function cambiaCapiScoiattolo(delta){
+  var el=document.getElementById('scTotaleAbbattuti');
+  el.value=Math.max(0,(parseInt(el.value)||0)+delta);
+}
+function rilevaPosizioneScoiattolo(){
+  var st=document.getElementById('scGpsStatus');st.textContent='📡 Acquisizione...';
+  if(!navigator.geolocation){st.textContent='GPS non disponibile';return;}
+  navigator.geolocation.getCurrentPosition(function(pos){
+    document.getElementById('scGpsN').value=pos.coords.latitude.toFixed(6);
+    document.getElementById('scGpsE').value=pos.coords.longitude.toFixed(6);
+    st.textContent='✅ Posizione acquisita (±'+Math.round(pos.coords.accuracy)+'m)';
+  },function(){st.textContent='⚠️ Impossibile rilevare la posizione';},{enableHighAccuracy:true,timeout:10000});
+}
+function cercaOperatoreScoiattolo(n,val){
+  var lista=document.getElementById('autocompleteListSco'+n);
+  var q=val.trim().toUpperCase();
+  if(q.length<2){lista.classList.remove('show');return;}
+  var trovati=cacciatori.filter(function(c){return c.cognome.toUpperCase().startsWith(q);}).slice(0,8);
+  lista.innerHTML='';
+  window['_trovatiSco'+n]=trovati;
+  trovati.forEach(function(c,i){
+    var div=document.createElement('div');
+    div.className='autocomplete-item';
+    div.innerHTML='<strong>'+c.cognome+'</strong> '+c.nome+'<small>'+(c.cf||'')+'</small>';
+    div.setAttribute('data-idx',i);
+    div.addEventListener('mousedown',function(e){
+      e.preventDefault();
+      var idx=parseInt(this.getAttribute('data-idx'));
+      var cc=window['_trovatiSco'+n][idx];
+      document.getElementById('scInc'+n+'Cognome').value=cc.cognome||'';
+      document.getElementById('scInc'+n+'Nome').value=cc.nome||'';
+      var cfEl=document.getElementById('scInc'+n+'CF');if(cfEl)cfEl.value=cc.cf||'';
+      var emEl=document.getElementById('scInc'+n+'Email');if(emEl)emEl.value=cc.email||'';
+      lista.classList.remove('show');
+    });
+    lista.appendChild(div);
+  });
+  lista.classList.add('show');
+}
+
+function selezionaOperatoreScoiattolo(n,cognome,nome,cf){
+  document.getElementById('scInc'+n+'Cognome').value=cognome;
+  document.getElementById('scInc'+n+'Nome').value=nome;
+  var cfEl=document.getElementById('scInc'+n+'CF');if(cfEl)cfEl.value=cf||'';
+  chiudiListaScoiattolo(n);
+}
+function chiudiListaScoiattolo(n){
+  document.getElementById('autocompleteListSco'+n).classList.remove('show');
+}
+async function submitScoiattolo(){
+  var data=document.getElementById('scData').value;
+  var comune=document.getElementById('scComune').value.trim();
+  var inc1Cognome=document.getElementById('scInc1Cognome').value.trim();
+  var inc1Nome=document.getElementById('scInc1Nome').value.trim();
+  var specie=document.getElementById('scSpecie').value;
+  var totale=document.getElementById('scTotaleAbbattuti').value;
+  if(!data||!comune){toast('Compila Data e Comune',true);return;}
+  if(!inc1Cognome||!inc1Nome){toast('Incaricato 1 obbligatorio (cognome e nome)',true);return;}
+  if(!specie){toast('Seleziona la specie',true);return;}
+  if(!totale||parseInt(totale)<0){toast('Inserisci il totale individui abbattuti',true);return;}
+
+  for(var n=1;n<=2;n++){
+    var cog=document.getElementById('scInc'+n+'Cognome').value.trim();
+    var nom=document.getElementById('scInc'+n+'Nome').value.trim();
+    if(cog && nom){
+      var exists=cacciatori.some(function(c){return c.cognome.toUpperCase()===cog.toUpperCase()&&c.nome.toUpperCase()===nom.toUpperCase();});
+      if(!exists){cacciatori.push({cognome:cog.toUpperCase(),nome:nom.toUpperCase(),cf:'',email:''});}
+    }
+  }
+  cacciatori.sort(function(a,b){return a.cognome.localeCompare(b.cognome);});
+
+  var payload={
+    tipo:'SCOIATTOLO',
+    numeroScheda:document.getElementById('scNumeroScheda').value.trim(), data:fmt(data),
+    oraInizio:document.getElementById('scOraInizio').value, oraFine:document.getElementById('scOraFine').value,
+    ore:document.getElementById('scOre').value.trim(),
+    incaricato1:(inc1Cognome+' '+inc1Nome).toUpperCase(), qualifica1:document.getElementById('scQual1').value,
+    incaricato2:(document.getElementById('scInc2Cognome').value.trim()+' '+document.getElementById('scInc2Nome').value.trim()).trim().toUpperCase(),
+    qualifica2:document.getElementById('scQual2').value,
+    numeroOperatori:document.getElementById('scNumeroOperatori').value.trim(), oreTot:document.getElementById('scOreTot').value.trim(),
+    localita:document.getElementById('scLocalita').value.trim(), comune:comune.toUpperCase(),
+    meteo:document.getElementById('scMeteo').value.trim(), vento:document.getElementById('scVento').value.trim(),
+    specie:specie,
+    abbattutiArma:document.getElementById('scAbbattutiArma').value||0, catturatiTrappola:document.getElementById('scCatturatiTrappola').value||0,
+    totaleAbbattuti:parseInt(totale),
+    smaltiti1069:document.getElementById('scSmaltiti1069').value||0, infossati:document.getElementById('scInfossati').value||0,
+    nonRecuperati:document.getElementById('scNonRecuperati').value||0,
+    gpsN:document.getElementById('scGpsN').value, gpsE:document.getElementById('scGpsE').value,
+    vistiCallosciurus:document.getElementById('scVistiCallosciurus').value||0, vistiCarolinensis:document.getElementById('scVistiCarolinensis').value||0,
+    vistiRossi:document.getElementById('scVistiRossi').value||0, note:document.getElementById('scNote').value.trim(),
+    inseritoDa:operatoreCorrente
+  };
+  loading(true);
+  try{
+    var d=await gsPost(payload);
+    if(d.status==='ok')toast('✅ Scheda Scoiattolo registrata!');
+    else toast('Errore: '+(d.message||'?'),true);
+  } catch(e){toast('Errore di connessione',true);} finally{loading(false);}
+  resetFormScoiattolo();vai('screenHome');
+}
+function resetFormScoiattolo(){
+  ['scNumeroScheda','scOraInizio','scOraFine','scOre','scInc1Cognome','scInc1Nome','scInc2Cognome','scInc2Nome',
+   'scNumeroOperatori','scOreTot','scLocalita','scComune','scMeteo','scVento',
+   'scAbbattutiArma','scCatturatiTrappola','scTotaleAbbattuti','scSmaltiti1069','scInfossati','scNonRecuperati',
+   'scGpsN','scGpsE','scVistiCallosciurus','scVistiCarolinensis','scVistiRossi','scNote'
+  ].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('scQual1').value='';
+  document.getElementById('scQual2').value='';
+  document.getElementById('scSpecie').value='';
+  document.getElementById('scGpsStatus').textContent='Tocca "Rileva" per acquisire la posizione';
+}
+
+// STATISTICHE PER SPECIE
+async function mostraStatSpecie(){
+  document.getElementById('modalStatSpecie').style.display='flex';
+  var el = document.getElementById('statSpecieContenuto');
+  el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:16px;">⏳ Caricamento...</div>';
+  try {
+    // Carica tutti i fogli in parallelo
+    var [rCorv, rIbis, rCorm, rMini, rDaino, rSco] = await Promise.all([
+      gsGet('reportCorvidi').catch(()=>({records:[]})),
+      gsGet('reportIbis').catch(()=>({records:[]})),
+      gsGet('reportCormorano').catch(()=>({records:[]})),
+      gsGet('reportMinilepre').catch(()=>({records:[]})),
+      gsGet('reportDaino').catch(()=>({records:[]})),
+      gsGet('reportScoiattolo').catch(()=>({records:[]})),
+    ]);
+
+    // Conta abbattuti per specie
+    var conteggi = {
+      'CORNACCHIA GRIGIA': 0, 'GAZZA': 0, 'PICCIONE': 0,
+      'IBIS SACRO': 0, 'CORMORANO': 0, 'DAINO': 0,
+      'MINILEPRE': 0, 'CONIGLIO': 0, 'VOLPE': 0, 'SCOIATTOLO DI PALLAS': 0
+    };
+
+    // CORVIDI&PICCIONE - specie in r.specie, abbattuti in r.capi
+    (rCorv.records||[]).forEach(function(r){
+      var sp = (r.specie||'').toUpperCase().trim();
+      var n = parseInt(r.capi)||0;
+      if(sp.indexOf('CORNACCHIA')!==-1) conteggi['CORNACCHIA GRIGIA']+=n;
+      else if(sp.indexOf('GAZZA')!==-1) conteggi['GAZZA']+=n;
+      else if(sp.indexOf('PICCIONE')!==-1) conteggi['PICCIONE']+=n;
+    });
+
+    // IBIS SACRO
+    (rIbis.records||[]).forEach(function(r){ conteggi['IBIS SACRO']+=parseInt(r.abbattuti)||0; });
+
+    // CORMORANO
+    (rCorm.records||[]).forEach(function(r){ conteggi['CORMORANO']+=parseInt(r.abbattuti)||0; });
+
+    // MINILEPRE_CONIGLIO_VOLPE - specie in r.specie
+    (rMini.records||[]).forEach(function(r){
+      var sp = (r.specie||'').toUpperCase().trim();
+      var n = parseInt(r.abbattuti)||0;
+      if(sp.indexOf('MINILEPRE')!==-1) conteggi['MINILEPRE']+=n;
+      else if(sp.indexOf('CONIGLIO')!==-1) conteggi['CONIGLIO']+=n;
+      else if(sp.indexOf('VOLPE')!==-1) conteggi['VOLPE']+=n;
+      else conteggi['MINILEPRE']+=n; // fallback
+    });
+
+    // DAINO
+    (rDaino.records||[]).forEach(function(r){ conteggi['DAINO']+=parseInt(r.abbattuti)||0; });
+
+    // SCOIATTOLO DI PALLAS
+    (rSco.records||[]).forEach(function(r){ conteggi['SCOIATTOLO DI PALLAS']+=parseInt(r.totaleAbbattuti)||0; });
+
+    var totale = Object.values(conteggi).reduce(function(a,b){return a+b;},0);
+    var specie = Object.keys(conteggi);
+
+    var html = '<div style="margin-bottom:10px;font-size:12px;color:var(--muted);">Totale capi abbattuti: <strong style="color:var(--text);font-size:16px;">' + totale + '</strong></div>';
+    html += '<div style="display:grid;gap:6px;">';
+    specie.forEach(function(s){
+      var n = conteggi[s];
+      var perc = totale > 0 ? Math.round(n/totale*100) : 0;
+      html += '<div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 12px;">' +
+        '<div style="display:flex;justify-content:space-between;margin-bottom:4px;">' +
+        '<span style="color:var(--text);font-size:12px;">' + s + '</span>' +
+        '<span style="color:var(--accent);font-weight:bold;">' + n + '</span>' +
+        '</div>' +
+        '<div style="background:rgba(255,255,255,0.08);border-radius:4px;height:4px;">' +
+        '<div style="background:var(--accent);border-radius:4px;height:4px;width:' + perc + '%"></div>' +
+        '</div></div>';
+    });
+    html += '</div>';
+    el.innerHTML = html;
+  } catch(e) {
+    el.innerHTML = '<div style="color:#e74c3c;text-align:center;padding:16px;">❌ Errore caricamento dati</div>';
+  }
+}
+
+// STATS
+async function loadStats(){
+  try{var d=await gsGet('statsCorvidi');document.getElementById('statMese').textContent=d.mese??0;document.getElementById('statAnno').textContent=d.anno??0;document.getElementById('statInterventi').textContent=d.interventi??0;document.getElementById('statTot').textContent=d.tot??0;}
+  catch(e){['statMese','statAnno','statInterventi','statTot'].forEach(function(id){document.getElementById(id).textContent='—';});}
+}
+
+// REPORT
+function switchReport(tab){
+  reportTab=tab;
+  document.getElementById('tabMensile').className='tab-btn'+(tab==='mensile'?' active':'');
+  document.getElementById('tabAnnuale').className='tab-btn'+(tab==='annuale'?' active':'');
+  renderReport();
+}
+
+async function loadReport(){
+  document.getElementById('reportContent').innerHTML='<div class="empty-state"><div>📊</div>Caricamento...</div>';
+  try{var d=await gsGet('reportCorvidi');reportData=d.records||[];renderReport();}
+  catch(e){document.getElementById('reportContent').innerHTML='<div class="empty-state"><div>⚠️</div>Errore</div>';}
+}
+
+function mesiNome(i){return['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'][i]||'';}
+
+function renderReport(){
+  var el=document.getElementById('reportContent');
+  if(!reportData.length){el.innerHTML='<div class="empty-state"><div>📂</div>Nessun dato</div>';return;}
+  var now=new Date();var html='';
+  var specieBadge=function(s){var map={'CORNACCHIA GRIGIA':'badge-cornacchia','GAZZA':'badge-gazza','PICCIONE':'badge-piccione','IBIS SACRO':'badge-ibis'};return s?'<span class="specie-badge '+(map[s]||'')+'">'+s+'</span>':'';}; 
+  if(reportTab==='mensile'){
+    var mesi={};
+    reportData.forEach(function(r){
+      var p=r.data?r.data.split('/'):[];if(p.length<3)return;
+      var m=parseInt(p[1]);var y=parseInt(p[2]);if(y<100)y+=2000;
+      var k=y+'-'+((''+m).padStart(2,'0'));
+      if(!mesi[k])mesi[k]=[];mesi[k].push(r);
+    });
+    var totM=reportData.filter(function(r){var p=r.data?r.data.split('/'):[];if(p.length<3)return false;var y=parseInt(p[2]);if(y<100)y+=2000;return parseInt(p[1])-1===now.getMonth()&&y===now.getFullYear();});
+    html+='<div class="totale-box"><div class="t-label">Capi questo mese</div><div class="t-num">'+totM.reduce(function(s,r){return s+(parseInt(r.capi)||0);},0)+'</div></div>';
+    Object.keys(mesi).sort().reverse().forEach(function(k){
+      var ym=k.split('-');var totK=mesi[k].reduce(function(s,r){return s+(parseInt(r.capi)||0);},0);
+      html+='<div class="report-section"><div class="report-month-title">'+mesiNome(parseInt(ym[1])-1)+' '+ym[0]+' — '+mesi[k].length+' interventi · '+totK+' capi</div>';
+      mesi[k].slice().reverse().forEach(function(r){html+='<div class="report-card"><div class="report-top"><div class="report-nome">👤 '+r.cognome+'</div><div class="report-data">'+r.data+'</div></div><div class="report-detail">📍 '+r.comune+(r.ubicazione?' — '+r.ubicazione:'')+'<br>🏛️ '+r.qualifica+'</div>'+specieBadge(r.specie)+'<span class="specie-badge capi-badge">🔢 '+r.capi+' capi</span></div>';});
+      html+='</div>';
+    });
+  } else {
+    var anni={};
+    reportData.forEach(function(r){var p=r.data?r.data.split('/'):[];if(p.length<3)return;var y=parseInt(p[2]);if(y<100)y+=2000;if(!anni[y])anni[y]={records:[],capi:0};anni[y].records.push(r);anni[y].capi+=parseInt(r.capi)||0;});
+    Object.keys(anni).sort().reverse().forEach(function(y){
+      var perSpecie={};anni[y].records.forEach(function(r){if(r.specie)perSpecie[r.specie]=(perSpecie[r.specie]||0)+(parseInt(r.capi)||0);});
+      var det=Object.entries(perSpecie).map(function(e){return e[0]+': '+e[1];}).join(' · ');
+      html+='<div class="report-card"><div class="report-top"><div class="report-nome">📆 Anno '+y+'</div><div class="report-data">'+anni[y].records.length+' interventi</div></div><div class="report-detail">'+det+'</div><span class="specie-badge capi-badge">🔢 '+anni[y].capi+' capi totali</span></div>';
+    });
+  }
+  el.innerHTML=html;
+}
+
+// SHEET
+function apriModalSheet(){document.getElementById('pwdSheet').value='';document.getElementById('errSheet').textContent='';document.getElementById('modalSheet').classList.add('show');}
+function verificaSheet(){if(document.getElementById('pwdSheet').value===PWD){chiudiModal('modalSheet');window.open(SHEET_URL,'_blank');}else{document.getElementById('errSheet').textContent='❌ Password errata';document.getElementById('pwdSheet').value='';}}
+document.getElementById('pwdSheet').addEventListener('keydown',function(e){if(e.key==='Enter')verificaSheet();});
+document.getElementById('pwdAgenti').addEventListener('keydown',function(e){if(e.key==='Enter')verificaAgenti();});
+
+
+var cacciatori = [];
+
+async function caricaCacciatoriDalFoglio(){
+  try{
+    var d = await gsGet('operatori');
+    if(d.operatori && Array.isArray(d.operatori) && d.operatori.length > 0){
+      cacciatori = d.operatori;
+    }
+  }catch(e){}
+}
+var nuovoCacciatore=false;
+
+function cercaCacciatore(val){
+  var lista=document.getElementById('autocompleteList');
+  var q=val.trim().toUpperCase();
+  if(q.length<2){lista.classList.remove('show');return;}
+  var trovati=cacciatori.filter(function(c){return c.cognome.toUpperCase().startsWith(q);}).slice(0,8);
+  lista.innerHTML='';
+  window._trovatiAC = trovati;
+  trovati.forEach(function(c, i){
+    var div=document.createElement('div');
+    div.className='autocomplete-item';
+    div.innerHTML='<strong>'+c.cognome+'</strong> '+c.nome+'<small>'+(c.cf||'')+'</small>';
+    div.setAttribute('data-idx', i);
+    div.addEventListener('mousedown', function(e){
+      e.preventDefault();
+      var idx=parseInt(this.getAttribute('data-idx'));
+      var cc=window._trovatiAC[idx];
+      document.getElementById('fCognome').value=cc.cognome||'';
+      document.getElementById('fNome').value=cc.nome||'';
+      document.getElementById('fCF').value=cc.cf||'';
+      var em=document.getElementById('fEmail');if(em)em.value=cc.email||'';
+      lista.classList.remove('show');
+      document.getElementById('nuovoCacBox').classList.remove('show');
+      nuovoCacciatore=false;
+    });
+    lista.appendChild(div);
+  });
+  var btnNuovo=document.createElement('div');
+  btnNuovo.className='autocomplete-item';
+  btnNuovo.style.color='#7dcfaa';
+  btnNuovo.style.fontStyle='italic';
+  btnNuovo.textContent='➕ Aggiungi nuovo operatore';
+  btnNuovo.addEventListener('mousedown', function(e){
+    e.preventDefault();
+    inserisciNuovo(val.trim());
+  });
+  lista.appendChild(btnNuovo);
+  lista.classList.add('show');
+}
+
+function selezionaCacciatoreDirectly(cognome, nome, cf, email){
+  document.getElementById('fCognome').value=cognome;
+  document.getElementById('fNome').value=nome;
+  document.getElementById('fCF').value=cf||'';
+  if(document.getElementById('fEmail')) document.getElementById('fEmail').value=email||'';
+  document.getElementById('autocompleteList').classList.remove('show');
+  document.getElementById('nuovoCacBox').classList.remove('show');
+  nuovoCacciatore=false;
+}
+function selezionaCacciatore(idx){
+  var c=cacciatori[idx];
+  document.getElementById('fCognome').value=c.cognome;
+  document.getElementById('fNome').value=c.nome;
+  document.getElementById('fCF').value=c.cf||'';
+  document.getElementById('autocompleteList').classList.remove('show');
+  document.getElementById('nuovoCacBox').classList.remove('show');
+  nuovoCacciatore=false;
+}
+
+function inserisciNuovo(cognome){
+  document.getElementById('fCognome').value=cognome;
+  document.getElementById('fNome').value='';document.getElementById('fCF').value='';
+  document.getElementById('autocompleteList').classList.remove('show');
+  document.getElementById('nuovoCacBox').classList.add('show');
+  nuovoCacciatore=true;
+}
+
+function chiudiLista(){document.getElementById('autocompleteList').classList.remove('show');}
+
+document.getElementById('pinLogin').addEventListener('keydown',function(e){if(e.key==='Enter')verificaPinLogin();});
+
+// ============================================================
+//  ESENZIONE TASSA CACCIA CORVIDI
+// ============================================================
+function initEsenzioneCorvidi(){
+  var sel = document.getElementById('esenzioneAnnoCorvidi');
+  sel.innerHTML = '';
+  var now = new Date().getFullYear();
+  for(var y = now; y >= now-5; y--){
+    sel.innerHTML += '<option value="'+y+'">'+(y===now?y+' (anno corrente)':y)+'</option>';
+  }
+  document.getElementById('anteprimaEsenzioneCorvidi').innerHTML = '';
+}
+
+async function generaStampaEsenzioneCorvidi(){
+  var anno = document.getElementById('esenzioneAnnoCorvidi').value;
+  document.getElementById('anteprimaEsenzioneCorvidi').innerHTML = '<div style="text-align:center;color:#7dcfaa;padding:12px;">⏳ Caricamento...</div>';
+  try{
+    var d = await gsGet('esenzione', {anno: anno});
+    var records = d.records || [];
+    if(!records.length){
+      document.getElementById('anteprimaEsenzioneCorvidi').innerHTML = '<div style="text-align:center;color:#e63946;padding:16px;">⚠️ Nessun operatore trovato per l\'anno '+anno+'</div>';
+      return;
+    }
+    var rows = '';
+    records.forEach(function(r, i){
+      rows += '<tr><td style="text-align:center;">'+(i+1)+'</td><td>'+r.cognome+'</td><td>'+r.nome+'</td><td>'+r.cf+'</td><td>'+r.email+'</td></tr>';
+    });
+    var html = '<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Esenzione Tassa '+anno+'</title><style>@page{margin:15mm;size:A4 portrait;}body{font-family:Arial,sans-serif;font-size:10px;color:#000;margin:0;padding:0;}.header{text-align:center;margin-bottom:16px;border-bottom:2px solid #000;padding-bottom:10px;}.titolo{font-size:16px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;}.prov{font-size:10px;margin-top:4px;color:#333;}table{width:100%;border-collapse:collapse;margin-top:10px;}th{background:#0d1b2a;color:#e8c547;font-size:10px;font-weight:bold;padding:6px 4px;border:1px solid #000;text-align:center;}td{font-size:9px;padding:4px 3px;border:1px solid #ccc;}tr:nth-child(even){background:#f9f9f9;}.footer{margin-top:20px;font-size:9px;color:#888;text-align:center;border-top:1px solid #ccc;padding-top:8px;}.no-print{margin-top:20px;text-align:center;}@media print{.no-print{display:none;}}</style></head><body>';
+    html += '<div class="header"><div class="titolo">NOMINATIVI ANNO '+anno+' PER ESENZIONE TASSA REGIONALE CACCIA</div><div class="prov">Polizia Provinciale di Cremona — Controllo Corvidi</div></div>';
+    html += '<table><thead><tr><th>#</th><th>Cognome</th><th>Nome</th><th>Codice Fiscale</th><th>Email</th></tr></thead><tbody>'+rows+'</tbody></table>';
+    html += '<div class="footer">Stampato il '+new Date().toLocaleDateString("it-IT")+' — Totale: '+records.length+' nominativi</div>';
+    html += '<div class="no-print"><button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#0d1b2a;color:#e8c547;border:none;border-radius:8px;">🖨️ Stampa / Salva PDF</button><button onclick="window.close()" style="margin-left:12px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Chiudi</button></div>';
+    html += '</body></html>';
+    var blob = new Blob([html], {type:'text/html'});
+    var url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+    document.getElementById('anteprimaEsenzioneCorvidi').innerHTML = '<div style="text-align:center;color:#7dcfaa;padding:12px;">✅ '+records.length+' nominativi per anno '+anno+'<br><small style="color:rgba(224,225,221,0.4);">📊 Foglio Esenzione Tassa '+anno+' aggiornato nel Google Sheet</small></div>';
+  }catch(e){
+    document.getElementById('anteprimaEsenzioneCorvidi').innerHTML = '<div style="text-align:center;color:#e63946;padding:16px;">⚠️ Errore: '+e.message+'</div>';
+  }
+}
+
+syncPinMapDaSheet().then(checkLogin);
+loadStats();
+caricaCacciatoriDalFoglio();
+</script>
+
+
+</body></html>
