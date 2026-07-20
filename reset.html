@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reset — PP Cremona</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0f1115;color:#e2e8f0;font-family:'Barlow',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.header{text-align:center;margin-bottom:32px;}
+.icon{font-size:52px;margin-bottom:8px;}
+h1{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:3px;color:#f5a623;}
+.sub{font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.4);margin-top:4px;text-transform:uppercase;}
+.card{width:100%;max-width:400px;background:#16213e;border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:20px;margin-bottom:16px;}
+.card-title{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:#f5a623;margin-bottom:12px;}
+.status-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05);font-size:13px;}
+.status-row:last-child{border-bottom:none;}
+.status-label{color:rgba(255,255,255,0.6);}
+.badge{font-size:11px;padding:3px 10px;border-radius:20px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;}
+.badge-wait{background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.3);}
+.badge-ok{background:rgba(74,222,128,0.15);color:#4ade80;}
+.badge-err{background:rgba(231,76,60,0.15);color:#e74c3c;}
+.btn{width:100%;max-width:400px;height:52px;border:none;border-radius:12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;margin-bottom:10px;}
+.btn-reset{background:#e74c3c;color:#fff;}
+.btn-reset:active{background:#c0392b;}
+.btn-back{background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);font-size:13px;font-family:'Barlow Condensed',sans-serif;height:44px;}
+.btn-back:hover{border-color:rgba(255,255,255,0.3);color:rgba(255,255,255,0.6);}
+.result{width:100%;max-width:400px;text-align:center;font-family:'Barlow Condensed',sans-serif;font-size:14px;color:#4ade80;padding:12px;display:none;margin-bottom:10px;}
+.result.show{display:block;}
+.warning{width:100%;max-width:400px;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.3);border-radius:10px;padding:12px 16px;font-size:12px;color:rgba(231,76,60,0.8);margin-bottom:16px;line-height:1.6;}
+
+.modal-istruzioni{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:8888;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;}
+.modal-istruzioni.show{display:flex;}
+.modal-istr-box{background:#1a0a0a;border:1px solid rgba(231,76,60,0.4);border-radius:16px;padding:24px 20px;max-width:480px;width:100%;margin:auto;}
+.modal-istr-box h2{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:#e74c3c;margin-bottom:2px;}
+.modal-istr-box h3{font-size:13px;letter-spacing:2px;color:rgba(231,76,60,0.6);margin-bottom:16px;text-transform:uppercase;}
+.istr-section{margin-bottom:16px;}
+.istr-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#7dcfaa;margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid rgba(125,207,170,0.2);}
+.istr-text{font-size:16px;color:rgba(232,234,240,0.7);line-height:1.7;}
+.istr-text strong{color:#e74c3c;}
+.istr-text .ok{color:#7dcfaa;}
+.istr-firma{font-size:13px;color:rgba(232,234,240,0.4);margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);line-height:1.7;}
+.btn-istr-close{width:100%;padding:12px;border:none;border-radius:10px;background:#e74c3c;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:12px;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="icon">🧹</div>
+  <h1>Reset Dati App</h1>
+<button onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.add(&#39;show&#39;)" style="display:block;width:100%;padding:11px;background:rgba(231,76,60,0.08);border:1px solid rgba(231,76,60,0.3);border-radius:10px;color:#e74c3c;font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:20px;">ℹ️ &nbsp;Istruzioni</button>
+  <div class="sub">Polizia Provinciale di Cremona</div>
+</div>
+
+<div class="warning">
+  ⚠️ Questa operazione cancella tutti i dati salvati localmente (PIN operatore, preferenze, cache). Dovrai reinserire il tuo codice operatore al prossimo accesso.
+</div>
+
+<div class="card">
+  <div class="card-title">🔍 Stato dati locali</div>
+  <div class="status-row"><span class="status-label">Login portale (OTP)</span><span class="badge badge-wait" id="s1">Assente</span></div>
+  <div class="status-row"><span class="status-label">PIN operatore</span><span class="badge badge-wait" id="s2">Assente</span></div>
+  <div class="status-row"><span class="status-label">Cache app (Service Worker)</span><span class="badge badge-wait" id="s3">Nessuno</span></div>
+  <div class="status-row"><span class="status-label">Dati temporanei</span><span class="badge badge-wait" id="s4">Vuoti</span></div>
+</div>
+
+<button class="btn btn-reset" onclick="resetTutto()">🧹 Cancella tutti i dati</button>
+<div class="result" id="result">✅ Dati cancellati! Ora torna al portale e accedi di nuovo con password e OTP.</div>
+<button class="btn btn-back" onclick="window.location.href=&#39;portale.html&#39;">← Torna al portale</button>
+
+<script>
+// Mostra stato attuale
+window.addEventListener('DOMContentLoaded', function(){
+  // Login portale
+  var accesso = localStorage.getItem('pp_accesso_v1');
+  document.getElementById('s1').textContent = accesso ? 'Presente' : 'Assente';
+  document.getElementById('s1').className = 'badge ' + (accesso ? 'badge-ok' : 'badge-wait');
+
+  // PIN operatore (cerca tutte le chiavi PIN delle app)
+  var pinKeys = ['servizio_operatore_v1','corvidi_operatore_v1','selvatici_utente',
+                 'piccioni_operatore_v1','flotta_operatore_v1'];
+  var pinPresente = pinKeys.some(function(k){ return localStorage.getItem(k); });
+  document.getElementById('s2').textContent = pinPresente ? 'Presente' : 'Assente';
+  document.getElementById('s2').className = 'badge ' + (pinPresente ? 'badge-ok' : 'badge-wait');
+
+  // Service Worker
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(function(regs){
+      document.getElementById('s3').textContent = regs.length > 0 ? regs.length+' attivi' : 'Nessuno';
+      document.getElementById('s3').className = 'badge ' + (regs.length > 0 ? 'badge-ok' : 'badge-wait');
+    });
+  } else {
+    document.getElementById('s3').textContent = 'N/D';
+    document.getElementById('s3').className = 'badge badge-wait';
+  }
+
+  // SessionStorage
+  var session = sessionStorage.length > 0;
+  document.getElementById('s4').textContent = session ? 'Presenti' : 'Vuoti';
+  document.getElementById('s4').className = 'badge ' + (session ? 'badge-ok' : 'badge-wait');
+});
+
+async function resetTutto(){
+  // 1. LocalStorage
+  try { localStorage.clear(); setBadge('s1','✅ Cancellato','badge-ok'); } 
+  catch(e) { setBadge('s1','❌ Errore','badge-err'); }
+
+  // 2. SessionStorage
+  try { sessionStorage.clear(); setBadge('s4','✅ Cancellato','badge-ok'); } 
+  catch(e) { setBadge('s4','❌ Errore','badge-err'); }
+
+  // 3. Service Workers + Cache
+  try {
+    if('serviceWorker' in navigator){
+      var regs = await navigator.serviceWorker.getRegistrations();
+      for(var r of regs) await r.unregister();
+    }
+    if('caches' in window){
+      var keys = await caches.keys();
+      for(var k of keys) await caches.delete(k);
+    }
+    setBadge('s3','✅ Cancellato','badge-ok');
+  } catch(e) { setBadge('s3','❌ Errore','badge-err'); }
+
+  setBadge('s2','✅ Cancellato','badge-ok');
+
+  document.getElementById('result').classList.add('show');
+}
+
+function setBadge(id, text, cls){
+  var el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'badge ' + cls;
+}
+</script>
+
+<!-- MODAL ISTRUZIONI RESET -->
+<div class="modal-istruzioni" id="modalIstruzioni">
+  <div class="modal-istr-box">
+    <h2>🧹 Reset Dati</h2>
+    <h3>Istruzioni — Polizia Provinciale di Cremona</h3>
+
+    <div class="istr-section">
+      <div class="istr-title">Cos'è e a cosa serve</div>
+      <div class="istr-text">Cancella tutti i dati salvati localmente sul dispositivo: codice operatore, PIN sincronizzati e token di accesso al portale. Utile in caso di cambio dispositivo, cambio operatore o per forzare la risincronizzazione.</div>
+    </div>
+
+    <div class="istr-section">
+      <div class="istr-title">Quando usarla</div>
+      <div class="istr-text">
+        • Hai cambiato dispositivo e vuoi configurarlo da zero<br>
+        • Il tuo PIN personale o quello originale non viene riconosciuto<br>
+        • Hai ricevuto un nuovo codice operatore dall'amministratore<br>
+        • Un'app non si comporta correttamente<br>
+        • Vuoi forzare un nuovo accesso al portale
+      </div>
+    </div>
+
+    <div class="istr-section">
+      <div class="istr-title">Cosa viene cancellato</div>
+      <div class="istr-text">
+        <strong>✗</strong> Codice operatore salvato sul dispositivo<br>
+        <strong>✗</strong> PIN personali impostati da te<br>
+        <strong>✗</strong> PIN sincronizzati dal server<br>
+        <strong>✗</strong> Token di accesso al portale<br>
+        <strong>✗</strong> Tutti i dati memorizzati localmente
+      </div>
+    </div>
+
+    <div class="istr-section">
+      <div class="istr-title">Cosa NON viene cancellato</div>
+      <div class="istr-text">
+        <span class="ok">✓</span> I dati inseriti e salvati sul Google Sheet sono al sicuro sul server e non vengono mai toccati da questa operazione.
+      </div>
+    </div>
+
+    <div class="istr-section">
+      <div class="istr-title">Come si usa</div>
+      <div class="istr-text">
+        1. Tocca <strong>🧹 Cancella tutti i dati</strong><br>
+        2. Attendi 3 secondi — verrai reindirizzato automaticamente al portale<br>
+        3. Inserisci password e codice OTP per rientrare<br>
+        4. In ogni app reinserisci il tuo <strong>PIN originale</strong> assegnato dall'amministratore<br>
+        5. Dopo puoi reimpostare il tuo PIN personale con il bottone 🔑
+      </div>
+    </div>
+
+    <div class="istr-firma">
+      Borrini Riccardo — Assistente Scelto di Polizia Locale<br>
+      Polizia Provinciale di Cremona<br>
+      📧 riccardo.borrini@provincia.cremona.it
+    </div>
+
+    <button class="btn-istr-close" onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.remove(&#39;show&#39;)">Chiudi</button>
+  </div>
+</div>
+
+
+</body></html>
