@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stampa Flotta — PP Cremona</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0f1115;color:#e2e8f0;font-family:'Barlow',sans-serif;min-height:100vh;padding:24px 16px;max-width:480px;margin:0 auto;}
+h1{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:3px;color:#f5a623;text-align:center;margin-bottom:4px;}
+.sub{font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:16px;text-transform:uppercase;}
+.form-group{margin-bottom:16px;}
+label{display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-bottom:5px;}
+input,select{width:100%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#e2e8f0;font-family:'Barlow',sans-serif;font-size:15px;padding:10px 12px;outline:none;}
+select option{background:#1a1a2e;color:#e2e8f0;}
+.btn{width:100%;height:52px;border:none;border-radius:12px;font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:2px;cursor:pointer;margin-bottom:10px;}
+.btn-tutti{background:linear-gradient(135deg,#1a1a2e,#e74c3c);color:#fff;}
+.btn-km{background:linear-gradient(135deg,#1a1a2e,#f5a623);color:#1a1a2e;}
+.btn-rif{background:linear-gradient(135deg,#1a1a2e,#27ae60);color:#fff;}
+.btn-back{background:transparent;border:1px solid rgba(255,255,255,0.15);color:rgba(255,255,255,0.4);font-size:13px;font-family:'Barlow',sans-serif;height:44px;}
+.status{text-align:center;padding:12px;margin-top:12px;border-radius:8px;font-size:13px;display:none;}
+.status.show{display:block;}
+.status.ok{background:rgba(39,174,96,0.15);color:#7dcfaa;}
+.status.err{background:rgba(231,76,60,0.15);color:#e74c3c;}
+.divider{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin:20px 0 12px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.btn-istr{display:block;width:100%;padding:11px;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.3);border-radius:10px;color:#f5a623;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:20px;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:8888;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:#16213e;border:1px solid rgba(245,166,35,0.4);border-radius:16px;padding:24px 20px;max-width:480px;width:100%;margin:auto;}
+.modal-box h2{font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;color:#f5a623;margin-bottom:2px;}
+.modal-box h3{font-size:13px;letter-spacing:2px;color:rgba(245,166,35,0.6);margin-bottom:16px;text-transform:uppercase;}
+.istr-section{margin-bottom:16px;}
+.istr-title{font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:2px;color:#7dcfaa;margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid rgba(125,207,170,0.2);}
+.istr-text{font-size:16px;color:rgba(232,234,240,0.7);line-height:1.7;}
+.istr-text strong{color:#f5a623;}
+.istr-firma{font-size:13px;color:rgba(232,234,240,0.4);margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);line-height:1.7;}
+.btn-close{width:100%;padding:12px;border:none;border-radius:10px;background:#f5a623;color:#1a1a2e;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:12px;}
+</style>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+
+<!-- MODAL LOGIN GOOGLE — mostrato finché l'account non è verificato -->
+<div id="modalLoginGoogle" style="display:flex;position:fixed;inset:0;z-index:99999;background:rgba(13,27,42,0.97);align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center;">
+  <div style="font-size:40px;margin-bottom:12px;">🔒</div>
+  <h2 style="color:#f5a623;font-family:Arial,sans-serif;font-size:20px;margin-bottom:8px;">Accesso riservato</h2>
+  <p style="color:#ccc;font-size:13px;max-width:320px;margin-bottom:20px;">Accedi con un account Google autorizzato per usare Stampa Flotta.</p>
+  <div id="googleSignInButton"></div>
+  <p id="loginGoogleErrore" style="color:#ff6b6b;font-size:12px;margin-top:16px;max-width:300px;"></p>
+</div>
+
+
+<!-- LOGIN OVERLAY STAMPA FLOTTA -->
+<div id="loginOverlayStampa" style="position: fixed; inset: 0px; background: rgb(15, 17, 21); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 24px;">
+  <div style="text-align:center;margin-bottom:24px;">
+    <div style="font-size:40px;margin-bottom:8px;">🖨️</div>
+    <div style="font-family:&#39;Bebas Neue&#39;,cursive;font-size:24px;letter-spacing:3px;color:#f5a623;">STAMPA FLOTTA</div>
+    <div style="font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.4);margin-top:4px;text-transform:uppercase;">Accesso riservato</div>
+  </div>
+  <div style="width:100%;max-width:320px;">
+    <input type="password" id="pwdStampa" placeholder="Password..." style="width:100%;padding:14px 16px;border-radius:10px;border:1px solid rgba(245,166,35,0.4);background:rgba(255,255,255,0.05);color:#fff;font-size:16px;margin-bottom:8px;outline:none;">
+    <div id="errStampa" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:8px;"></div>
+    <button onclick="verificaPasswordStampa()" style="width:100%;padding:14px;border-radius:10px;border:none;background:#f5a623;color:#0f1115;font-family:&#39;Bebas Neue&#39;,cursive;font-size:18px;letter-spacing:2px;cursor:pointer;">Accedi →</button>
+  </div>
+</div>
+
+<!-- MODAL ISTRUZIONI -->
+<div class="modal-overlay" id="modalIstruzioni">
+  <div class="modal-box">
+    <h2>🖨️ Stampa Flotta</h2>
+    <h3>Istruzioni — Polizia Provinciale di Cremona</h3>
+    <div class="istr-section">
+      <div class="istr-title">Cos'è e a cosa serve</div>
+      <div class="istr-text">La Stampa Flotta genera i documenti ufficiali mensili per tutti i veicoli di servizio: Scheda Viaggio Mensile e Foglio Carburante, pronti per la stampa e la firma, dai dati già inseriti nell'app Registro Flotta.</div>
+    </div>
+    <div class="istr-section">
+      <div class="istr-title">Come si usa</div>
+      <div class="istr-text">
+        1. Seleziona il <strong>mese</strong><br>
+        2. Scegli la <strong>targa</strong> per un singolo veicolo<br>
+        3. Tocca il documento da generare — si apre in nuova finestra<br>
+        4. Stampa o salva il PDF<br><br>
+        Per tutti i veicoli usa <strong>Stampa Tutto</strong>
+      </div>
+    </div>
+    <div class="istr-section">
+      <div class="istr-title">Documenti disponibili</div>
+      <div class="istr-text">
+        🚗 <strong>Scheda Viaggio Mensile</strong> — data, conducente, turno automatico, km inizio/fine e percorsi<br>
+        ⛽ <strong>Foglio Carburante</strong> — rifornimenti del mese con riepilogo km e spazio firme<br>
+        🖨️ <strong>Stampa Tutto</strong> — PDF unico con schede e fogli di tutti i veicoli del mese
+      </div>
+    </div>
+    <div class="istr-section">
+      <div class="istr-title">Quanto lavoro si risparmia</div>
+      <div class="istr-text">La compilazione manuale mensile richiedeva raccolta dati e trascrizione per ogni veicolo. Con questa app i documenti ufficiali vengono generati automaticamente in pochi secondi.</div>
+    </div>
+    <div class="istr-firma">
+      Borrini Riccardo — Assistente Scelto di Polizia Locale<br>
+      Polizia Provinciale di Cremona<br>
+      📧 riccardo.borrini@provincia.cremona.it
+    </div>
+    <button class="btn-close" onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.remove(&#39;show&#39;)">Chiudi</button>
+  </div>
+</div>
+
+<h1>🖨️ STAMPA FLOTTA</h1>
+<div class="sub">Polizia Provinciale di Cremona</div>
+<button class="btn-istr" onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.add(&#39;show&#39;)">ℹ️ &nbsp;Istruzioni</button>
+
+<div class="form-group">
+  <label>Mese</label>
+  <input type="month" id="mese">
+</div>
+
+<div class="divider">📄 Stampa singolo veicolo</div>
+<div class="form-group">
+  <label>Targa veicolo</label>
+  <select id="targa"><option value="">— Seleziona targa —</option><option value="YA256AX">YA256AX</option><option value="YA295AP">YA295AP</option><option value="YA358AV">YA358AV</option><option value="YA365AM">YA365AM</option><option value="YA438AR">YA438AR</option><option value="YA632AS">YA632AS</option><option value="YA743AB">YA743AB</option><option value="YA754AP">YA754AP</option><option value="YA772AL">YA772AL</option><option value="YA773AL">YA773AL</option></select>
+</div>
+<button class="btn btn-km" onclick="stampaKm()">🚗 Scheda Viaggio</button>
+<button class="btn btn-rif" onclick="stampaRif()">⛽ Foglio Carburante</button>
+
+<div class="divider">📋 Stampa tutti i veicoli</div>
+<button class="btn btn-tutti" onclick="stampaTutto()">🖨️ Stampa Tutto (Schede + Carburante)</button>
+
+<div class="status show ok" id="status">✅ Stampati 1 veicoli per Maggio 2026</div>
+<button class="btn btn-back" onclick="window.location.href=&#39;flotta.html&#39;" style="margin-top:16px;">← Torna a Registro Flotta</button>
+
+<script>
+var URL_GS='https://script.google.com/macros/s/AKfycbzY8hcFw4FJueOFcFaTGJniKu64Y-36fFeJ6FDsGC1N_GpuxMYteCTrtknnsivOakY/exec';
+var idTokenCorrente = null;
+var nomeOperatoreGoogle = null;
+
+function salvaTokenCondiviso(token) {
+  try {
+    localStorage.setItem('pp_shared_idtoken', token);
+    localStorage.setItem('pp_shared_idtoken_scadenza', String(Date.now() + 55*60*1000));
+  } catch(e) {}
+}
+
+function leggiTokenCondiviso() {
+  try {
+    var token = localStorage.getItem('pp_shared_idtoken');
+    var scadenza = parseInt(localStorage.getItem('pp_shared_idtoken_scadenza') || '0');
+    if (token && Date.now() < scadenza) return token;
+  } catch(e) {}
+  return null;
+}
+
+function mostraLoginGoogle() {
+  var modal = document.getElementById('modalLoginGoogle');
+  if (modal) modal.style.display = 'flex';
+}
+
+function handleGoogleCredentialResponse(response) {
+  idTokenCorrente = response.credential;
+  fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(idTokenCorrente))
+    .then(function(r){ return r.json(); })
+    .then(function(verifica){
+      if (verifica.ok) {
+        nomeOperatoreGoogle = verifica.nome;
+        salvaTokenCondiviso(idTokenCorrente);
+        document.getElementById('modalLoginGoogle').style.display = 'none';
+        document.getElementById('loginGoogleErrore').textContent = '';
+      } else {
+        document.getElementById('loginGoogleErrore').textContent = '❌ ' + verifica.message;
+        idTokenCorrente = null;
+      }
+    })
+    .catch(function(){
+      document.getElementById('loginGoogleErrore').textContent = '❌ Errore di verifica, riprova.';
+    });
+}
+
+function inizializzaBottoneGoogle(){
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.initialize({
+      client_id: '226909521211-tk40j8dfcr6dr428uqb4sd4s2lt5qbi6.apps.googleusercontent.com',
+      callback: handleGoogleCredentialResponse,
+      auto_select: true
+    });
+    google.accounts.id.renderButton(
+      document.getElementById('googleSignInButton'),
+      { theme: 'outline', size: 'large', text: 'signin_with', width: 280 }
+    );
+    google.accounts.id.prompt();
+
+    setInterval(function(){
+      try { google.accounts.id.prompt(); } catch(e) {}
+    }, 45 * 60 * 1000);
+  }
+}
+
+window.onload = function(){
+  var tokenCondiviso = leggiTokenCondiviso();
+  if (tokenCondiviso) {
+    idTokenCorrente = tokenCondiviso;
+    fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(tokenCondiviso))
+      .then(function(r){ return r.json(); })
+      .then(function(verifica){
+        if (verifica.ok) {
+          nomeOperatoreGoogle = verifica.nome;
+          document.getElementById('modalLoginGoogle').style.display = 'none';
+        } else {
+          idTokenCorrente = null;
+          inizializzaBottoneGoogle();
+        }
+      })
+      .catch(function(){ inizializzaBottoneGoogle(); });
+  } else {
+    inizializzaBottoneGoogle();
+  }
+};
+
+var now=new Date(),y=now.getFullYear(),m=now.getMonth();
+if(m===0){m=12;y--;}
+document.getElementById('mese').value=y+'-'+String(m).padStart(2,'0');
+
+function nomeMese(n){return['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'][n];}
+
+function dataStr(dt){
+  if(!dt)return'';
+  return dt.split(',')[0].trim();
+}
+
+function calcolaTurno(dt){
+  if(!dt)return'';
+  var hm=dt.indexOf(',')>=0?dt.split(',')[1].trim():(dt.split(' ')[1]||'');
+  var h=parseInt((hm||'').split(':')[0])||0;
+  if(h>=7&&h<13)return'7/13';
+  if(h>=13&&h<19)return'13/19';
+  return'19/7';
+}
+
+function setStatus(msg,ok){
+  var el=document.getElementById('status');
+  el.textContent=msg;
+  el.className='status show '+(ok?'ok':'err');
+}
+
+async function caricaTarghe(){
+  try {
+    var res = await fetch(URL_GS + '?action=targhe&idToken=' + encodeURIComponent(idTokenCorrente));
+    var d = await res.json();
+    var targhe = d.targhe || [];
+    var sel = document.getElementById('targa');
+    sel.innerHTML = '<option value="">— Seleziona targa —</option>';
+    targhe.forEach(function(t){
+      var opt = document.createElement('option');
+      opt.value = t;
+      opt.textContent = t;
+      sel.appendChild(opt);
+    });
+  } catch(e) {
+    // Fallback targhe default
+    var def = ['YA632AS','YA358AV','YA772AL','YA773AL','YA743AB','YA256AX','YA295AP','YA365AM','YA754AP','YA438AR'];
+    var sel = document.getElementById('targa');
+    sel.innerHTML = '<option value="">— Seleziona targa —</option>';
+    def.forEach(function(t){
+      var opt = document.createElement('option');
+      opt.value = t;
+      opt.textContent = t;
+      sel.appendChild(opt);
+    });
+  }
+}
+caricaTarghe();
+
+function getMeseInfo(){
+  var mese=document.getElementById('mese').value;
+  if(!mese){alert('Seleziona un mese');return null;}
+  var parts=mese.split('-');
+  return{anno:parseInt(parts[0]),meseNum:parseInt(parts[1]),meseLabel:nomeMese(parseInt(parts[1])-1)+' '+parts[0]};
+}
+
+function filtraPerMeseETarga(arr,meseNum,anno,targa){
+  return arr.filter(function(r){
+    if(!r.dataOra)return false;
+    var p=r.dataOra.split('/');
+    if(p.length<3)return false;
+    var m2=parseInt(p[1]);
+    // Pulisce l'anno da eventuale ", HH:MM" o " HH:MM"
+    var annoStr=p[2].toString().split(',')[0].split(' ')[0].trim();
+    var a=parseInt(annoStr);
+    if(a<100)a+=2000;
+    var targaOk=!targa||(r.targa&&r.targa.toUpperCase()===targa.toUpperCase());
+    return m2===meseNum&&a===anno&&targaOk;
+  });
+}
+
+var CSS_PDF=[
+  '@page{margin:10mm;size:A4 portrait;}',
+  'body{font-family:Arial,sans-serif;font-size:10px;color:#000;margin:0;padding:0;}',
+  '.page{page-break-after:always;page-break-inside:avoid;padding:4px 0;}',
+  '.page:last-child{page-break-after:avoid;}',
+  '.header-doc{text-align:center;margin-bottom:6px;border-bottom:2px solid #000;padding-bottom:5px;}',
+  '.titolo-doc{font-size:14px;font-weight:bold;letter-spacing:1px;}',
+  '.sub-doc{font-size:12px;font-weight:bold;}',
+  '.prov{font-size:10px;text-align:left;margin-bottom:3px;}',
+  '.mese-targa{display:flex;gap:30px;margin:5px 0;font-size:10px;}',
+  '.mese-targa strong{min-width:90px;border-bottom:1px solid #000;display:inline-block;}',
+  'table{width:100%;border-collapse:collapse;margin-top:4px;table-layout:fixed;}',
+  'th{background:#e0e0e0;font-size:8px;font-weight:bold;text-align:center;padding:3px 2px;border:1px solid #000;overflow:hidden;}',
+  'td{font-size:8px;padding:2px 3px;border:1px solid #000;height:12px;text-align:right;overflow:hidden;white-space:nowrap;}',
+  'td:first-child{text-align:center;}',
+  'th:nth-child(1),td:nth-child(1){width:11%;}',
+  'th:nth-child(2),td:nth-child(2){width:22%;text-align:left;}',
+  'th:nth-child(3),td:nth-child(3){width:8%;text-align:center;}',
+  'th:nth-child(4),td:nth-child(4){width:15%;}',
+  'th:nth-child(5),td:nth-child(5){width:15%;}',
+  'th:nth-child(6),td:nth-child(6){width:15%;}',
+  '.tot-table{width:100%;border-collapse:collapse;margin-top:8px;}',
+  '.tot-table td{border:1px solid #000;padding:3px 6px;font-size:9px;}',
+  '.tot-table td:first-child{font-weight:bold;background:#f0f0f0;width:55%;}',
+  '.firma-table{width:100%;border-collapse:collapse;margin-top:3px;}',
+  '.firma-table td{border:1px solid #000;padding:16px 6px 3px;font-size:9px;}',
+  '.carb-row{display:flex;gap:20px;margin:5px 0;font-size:10px;}',
+  '.chk{width:11px;height:11px;border:1px solid #000;display:inline-block;text-align:center;line-height:10px;font-size:9px;margin-right:3px;}',
+  '.info-row{display:flex;gap:6px;align-items:baseline;margin-bottom:3px;}',
+  '.info-row span{font-size:8px;}',
+  '.info-row strong{min-width:100px;border-bottom:1px solid #000;display:inline-block;font-size:11px;}',
+  '@media print{.no-print{display:none;}}'
+].join('');
+
+function paginaKm(targa,meseLabel,righe){
+  var rows='';
+  righe.forEach(function(r){
+    var kmI=(parseInt(r.kmFinali)||0)-(parseInt(r.kmGiorno)||0);
+    rows+='<tr>'
+      +'<td>'+dataStr(r.dataOra)+'</td>'
+      +'<td>'+(r.conducente||r.agente||'')+'</td>'
+      +'<td>'+calcolaTurno(r.dataOra)+'</td>'
+      +'<td>'+kmI+'</td>'
+      +'<td>'+(r.kmFinali||'')+'</td>'
+      +'<td>'+(r.kmGiorno||0)+'</td>'
+      +'</tr>';
+  });
+  for(var i=righe.length;i<25;i++) rows+='<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>';
+  return '<div class="page">'
+    +'<div class="header-doc"><div class="titolo-doc">POLIZIA LOCALE</div><div class="sub-doc">SCHEDA VIAGGIO MENSILE</div></div>'
+    +'<div class="prov">Provincia di Cremona</div>'
+    +'<div class="mese-targa"><div>MESE &nbsp;<strong>'+meseLabel+'</strong></div><div>TARGA &nbsp;<strong>'+targa+'</strong></div></div>'
+    +'<table><thead><tr><th>DATA</th><th>PERSONE A BORDO</th><th>TURNO</th><th>KM INIZIO</th><th>KM FINE</th><th>KM PERCORSI</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'</div>';
+}
+
+function paginaRif(targa,meseLabel,righe,isLast){
+  var rows='';
+  var isBenzina=true,kmInizio=0,kmFine=0;
+  if(righe.length>0){
+    isBenzina=(righe[0].carburante||'BENZINA').toUpperCase().indexOf('BENZ')>=0;
+    kmInizio=parseFloat(righe[0].km)||0;
+    kmFine=parseFloat(righe[righe.length-1].km)||0;
+    righe.forEach(function(r){
+      rows+='<tr><td>'+dataStr(r.dataOra)+'</td><td>'+(r.importo||'')+'</td><td>'+(r.km||'')+'</td><td>'+(r.costoLitro||'')+'</td></tr>';
+    });
+  }
+  for(var i=righe.length;i<15;i++) rows+='<tr><td>&nbsp;</td><td></td><td></td><td></td></tr>';
+  return '<div class="page"'+(isLast?' style="page-break-after:avoid;"':'')+'>'
+    +'<div class="header-doc"><div class="titolo-doc">FOGLIO CARBURANTE</div><div class="sub-doc">Provincia di Cremona — POLIZIA LOCALE</div></div>'
+    +'<div class="info-row"><span>MESE</span>&nbsp;<strong>'+meseLabel+'</strong></div>'
+    +'<div class="info-row"><span>TARGA</span>&nbsp;<strong>'+targa+'</strong></div>'
+    +'<div class="carb-row"><span><span class="chk">'+(isBenzina?'&#10003;':'')+'</span>BENZINA</span><span><span class="chk">'+(!isBenzina?'&#10003;':'')+'</span>GASOLIO</span></div>'
+    +'<table><thead><tr><th>DATA</th><th>IMPORTO</th><th>KM VEICOLO</th><th>COSTO AL LITRO</th></tr></thead><tbody>'+rows+'</tbody></table>'
+    +'<table class="tot-table"><tr><td>KM FINE MESE</td><td>'+kmFine+'</td></tr><tr><td>KM INIZIO MESE</td><td>'+kmInizio+'</td></tr><tr><td>KM PERCORSI MESE</td><td>'+Math.round(kmFine-kmInizio)+'</td></tr></table>'
+    +'<table class="firma-table"><tr><td>Firma conducente</td><td>Firma responsabile</td></tr></table>'
+    +'</div>';
+}
+
+function apriPDF(bodyHtml,titolo){
+  var html='<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>'+titolo+'</title>'
+    +'<style>'+CSS_PDF+'</style></head><body>'+bodyHtml
+    +'<div class="no-print" style="margin:20px;text-align:center;">'
+    +'<button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#1a1a2e;color:#f5a623;border:none;border-radius:8px;">Stampa / Salva PDF</button>'
+    +'<button onclick="window.close()" style="margin-left:12px;padding:12px 20px;font-size:14px;cursor:pointer;">Chiudi</button>'
+    +'</div>';
+  var blob=new Blob([html],{type:'text/html'}); var url=URL.createObjectURL(blob); window.open(url,'_blank');
+}
+async function stampaKm(){
+  var info=getMeseInfo();if(!info)return;
+  var targa=document.getElementById('targa').value;
+  if(!targa){alert('Seleziona una targa');return;}
+  setStatus('Caricamento...',true);
+  try{
+    var res=await fetch(URL_GS+'?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));
+    var d=await res.json();
+    var righe=filtraPerMeseETarga(d.km||[],info.meseNum,info.anno,targa);
+    apriPDF(paginaKm(targa,info.meseLabel,righe),'Scheda Viaggio - '+targa+' - '+info.meseLabel);
+    setStatus('\u2705 '+righe.length+' registrazioni per '+targa,true);
+  }catch(e){setStatus('\u26a0\ufe0f Errore: '+e.message,false);}
+}
+
+async function stampaRif(){
+  var info=getMeseInfo();if(!info)return;
+  var targa=document.getElementById('targa').value;
+  if(!targa){alert('Seleziona una targa');return;}
+  setStatus('Caricamento...',true);
+  try{
+    var res=await fetch(URL_GS+'?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));
+    var d=await res.json();
+    var righe=filtraPerMeseETarga(d.rif||[],info.meseNum,info.anno,targa);
+    apriPDF(paginaRif(targa,info.meseLabel,righe,true),'Foglio Carburante - '+targa+' - '+info.meseLabel);
+    setStatus('\u2705 '+righe.length+' rifornimenti per '+targa,true);
+  }catch(e){setStatus('\u26a0\ufe0f Errore: '+e.message,false);}
+}
+
+async function stampaTutto(){
+  var info=getMeseInfo();if(!info)return;
+  setStatus('Caricamento tutti i dati...',true);
+  try{
+    var res=await fetch(URL_GS+'?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));
+    var d=await res.json();
+    var kmMese=filtraPerMeseETarga(d.km||[],info.meseNum,info.anno,null);
+    var rifMese=filtraPerMeseETarga(d.rif||[],info.meseNum,info.anno,null);
+    var map={};
+    kmMese.forEach(function(r){if(r.targa)map[r.targa.toUpperCase()]=true;});
+    rifMese.forEach(function(r){if(r.targa)map[r.targa.toUpperCase()]=true;});
+    var targhe=Object.keys(map).sort();
+    if(!targhe.length){setStatus('\u26a0\ufe0f Nessun dato per '+info.meseLabel,false);return;}
+    var body='';
+    targhe.forEach(function(targa,idx){
+      var isLast=(idx===targhe.length-1);
+      var kmT=filtraPerMeseETarga(d.km||[],info.meseNum,info.anno,targa);
+      var rifT=filtraPerMeseETarga(d.rif||[],info.meseNum,info.anno,targa);
+      body+=paginaKm(targa,info.meseLabel,kmT);
+      body+=paginaRif(targa,info.meseLabel,rifT,isLast);
+    });
+    apriPDF(body,'Report Completo Flotta - '+info.meseLabel);
+    setStatus('\u2705 Stampati '+targhe.length+' veicoli per '+info.meseLabel,true);
+  }catch(e){setStatus('\u26a0\ufe0f Errore: '+e.message,false);}
+}
+
+</script>
+<script>
+function verificaPasswordStampa(){
+  var pwd = document.getElementById('pwdStampa').value;
+  if(pwd === 'CENTRALE_PP_CR'){
+    localStorage.setItem('stampa_accesso_v1','ok');
+    document.getElementById('loginOverlayStampa').style.display='none';
+  } else {
+    document.getElementById('errStampa').textContent='❌ Password errata';
+    document.getElementById('pwdStampa').value='';
+  }
+}
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('pwdStampa').addEventListener('keydown',function(e){if(e.key==='Enter')verificaPasswordStampa();});
+  if(localStorage.getItem('stampa_accesso_v1')==='ok'){
+    document.getElementById('loginOverlayStampa').style.display='none';
+  }
+});
+</script>
+</body></html>
