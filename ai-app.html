@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI APP — PP Cremona</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0f1115;color:#e2e8f0;font-family:'Barlow',sans-serif;min-height:100vh;display:flex;flex-direction:column;}
+.header{text-align:center;padding:20px 16px 12px;border-bottom:1px solid rgba(255,255,255,0.08);}
+.header .icon{font-size:38px;margin-bottom:4px;}
+.header h1{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:#f5a623;}
+.header .sub{font-size:11px;letter-spacing:1.5px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-top:2px;}
+
+.chat-wrap{flex:1;display:flex;flex-direction:column;max-width:700px;width:100%;margin:0 auto;padding:16px;overflow:hidden;}
+.messages{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding-bottom:12px;}
+.msg{max-width:85%;padding:12px 16px;border-radius:14px;font-size:14px;line-height:1.6;white-space:pre-wrap;}
+.msg.user{align-self:flex-end;background:linear-gradient(135deg,#f5a623,#c9820e);color:#1a1200;font-weight:500;}
+.msg.ai{align-self:flex-start;background:#16213e;border:1px solid rgba(255,255,255,0.08);color:#e2e8f0;}
+.msg.ai.loading{color:rgba(255,255,255,0.4);font-style:italic;}
+
+.suggerimenti{display:flex;flex-wrap:wrap;gap:8px;padding:8px 0 14px;}
+.chip{background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.35);color:#f5a623;padding:8px 14px;border-radius:20px;font-size:12px;cursor:pointer;white-space:nowrap;}
+.chip:active{background:rgba(245,166,35,0.2);}
+
+.input-bar{display:flex;gap:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.08);}
+.input-bar textarea{flex:1;background:#16213e;border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:12px 14px;color:#e2e8f0;font-family:'Barlow',sans-serif;font-size:14px;resize:none;max-height:100px;}
+.input-bar textarea:focus{outline:none;border-color:#f5a623;}
+.input-bar button{background:linear-gradient(135deg,#f5a623,#c9820e);border:none;border-radius:12px;color:#1a1200;font-weight:700;padding:0 20px;cursor:pointer;font-size:14px;}
+.input-bar button:disabled{opacity:0.4;cursor:default;}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:20px;}
+#modalLoginGoogle{display:flex;position:fixed;inset:0;z-index:99999;background:rgba(13,27,42,0.97);align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center;}
+#modalLoginGoogle .icon{font-size:40px;margin-bottom:12px;}
+#modalLoginGoogle h2{color:#f5a623;font-family:Arial,sans-serif;font-size:20px;margin-bottom:8px;}
+#modalLoginGoogle p{color:#ccc;font-size:13px;max-width:320px;margin-bottom:20px;}
+#loginGoogleErrore{color:#ff6b6b;font-size:12px;margin-top:16px;max-width:300px;}
+</style>
+</head>
+<body>
+
+<!-- MODAL LOGIN GOOGLE -->
+<div id="modalLoginGoogle">
+  <div class="icon">🔒</div>
+  <h2>Accesso riservato</h2>
+  <p>Accedi con un account Google autorizzato per usare AI APP.</p>
+  <div id="googleSignInButton"></div>
+  <p id="loginGoogleErrore"></p>
+</div>
+
+<div class="header">
+  <div class="icon">🤖</div>
+  <h1>AI APP</h1>
+  <div class="sub">Assistente PP Cremona — Polizia Provinciale di Cremona</div>
+</div>
+
+<div class="chat-wrap">
+  <div class="messages" id="messages">
+    <div class="msg ai">👋 Ciao! Sono l'assistente della suite app PP Cremona. Chiedimi come usare qualsiasi app — Corvidi, Flotta, Selvatici, Servizio, Turni, Piccioni, Portale — e ti spiego passo passo, con esempi pratici se serve.</div>
+  </div>
+
+  <div class="suggerimenti" id="suggerimenti">
+    <div class="chip" onclick="inviaSuggerimento(this)">Come registro un intervento CRAS?</div>
+    <div class="chip" onclick="inviaSuggerimento(this)">Come funziona la ristampa schede?</div>
+    <div class="chip" onclick="inviaSuggerimento(this)">Come uso la modalità prova?</div>
+    <div class="chip" onclick="inviaSuggerimento(this)">Cos'è l'analisi Art.24 nei Turni?</div>
+  </div>
+
+  <div class="input-bar">
+    <textarea id="inputDomanda" rows="1" placeholder="Scrivi la tua domanda..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();inviaDomanda();}"></textarea>
+    <button id="btnInvia" onclick="inviaDomanda()">Invia</button>
+  </div>
+</div>
+
+<script>
+var idTokenCorrente = null;
+var nomeOperatoreGoogle = null;
+var CORVIDI_URL_GS = 'https://script.google.com/macros/s/AKfycbxL49RBHln0W11KTM90AeJblxpsu4vigg7H_mnzKBw4tdLEfS1wIWkCR4LU9AOStOpIJQ/exec';
+
+function salvaTokenCondiviso(token) {
+  try {
+    localStorage.setItem('pp_shared_idtoken', token);
+    localStorage.setItem('pp_shared_idtoken_scadenza', String(Date.now() + 55*60*1000));
+  } catch(e) {}
+}
+function leggiTokenCondiviso() {
+  try {
+    var token = localStorage.getItem('pp_shared_idtoken');
+    var scadenza = parseInt(localStorage.getItem('pp_shared_idtoken_scadenza') || '0');
+    if (token && Date.now() < scadenza) return token;
+  } catch(e) {}
+  return null;
+}
+
+function handleGoogleCredentialResponse(response) {
+  idTokenCorrente = response.credential;
+  fetch(CORVIDI_URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(idTokenCorrente))
+    .then(function(r){ return r.json(); })
+    .then(function(verifica){
+      if (verifica.ok) {
+        nomeOperatoreGoogle = verifica.nome;
+        salvaTokenCondiviso(idTokenCorrente);
+        document.getElementById('modalLoginGoogle').style.display = 'none';
+      } else {
+        document.getElementById('loginGoogleErrore').textContent = '❌ ' + verifica.message;
+        idTokenCorrente = null;
+      }
+    })
+    .catch(function(){
+      document.getElementById('loginGoogleErrore').textContent = '❌ Errore di verifica, riprova.';
+    });
+}
+
+function inizializzaBottoneGoogle(){
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.initialize({
+      client_id: '226909521211-tk40j8dfcr6dr428uqb4sd4s2lt5qbi6.apps.googleusercontent.com',
+      callback: handleGoogleCredentialResponse,
+      auto_select: true
+    });
+    google.accounts.id.renderButton(
+      document.getElementById('googleSignInButton'),
+      { theme: 'outline', size: 'large', text: 'signin_with', width: 280 }
+    );
+    google.accounts.id.prompt();
+    setInterval(function(){ try { google.accounts.id.prompt(); } catch(e) {} }, 45 * 60 * 1000);
+  }
+}
+
+window.onload = function(){
+  var tokenCondiviso = leggiTokenCondiviso();
+  if (tokenCondiviso) {
+    idTokenCorrente = tokenCondiviso;
+    fetch(CORVIDI_URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(tokenCondiviso))
+      .then(function(r){ return r.json(); })
+      .then(function(verifica){
+        if (verifica.ok) {
+          nomeOperatoreGoogle = verifica.nome;
+          document.getElementById('modalLoginGoogle').style.display = 'none';
+        } else {
+          idTokenCorrente = null;
+          inizializzaBottoneGoogle();
+        }
+      })
+      .catch(function(){ inizializzaBottoneGoogle(); });
+  } else {
+    inizializzaBottoneGoogle();
+  }
+};
+
+// ============================================================
+// CONOSCENZA DELLA SUITE — questo testo viene passato all'AI
+// come contesto, così sa rispondere in dettaglio su ogni app.
+// ============================================================
+var CONOSCENZA_SUITE = `Sei l'assistente ufficiale della suite di app web della Polizia Provinciale di Cremona (PP Cremona). Il tuo compito è aiutare gli agenti a usare al meglio ciascuna app: rispondi SOLO a domande pratiche su come si usano — quali bottoni premere, quali campi compilare, in che ordine, con esempi concreti quando utile. Non spiegare mai l'architettura tecnica (come sono fatte, dove sono ospitate, quale tecnologia usano, come sono state costruite) — quello non interessa a chi le usa sul campo. Rispondi in italiano, in modo chiaro e conciso. Non conosci nulla al di fuori di questa suite di app: se ti chiedono altro, rispondi gentilmente che sei specializzato solo sull'uso delle app PP Cremona.
+
+NOTA UTILE SUL LOGIN: si accede con l'account Google autorizzato; una volta fatto l'accesso su una qualsiasi app (o sul Portale), le altre si aprono già autenticate per circa un'ora, senza richiedere il login di nuovo.
+
+LE APP:
+
+🐦‍⬛ CORVIDI: gestione interventi di controllo corvidi, con dati CF/Email dell'operatore, statistiche per specie.
+
+🚗 FLOTTA: gestione dei veicoli della flotta (10 targhe, 10 autisti), registro chilometri e rifornimenti carburante.
+
+🖨️ STAMPA FLOTTA: strumento dedicato per stampare i documenti di Flotta.
+
+🐦 PICCIONI: censimento e abbattimento piccioni per Comune/Azienda, con gestione cacciatori (CF/Email) per l'esenzione della tassa regionale di caccia.
+
+📋 SERVIZIO: registro del servizio giornaliero degli agenti.
+
+📅 TURNI: calendario turni di servizio, archivio mensile, e una sezione speciale "⚖️ ART.24" che analizza automaticamente se un agente ha lavorato un'intera settimana senza godere del giorno di riposo (turno "R") — in quel caso spetta la maggiorazione del 50% prevista dall'Art.24 del CCNL. Il report può essere scritto in un foglio dedicato e annotato direttamente sui turni.
+
+🏠 PORTALE: pagina centrale con l'elenco di tutte le app, punto di accesso comodo.
+
+🦌 SELVATICI (la più completa, gestisce due tipi di intervento):
+
+  CRAS (recupero animali selvatici):
+  - Si registra: agente, tipo animale, via/comune di residenza del consegnante, luogo del ritrovamento (separato dalla residenza, con una spunta per farli coincidere automaticamente se sono lo stesso posto)
+  - Una spunta apposita per quando l'animale viene consegnato direttamente al Comando invece che trovato sul campo
+  - L'esito può essere "Consegnato al CRAS" (con scelta del centro: Loghino Bosco, Parcobaleno, o "CRAS" generico se non si è sicuri di dove andrà) oppure "Liberato"
+  - Esempio pratico: un agente trova un cervo ferito in Via Roma a Cremona, il consegnante abita proprio lì (stessa via) — spunta "coincide con la residenza", scrive Via Roma/Cremona una volta sola, sceglie CRAS generico se non sa ancora il centro esatto, e salva
+
+  IZP (Istituto Zooprofilassi):
+  - Si registra: tipo animale, causa morte, tipo consegna (Carcassa o Campioni), via/comune del ritrovamento
+  - Campo "Numero identificativo": obbligatorio in caso di CINGHIALE per la sorveglianza della peste suina africana
+  - Stampa il Modulo Regione Lombardia ufficiale
+
+  FUNZIONI COMUNI A CRAS E IZP:
+  - Sistema BOZZE: sul campo si può salvare una bozza (più veloce, senza tutti i dettagli), e più tardi in ufficio si stampano e registrano tutte insieme
+  - "🖨️ Ristampa schede di oggi": bottone in home che apre la scelta tra CRAS e IZP; permette di correggere QUALSIASI campo di una pratica della giornata (tranne il numero di pratica, che resta sempre fisso) e ristampare il documento aggiornato
+  - "🧪 Modalità prova": per allenarsi/testare l'inserimento dati senza intaccare la numerazione ufficiale delle pratiche — le pratiche di prova hanno scritto "PROVA" al posto del numero, e sono ristampabili solo nei primi 10 minuti dalla creazione, poi vanno cancellate a mano dal foglio
+  - Tutti i testi che scrivi vengono salvati automaticamente in MAIUSCOLO nel foglio Google, qualunque sia come li digiti
+  - Privacy: nome e telefono del consegnante restano completi (leggibili) nel foglio per 7 giorni — utile se un collega diverso deve correggere/ristampare la pratica — poi vengono trasformati automaticamente in iniziali e telefono mascherato
+  - "⬇️ Scarica PDF": su ogni stampa (verbali CRAS, moduli IZP) un bottone scarica subito il PDF nella cartella Download del dispositivo, senza passare dalla finestra di stampa del browser
+
+🧹 RESET: pagina per pulire i dati salvati sul dispositivo (utile se si cambia telefono o si hanno problemi), libera senza bisogno di login.
+
+Rispondi sempre in modo pratico e concreto. Se la domanda riguarda un problema tecnico specifico che non sai risolvere con queste informazioni, suggerisci di contattare Borrini Riccardo (amministratore della suite).`;
+
+var storicoChat = [];
+
+function aggiungiMessaggio(testo, tipo){
+  var div = document.createElement('div');
+  div.className = 'msg ' + tipo;
+  div.textContent = testo;
+  document.getElementById('messages').appendChild(div);
+  document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+  return div;
+}
+
+function inviaSuggerimento(el){
+  document.getElementById('inputDomanda').value = el.textContent;
+  inviaDomanda();
+}
+
+async function inviaDomanda(){
+  var input = document.getElementById('inputDomanda');
+  var domanda = input.value.trim();
+  if(!domanda) return;
+
+  document.getElementById('suggerimenti').style.display = 'none';
+  aggiungiMessaggio(domanda, 'user');
+  storicoChat.push({role:'user', content: domanda});
+  input.value = '';
+  document.getElementById('btnInvia').disabled = true;
+
+  var msgLoading = aggiungiMessaggio('Sto pensando...', 'ai loading');
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        system: CONOSCENZA_SUITE,
+        messages: storicoChat
+      })
+    });
+    const data = await response.json();
+    const testoRisposta = (data.content || [])
+      .filter(function(item){ return item.type === 'text'; })
+      .map(function(item){ return item.text; })
+      .join('\n');
+
+    msgLoading.remove();
+    aggiungiMessaggio(testoRisposta || 'Non sono riuscito a generare una risposta, riprova.', 'ai');
+    storicoChat.push({role:'assistant', content: testoRisposta});
+  } catch(e) {
+    msgLoading.remove();
+    aggiungiMessaggio('❌ Errore di connessione. Riprova tra poco.', 'ai');
+  }
+
+  document.getElementById('btnInvia').disabled = false;
+}
+</script>
+</body>
+</html>
