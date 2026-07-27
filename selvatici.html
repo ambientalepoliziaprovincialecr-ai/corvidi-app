@@ -1913,7 +1913,7 @@ function stampaVerbale(r) {
 
   var CSS = '@page{margin:8mm;size:A4 portrait;}' +
     'body{font-family:Arial,sans-serif;font-size:12px;color:#000;margin:0;padding:0;}' +
-    '.ricevuta{min-height:95mm;border-bottom:2px dashed #999;padding:4mm 2mm 3mm;box-sizing:border-box;position:relative;}' +
+    '.ricevuta{min-height:95mm;border-bottom:2px dashed #999;padding:4mm 2mm 50mm;box-sizing:border-box;position:relative;}' +
     '.ricevuta:last-child{border-bottom:none;}' +
     '.intestazione{text-align:center;margin-bottom:4px;}' +
     '.ente{font-size:10px;color:#444;margin:1px 0;}' +
@@ -1959,7 +1959,7 @@ function stampaVerbale(r) {
     var luogoEsito = r.luogoLiberazione || (isLibero ? r.localita || '' : '');
     var centro = r.centroCras || '';
 
-    var html = '<div class="ricevuta"' + (isCopia ? ' style="margin-top:60mm;"' : '') + '>';
+    var html = '<div class="ricevuta"' + (isCopia ? ' style="margin-top:50mm;"' : '') + '>';
     html += '<div class="num-pratica">N. '+(r.numeroPratica||'')+'</div>';
     html += '<div class="intestazione">';
     html += '<div class="ente">Provincia di Cremona</div>';
@@ -2061,7 +2061,7 @@ function stampaTuttiRitiri(records, dataLabel) {
     'body{font-family:Arial,sans-serif;font-size:12px;color:#000;margin:0;padding:0;}' +
     '.pagina{width:100%;page-break-after:always;}' +
     '.pagina:last-child{page-break-after:avoid;}' +
-    '.ricevuta{min-height:95mm;border-bottom:2px dashed #999;padding:4mm 2mm 3mm;box-sizing:border-box;position:relative;}' +
+    '.ricevuta{min-height:95mm;border-bottom:2px dashed #999;padding:4mm 2mm 50mm;box-sizing:border-box;position:relative;}' +
     '.ricevuta:last-child{border-bottom:none;}' +
     '.intestazione{text-align:center;margin-bottom:4px;}' +
     '.ente{font-size:10px;color:#444;margin:1px 0;}' +
@@ -2107,7 +2107,7 @@ function stampaTuttiRitiri(records, dataLabel) {
     var luogoEsito = r.luogoLiberazione || (isLibero ? r.localita || '' : '');
     var centro = r.centroCras || '';
 
-    var html = '<div class="ricevuta"' + (isCopia ? ' style="margin-top:60mm;"' : '') + '>';
+    var html = '<div class="ricevuta"' + (isCopia ? ' style="margin-top:50mm;"' : '') + '>';
     html += '<div class="num-pratica">N. '+(r.numeroPratica||'')+'</div>';
     html += '<div class="intestazione">';
     html += '<div class="ente">Provincia di Cremona</div>';
@@ -2831,7 +2831,7 @@ async function stampaTutteLeBozze() {
   // Genera unico HTML con tutti i verbali (2 copie per ogni bozza CRAS)
   var CSS = '@page{margin:8mm;size:A4 portrait;}' +
     'body{font-family:Arial,sans-serif;font-size:12px;color:#000;margin:0;padding:0;}' +
-    '.ricevuta{min-height:95mm;border-bottom:2px dashed #999;padding:4mm 2mm 3mm;box-sizing:border-box;position:relative;page-break-inside:avoid;}' +
+    '.ricevuta{min-height:95mm;border-bottom:2px dashed #999;padding:4mm 2mm 50mm;box-sizing:border-box;position:relative;page-break-inside:avoid;}' +
     '.ricevuta:last-child{border-bottom:none;}' +
     '.num-pratica{position:absolute;top:4mm;right:2mm;font-size:11px;font-weight:bold;border:1px solid #000;padding:2px 6px;border-radius:3px;}' +
     '.intestazione{text-align:center;margin-bottom:4px;}' +
@@ -2864,7 +2864,7 @@ async function stampaTutteLeBozze() {
     var centro=r.centroCras||'';
     var via=r.via||''; var comune=r.comune||''; var cellulare=r.cellulare||''; var doveTrovato=r.doveTrovato||r.localita||'';
 
-    var html='<div class="ricevuta"'+(isCopia?' style="margin-top:60mm;"':'')+'>';
+    var html='<div class="ricevuta"'+(isCopia?' style="margin-top:50mm;"':'')+'>';
     html+='<div class="num-pratica">N. Pratica: '+numPratica+'</div>';
     html+='<div class="intestazione"><div class="ente">Provincia di Cremona</div><div class="titolo-ente">POLIZIA LOCALE</div><div class="ente">Corso Vittorio Emanuele II, 17 - 26100 CREMONA</div></div>';
     html+='<div class="titolo-doc">VERBALE DI RECUPERO E DI CONSEGNA FAUNA SELVATICA</div>';
@@ -2950,7 +2950,7 @@ async function eliminaBozza(rowId, tipo) {
 function stampaVerbaleCompleto(r, numPratica, dopoStampa) {
   var CSS = '@page{margin:8mm;size:A4 portrait;}' +
     'body{font-family:Arial,sans-serif;font-size:12px;color:#000;margin:0;padding:0;}' +
-    '.ricevuta{min-height:95mm;border-bottom:2px dashed #999;padding:4mm 2mm 3mm;box-sizing:border-box;position:relative;}' +
+    '.ricevuta{min-height:95mm;border-bottom:2px dashed #999;padding:4mm 2mm 50mm;box-sizing:border-box;position:relative;}' +
     '.ricevuta:last-child{border-bottom:none;}' +
     '.num-pratica{position:absolute;top:4mm;right:2mm;font-size:11px;font-weight:bold;border:1px solid #000;padding:2px 6px;border-radius:3px;}' +
     '.intestazione{text-align:center;margin-bottom:4px;}' +
@@ -2984,7 +2984,7 @@ function stampaVerbaleCompleto(r, numPratica, dopoStampa) {
     var centro=r.centroCras||'';
     var via=r.via||''; var comune=r.comune||''; var cellulare=r.cellulare||''; var doveTrovato=r.doveTrovato||r.localita||'';
 
-    var html='<div class="ricevuta"'+(isCopia?' style="margin-top:60mm;"':'')+'>';
+    var html='<div class="ricevuta"'+(isCopia?' style="margin-top:50mm;"':'')+'>';
     html+='<div class="num-pratica">N. Pratica: '+numPratica+'</div>';
     html+='<div class="intestazione"><div class="ente">Provincia di Cremona</div><div class="titolo-ente">POLIZIA LOCALE</div><div class="ente">Corso Vittorio Emanuele II, 17 - 26100 CREMONA</div></div>';
     html+='<div class="titolo-doc">VERBALE DI RECUPERO E DI CONSEGNA FAUNA SELVATICA</div>';
