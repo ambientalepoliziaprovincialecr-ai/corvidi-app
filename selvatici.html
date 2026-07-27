@@ -1856,12 +1856,23 @@ function apriFinestraStampabile(html, nomeFile) {
           var s = win.document.createElement('script');
           s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
           s.onload = function(){
+            // Se il documento non ha pagine forzate (.pagina), la
+            // dimensione del PDF si adatta al contenuto reale invece
+            // di lasciare uno spazio bianco vuoto fino a fine A4.
+            var haPagineForzate = !!el.querySelector('.pagina');
+            var formato = 'a4';
+            if (!haPagineForzate) {
+              var wPx = el.scrollWidth || el.offsetWidth || 1;
+              var hPx = el.scrollHeight || el.offsetHeight || 0;
+              var hMM = hPx ? (210 * (hPx / wPx)) : 297;
+              formato = [210, hMM];
+            }
             win.html2pdf().set({
               margin: 0,
               filename: nomeFile || 'documento.pdf',
               image: { type: 'jpeg', quality: 0.98 },
               html2canvas: { scale: 2 },
-              jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+              jsPDF: { unit: 'mm', format: formato, orientation: 'portrait' }
             }).from(el).save();
           };
           win.document.head.appendChild(s);
@@ -1917,7 +1928,7 @@ function stampaVerbale(r) {
     '.firme{display:flex;justify-content:space-between;margin-top:10px;}' +
     '.firma-box{text-align:center;font-size:11px;}' +
     '.firma-line{border-bottom:1px solid #000;width:130px;height:28px;margin-bottom:3px;}' +
-    '.copia-label{position:absolute;bottom:2mm;right:4mm;font-size:1.2cm;font-weight:bold;color:#000;text-transform:uppercase;line-height:1;white-space:nowrap;}' +
+    '.copia-label{position:absolute;top:78mm;right:4mm;font-size:1.2cm;font-weight:bold;color:#000;text-transform:uppercase;line-height:1;white-space:nowrap;}' +
     '.num-pratica{position:absolute;top:2mm;right:4mm;font-size:11px;font-weight:bold;color:#000;}' +
     '@media print{.no-print{display:none;}}';
 
@@ -2064,7 +2075,7 @@ function stampaTuttiRitiri(records, dataLabel) {
     '.firme{display:flex;justify-content:space-between;margin-top:10px;}' +
     '.firma-box{text-align:center;font-size:11px;}' +
     '.firma-line{border-bottom:1px solid #000;width:130px;height:28px;margin-bottom:3px;}' +
-    '.copia-label{position:absolute;bottom:2mm;right:4mm;font-size:1.2cm;font-weight:bold;color:#000;text-transform:uppercase;line-height:1;white-space:nowrap;}' +
+    '.copia-label{position:absolute;top:78mm;right:4mm;font-size:1.2cm;font-weight:bold;color:#000;text-transform:uppercase;line-height:1;white-space:nowrap;}' +
     '.num-pratica{position:absolute;top:2mm;right:4mm;font-size:11px;font-weight:bold;color:#000;}' +
     '@media print{.no-print{display:none;}}';
 
@@ -2834,7 +2845,7 @@ async function stampaTutteLeBozze() {
     '.firme{display:flex;justify-content:space-between;margin-top:10px;}' +
     '.firma-box{text-align:center;font-size:11px;}' +
     '.firma-line{border-bottom:1px solid #000;width:130px;height:28px;margin-bottom:3px;}' +
-    '.copia-label{position:absolute;bottom:2mm;right:4mm;font-size:1.2cm;font-weight:bold;color:#000;text-transform:uppercase;line-height:1;white-space:nowrap;}' +
+    '.copia-label{position:absolute;top:78mm;right:4mm;font-size:1.2cm;font-weight:bold;color:#000;text-transform:uppercase;line-height:1;white-space:nowrap;}' +
     '@media print{.no-print{display:none;}}';
 
   var chk = function(ok) { return '<span class="box">'+(ok?'&#10003;':'&nbsp;')+'</span>'; };
@@ -2953,7 +2964,7 @@ function stampaVerbaleCompleto(r, numPratica, dopoStampa) {
     '.firme{display:flex;justify-content:space-between;margin-top:10px;}' +
     '.firma-box{text-align:center;font-size:11px;}' +
     '.firma-line{border-bottom:1px solid #000;width:130px;height:28px;margin-bottom:3px;}' +
-    '.copia-label{position:absolute;bottom:2mm;right:4mm;font-size:1.2cm;font-weight:bold;color:#000;text-transform:uppercase;line-height:1;white-space:nowrap;}' +
+    '.copia-label{position:absolute;top:78mm;right:4mm;font-size:1.2cm;font-weight:bold;color:#000;text-transform:uppercase;line-height:1;white-space:nowrap;}' +
     '@media print{.no-print{display:none;}}';
 
   var chk = function(ok) { return '<span class="box">'+(ok?'&#10003;':'&nbsp;')+'</span>'; };
