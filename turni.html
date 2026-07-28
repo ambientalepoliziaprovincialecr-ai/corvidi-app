@@ -31,6 +31,7 @@ header{background:var(--surface);border-bottom:1px solid var(--border);height:58
 #connBanner{position:sticky;top:0;z-index:100;text-align:center;font-family:var(--display);letter-spacing:2px;padding:10px 8px;font-size:20px;line-height:1.3;}
 #connBanner.online{background:var(--success);color:#fff;}
 #connBanner.offline{background:var(--danger);color:#fff;animation:connBlink 1s infinite;}
+#connBanner.loading{background:#6b7280;color:#fff;}
 @keyframes connBlink{0%,100%{opacity:1}50%{opacity:.55}}
 #view-cal{display:block}
 #view-day{display:none}
@@ -364,33 +365,49 @@ select.modal-input{-webkit-appearance:none;appearance:none}
 var API_URL = 'https://script.google.com/macros/s/AKfycbyVBPIGRRJigXuoQsHialZiFugbN-jKRM-rB6jUnKHw7w52AE_H9rVr20TYxE-sazMs/exec';
 
 // ── STATO CONNESSIONE (banner grande in alto) ────────────
-function setConnBanner(online){
+// Il banner non dice solo "internet funziona": dice che i turni
+// sono stati caricati con successo e l'app è davvero operativa.
+// Finché il primo caricamento non è riuscito, resta in stato
+// "in attesa" (grigio) — non diventa verde solo perché la rete
+// di per sé risponde.
+var datiCaricatiConSuccesso = false;
+var appareCollegato = false;
+
+function setConnBanner(stato){ // 'loading' | 'ok' | 'err'
   var b = document.getElementById('connBanner');
   if(!b) return;
-  if(online){
+  if(stato === 'ok'){
     b.className = 'online';
-    b.textContent = '🟢 CONNESSO';
+    b.textContent = '🟢 CONNESSO — TURNI CARICATI';
+  } else if(stato === 'loading'){
+    b.className = 'loading';
+    b.textContent = '⏳ CONNESSIONE IN CORSO...';
   } else {
     b.className = 'offline';
-    b.textContent = '🔴 NON CONNESSO — LE MODIFICHE NON VERRANNO SALVATE';
+    b.textContent = datiCaricatiConSuccesso
+      ? '🔴 CONNESSIONE PERSA — LE MODIFICHE NON VERRANNO SALVATE'
+      : '🔴 TURNI NON CARICATI — RICARICA LA PAGINA';
   }
 }
-var appareCollegato = navigator.onLine;
-setConnBanner(appareCollegato);
-window.addEventListener('online', function(){ appareCollegato = true; setConnBanner(true); verificaConnessioneReale(); });
-window.addEventListener('offline', function(){ appareCollegato = false; setConnBanner(false); });
+setConnBanner('loading');
+
+window.addEventListener('online', function(){ verificaConnessioneReale(); });
+window.addEventListener('offline', function(){ appareCollegato = false; setConnBanner('err'); });
 
 // navigator.onLine indica solo se il dispositivo ha una rete attiva,
 // non se il server è davvero raggiungibile (es. wifi senza internet,
 // o Apps Script irraggiungibile) — quindi verifichiamo periodicamente
-// con una richiesta reale, leggera, al backend.
+// con una richiesta reale, leggera, al backend. Questo controllo
+// periodico serve solo a rilevare una connessione persa DOPO che i
+// turni erano già stati caricati con successo — non fa mai apparire
+// "connesso" prima che il primo caricamento dati sia riuscito.
 function verificaConnessioneReale(){
-  if(!navigator.onLine){ appareCollegato = false; setConnBanner(false); return; }
+  if(!datiCaricatiConSuccesso) return; // il primo loadData decide da solo lo stato
+  if(!navigator.onLine){ appareCollegato = false; setConnBanner('err'); return; }
   fetch(API_URL + '?action=ping', { method: 'GET', cache: 'no-store' })
-    .then(function(){ appareCollegato = true; setConnBanner(true); })
-    .catch(function(){ appareCollegato = false; setConnBanner(false); });
+    .then(function(){ appareCollegato = true; setConnBanner('ok'); })
+    .catch(function(){ appareCollegato = false; setConnBanner('err'); });
 }
-verificaConnessioneReale();
 setInterval(verificaConnessioneReale, 15000);
 
 var SCHED = null;
@@ -469,6 +486,9 @@ function loadData(anno, mese){
       SCHED = data;
       PIN_MAP = data.pinMap || {};
       setSync('ok','SINCRONIZZATO');
+      datiCaricatiConSuccesso = true;
+      appareCollegato = true;
+      setConnBanner('ok');
       if (data.ultimaModifica) controllaBannerModifica(data.ultimaModifica, data.dettaglioModifica);
       aggiornaNavMese();
       // Resetta currentDay se appartiene a un mese diverso
@@ -501,6 +521,8 @@ function loadData(anno, mese){
     })
     .catch(function(err){
       setSync('err','ERRORE CARICAMENTO');
+      appareCollegato = false;
+      setConnBanner('err');
       console.error(err);
     });
 }
@@ -760,7 +782,7 @@ function saveTurno(){
     document.getElementById('m-err').style.display='block';
     setSync('err','ERRORE');
     appareCollegato = false;
-    setConnBanner(false);
+    setConnBanner('err');
   });
 }
 
