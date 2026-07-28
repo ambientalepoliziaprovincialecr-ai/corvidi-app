@@ -38,6 +38,13 @@ body{background:#0f1115;color:#e2e8f0;font-family:'Barlow',sans-serif;min-height
 .modal-section p{font-size:13px;color:rgba(255,255,255,0.65);line-height:1.7;}
 .modal-section a{color:#7dcfaa;}
 .modal-close{width:100%;padding:12px;border:none;border-radius:10px;background:#f5a623;color:#0f1115;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:8px;}
+
+/* Banner stato login */
+#loginBanner{text-align:center;font-family:'Bebas Neue',cursive;letter-spacing:2px;padding:12px 10px;font-size:16px;line-height:1.4;cursor:default;}
+#loginBanner.ok{background:#1f6b3a;color:#d7f9e2;}
+#loginBanner.no{background:#8b1e1e;color:#ffe2e2;cursor:pointer;animation:loginBlink 1s infinite;}
+@keyframes loginBlink{0%,100%{opacity:1}50%{opacity:.6}}
+#loginBanner .sub{display:block;font-family:'Barlow',sans-serif;font-size:11px;letter-spacing:0.5px;text-transform:none;margin-top:2px;opacity:.9;}
 </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -134,6 +141,35 @@ function leggiTokenCondiviso() {
   return null;
 }
 
+function aggiornaBannerLogin(loggato, nome){
+  var b = document.getElementById('loginBanner');
+  if(!b) return;
+  if(loggato){
+    b.className = 'ok';
+    b.innerHTML = '✅ LOGIN EFFETTUATO — ' + (nome||'') + '<span class="sub">Tocca qui per cambiare utente</span>';
+  } else {
+    b.className = 'no';
+    b.innerHTML = '🔴 NON SEI LOGGATO<span class="sub">Tocca qui per accedere con Google</span>';
+  }
+}
+
+function clickBannerLogin(){
+  var loggato = document.getElementById('loginBanner').className.indexOf('ok') >= 0;
+  if(!loggato){
+    document.getElementById('loginOverlay').style.display = 'flex';
+    inizializzaBottoneGoogle();
+    return;
+  }
+  if(confirm('Vuoi cambiare utente / rifare il login?')){
+    try {
+      localStorage.removeItem('pp_shared_idtoken');
+      localStorage.removeItem('pp_shared_idtoken_scadenza');
+      localStorage.removeItem('pp_operatore_v1');
+    } catch(e) {}
+    location.reload();
+  }
+}
+
 function handleGoogleCredentialResponse(response) {
   idTokenCorrente = response.credential;
   fetch(CORVIDI_URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(idTokenCorrente))
@@ -145,13 +181,16 @@ function handleGoogleCredentialResponse(response) {
         salvaTokenCondiviso(idTokenCorrente);
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('loginGoogleErrore').textContent = '';
+        aggiornaBannerLogin(true, operatoreCorrente);
       } else {
         document.getElementById('loginGoogleErrore').textContent = '❌ ' + verifica.message;
         idTokenCorrente = null;
+        aggiornaBannerLogin(false);
       }
     })
     .catch(function(){
       document.getElementById('loginGoogleErrore').textContent = '❌ Errore di verifica, riprova.';
+      aggiornaBannerLogin(false);
     });
 }
 
@@ -174,6 +213,10 @@ function inizializzaBottoneGoogle(){
   }
 }
 
+// Il banner e l'overlay si basano SEMPRE sulla verifica reale del
+// token condiviso (che ha una scadenza), mai solo sul nome salvato
+// in cache — un nome cache non scade mai, quindi da solo darebbe
+// una falsa sicurezza di essere ancora loggati.
 window.onload = function(){
   var tokenCondiviso = leggiTokenCondiviso();
   if (tokenCondiviso) {
@@ -185,27 +228,29 @@ window.onload = function(){
           operatoreCorrente = verifica.nome;
           try { localStorage.setItem('pp_operatore_v1', verifica.nome); } catch(e) {}
           document.getElementById('loginOverlay').style.display = 'none';
+          aggiornaBannerLogin(true, operatoreCorrente);
         } else {
           idTokenCorrente = null;
           document.getElementById('loginOverlay').style.display = 'flex';
+          aggiornaBannerLogin(false);
           inizializzaBottoneGoogle();
         }
       })
       .catch(function(){
+        // Errore di rete: non sappiamo con certezza se il token è
+        // valido, ma non possiamo confermarlo — meglio segnalarlo
+        // come non verificato piuttosto che dare falsa sicurezza.
+        aggiornaBannerLogin(false);
         document.getElementById('loginOverlay').style.display = 'flex';
         inizializzaBottoneGoogle();
       });
     return;
   }
 
-  // Mostra il login solo se non abbiamo già un operatore salvato su
-  // questo dispositivo (il vero controllo Google avviene comunque ad
-  // ogni utilizzo effettivo delle singole app)
-  if (operatoreCorrente) {
-    document.getElementById('loginOverlay').style.display = 'none';
-  } else {
-    document.getElementById('loginOverlay').style.display = 'flex';
-  }
+  // Nessun token condiviso valido: non loggato, punto. Non ci
+  // fidiamo più del solo nome in cache per nascondere l'avviso.
+  aggiornaBannerLogin(false);
+  document.getElementById('loginOverlay').style.display = 'flex';
 
   if (window.google && google.accounts && google.accounts.id) {
     google.accounts.id.initialize({
@@ -225,6 +270,8 @@ window.onload = function(){
   }
 };
 </script>
+
+  <div id="loginBanner" class="no" onclick="clickBannerLogin()">🔴 NON SEI LOGGATO<span class="sub">Tocca qui per accedere con Google</span></div>
 
   <div class="header">
     <div class="header-title">PP CREMONA</div>
