@@ -1175,7 +1175,11 @@ window.addEventListener('load',function(){
   }catch(e){}
 
   aggiornaNavMese();
-  loadData(viewingYear, viewingMonth);
+  // Il caricamento dati parte SOLO dopo che il login (token condiviso o
+  // Google fresco) è stato verificato con successo — vedi window.onload
+  // sopra e handleGoogleCredentialResponse. Chiamarlo anche qui creava
+  // una corsa: a volte partiva prima che idTokenCorrente fosse pronto,
+  // dando "ERRORE CARICAMENTO" anche quando la connessione era ok.
 });
 
 </script>
