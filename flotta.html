@@ -458,7 +458,11 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="form-group" style="margin-top:16px;">
     <label class="form-label">Seleziona mese <span style="color:#ffeb3b;">*</span></label>
-    <input type="month" class="form-input" id="tuttoMese" style="font-size:16px;">
+    <div style="display:flex;gap:8px;">
+      <select class="form-select" id="tuttoMeseSel" style="flex:2;font-size:16px;" onchange="aggiornaTuttoMese()"></select>
+      <select class="form-select" id="tuttoAnnoSel" style="flex:1;font-size:16px;" onchange="aggiornaTuttoMese()"></select>
+    </div>
+    <input type="hidden" id="tuttoMese">
   </div>
   <div style="background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.3);border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:rgba(255,235,59,0.7);line-height:1.6;">
     📄 Genera un unico PDF con:<br>
@@ -965,7 +969,52 @@ async function submitKm() {
   var km = document.getElementById('kmFinali').value;
   var note = document.getElementById('kmNote').value.trim();
   if (!dataOra || !targa || !conducente || !km) { toast('Seleziona almeno un conducente e compila tutti i campi', true); return; }
-  await invia({tipo:'KM', dataOra:fmtDT(dataOra), targa, conducente, kmFinali:parseInt(km), note, inseritoDa:operatoreCorrente});
+
+  // Controllo preventivo: avvisa se il km inserito implica un
+  // percorso anomalo (oltre 300 km rispetto all'ultima registrazione
+  // nota per la stessa targa) — aiuta a intercettare subito un
+  // errore di battitura, invece di scoprirlo un mese dopo.
+  var kmNum = parseInt(km);
+  var SOGLIA_AVVISO_KM = 300;
+  try {
+    var resUltimo = await fetch(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));
+    var dUltimo = await resUltimo.json();
+    var registrazioniTarga = (dUltimo.km || []).filter(function(r){
+      return (r.targa || '').toString().toUpperCase().trim() === targa.toString().toUpperCase().trim() && parseInt(r.kmFinali) > 0;
+    });
+    if (registrazioniTarga.length > 0) {
+      var ultimaReg = registrazioniTarga[registrazioniTarga.length - 1];
+      var ultimoKm = parseInt(ultimaReg.kmFinali) || 0;
+      var deltaOggi = kmNum - ultimoKm;
+      if (deltaOggi < 0) {
+        var confermatoNegativo = confirm(
+          '⚠️ ATTENZIONE — KM INFERIORI ALL\'ULTIMO INSERIMENTO\n\n' +
+          'L\'ultimo inserimento per questo veicolo risulta a ' + ultimoKm + ' km.\n' +
+          'Il km che stai inserendo (' + kmNum + ' km) è INFERIORE di ' + Math.abs(deltaOggi) + ' km.\n\n' +
+          'Un veicolo non può percorrere km negativi: molto probabilmente hai selezionato la TARGA SBAGLIATA.\n\n' +
+          'Se sei sicuro che targa e km siano corretti, premi OK per registrare comunque.\n' +
+          'Altrimenti premi Annulla e ricontrolla la targa selezionata.'
+        );
+        if (!confermatoNegativo) { return; }
+      } else if (deltaOggi > SOGLIA_AVVISO_KM) {
+        var confermato = confirm(
+          '⚠️ ATTENZIONE\n\n' +
+          'Risulta che oggi hai percorso ' + deltaOggi + ' km con questo veicolo (oltre ' + SOGLIA_AVVISO_KM + ' km).\n\n' +
+          'L\'ultimo inserimento registrato risulta a ' + ultimoKm + ' km.\n' +
+          'Km che stai per registrare: ' + kmNum + ' km.\n\n' +
+          'Se hai fatto davvero un percorso lungo, premi OK per confermare.\n' +
+          'Se pensi di aver digitato un numero sbagliato, premi Annulla e ricontrolla il contachilometri.'
+        );
+        if (!confermato) { return; }
+      }
+    }
+  } catch(e) {
+    // Se il controllo preventivo fallisce (es. rete assente), non
+    // blocchiamo la registrazione: meglio salvare senza avviso che
+    // perdere il dato.
+  }
+
+  await invia({tipo:'KM', dataOra:fmtDT(dataOra), targa, conducente, kmFinali:kmNum, note, inseritoDa:operatoreCorrente});
   document.getElementById('kmTarga').value = '';
   document.getElementById('kmFinali').value = '';
   document.getElementById('kmNote').value = '';
@@ -1422,8 +1471,36 @@ function initStampaTutto(){
   // Default: mese precedente
   var y=now.getFullYear(), m=now.getMonth(); // getMonth() è già il mese precedente (0-based)
   if(m===0){m=12;y--;}
-  document.getElementById('tuttoMese').value=y+'-'+String(m).padStart(2,'0');
+
+  var selMese=document.getElementById('tuttoMeseSel');
+  var selAnno=document.getElementById('tuttoAnnoSel');
+  if(selMese.options.length===0){
+    for(var i=1;i<=12;i++){
+      var opt=document.createElement('option');
+      opt.value=String(i).padStart(2,'0');
+      opt.textContent=nomeMeseFn(i-1);
+      selMese.appendChild(opt);
+    }
+  }
+  if(selAnno.options.length===0){
+    var annoCorrente=now.getFullYear();
+    for(var a=annoCorrente-2;a<=annoCorrente+1;a++){
+      var optA=document.createElement('option');
+      optA.value=String(a);
+      optA.textContent=String(a);
+      selAnno.appendChild(optA);
+    }
+  }
+  selMese.value=String(m).padStart(2,'0');
+  selAnno.value=String(y);
+  aggiornaTuttoMese();
   document.getElementById('anteprimaTutto').innerHTML='';
+}
+
+function aggiornaTuttoMese(){
+  var m=document.getElementById('tuttoMeseSel').value;
+  var y=document.getElementById('tuttoAnnoSel').value;
+  document.getElementById('tuttoMese').value = (m&&y) ? (y+'-'+m) : '';
 }
 
 function nomeMeseFn(n){return['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'][n];}
