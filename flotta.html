@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0039)https://palvareto.github.io/flotta.html -->
+<!-- saved from url=(0075)https://ambientalepoliziaprovincialecr-ai.github.io/corvidi-app/flotta.html -->
 <html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Flotta">
 <title>Registro Flotta</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="./Registro Flotta_files/css2" rel="stylesheet">
 <style>
 :root{--blu:#0D1B2E;--oro:#f5a623;--oro2:#ffc84a;--crema:#ffeb3b;--verde:#27ae60;--rosso:#e74c3c;--grigio:rgba(255,255,255,0.07);--bordo:rgba(255,255,255,0.12);}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -56,6 +56,9 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
 .form-textarea{resize:none;height:70px;}
 .data-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;}
 .btn-adesso{padding:10px 14px;background:rgba(245,166,35,0.15);border:1px solid rgba(245,166,35,0.4);border-radius:8px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;white-space:nowrap;}
+.turno-row{display:flex;gap:8px;margin-top:8px;}
+.btn-turno{flex:1;padding:12px 4px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#ccc;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:0.5px;cursor:pointer;text-align:center;}
+.btn-turno.active{background:rgba(245,166,35,0.2);border-color:#f5a623;color:#ffeb3b;font-weight:600;}
 .btn-adesso:hover{background:rgba(245,166,35,0.3);}
 input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 /* AGENTI */
@@ -132,12 +135,12 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 .istr-firma{font-size:13px;color:rgba(255,235,59,0.4);margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);line-height:1.7;}
 .btn-istr-close{width:100%;padding:12px;border:none;border-radius:10px;background:#f5a623;color:#1a1a2e;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:12px;}
 </style>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-</head>
+<script src="./Registro Flotta_files/client" async="" defer=""></script>
+<style id="googleidentityservice_button_styles">.qJTHM{-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;color:#202124;direction:ltr;-webkit-touch-callout:none;font-family:Roboto-Regular,arial,sans-serif;-webkit-font-smoothing:antialiased;font-weight:400;margin:0;overflow:hidden;-webkit-text-size-adjust:100%}.ynRLnc{left:-9999px;position:absolute;top:-9999px}.L6cTce{display:none}.bltWBb{overflow-wrap:break-word;word-break:break-word}.hSRGPd{color:#1a73e8;cursor:pointer;font-weight:500;text-decoration:none}.Bz112c-W3lGp{height:16px;width:16px}.Bz112c-E3DyYd{height:20px;width:20px}.Bz112c-r9oPif{height:24px;width:24px}.Bz112c-u2z5K{height:36px;width:36px}.Bz112c-uaxL4e{border-radius:10px}.LgbsSe-Bz112c{display:block}.S9gUrf-YoZ4jf{border:none;margin:0;padding:0}.S9gUrf-YoZ4jf *{border:none;margin:0;padding:0}.fFW7wc-ibnC6b>.aZ2wEe>div{border-color:#4285f4}.P1ekSe-ZMv3u{-webkit-transition:height .2s linear;transition:height .2s linear}.P1ekSe-ZMv3u>div:first-child{background-color:#1a73e8!important;-webkit-transition:width .3s linear;transition:width .3s linear}.P1ekSe-ZMv3u>div:nth-child(2){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(90deg,#1a73e8,#1a73e8)!important}.P1ekSe-ZMv3u>div:nth-child(3){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(90deg,#1a73e8,#1a73e8)!important}.haAclf{display:inline-block}.nsm7Bb-HzV7m-LgbsSe{border-radius:4px;box-sizing:border-box;-webkit-transition:background-color .218s,border-color .218s;transition:background-color .218s,border-color .218s;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;-webkit-appearance:none;background-color:#fff;background-image:none;border:1px solid #dadce0;color:#3c4043;cursor:pointer;font-family:Google Sans,arial,sans-serif;font-size:.875rem;height:40px;letter-spacing:.25px;outline:none;overflow:hidden;padding:0 12px;position:relative;text-align:center;vertical-align:middle;white-space:nowrap;width:auto}@media screen and (-ms-high-contrast:active){.nsm7Bb-HzV7m-LgbsSe{border:2px solid windowText;color:windowText}}@media screen and (preferes-contrast:more){.nsm7Bb-HzV7m-LgbsSe{color:#000}}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe{font-size:.875rem;height:32px;letter-spacing:.25px;padding:0 10px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe{font-size:.6875rem;height:20px;letter-spacing:.3px;padding:0 8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe{padding:0;width:40px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe{width:32px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe{width:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK{border-radius:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.pSzOP-SxQuSe{border-radius:16px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.purZT-SxQuSe{border-radius:10px}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc{border:1px solid #8e918f;background-color:#131314;color:#e3e3e3}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc{border:none;color:#fff}.nsm7Bb-HzV7m-LgbsSe.MFS4be-v3pZbf-Ia7Qfc{background-color:#1a73e8}.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{background-color:#202124;color:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{color:#fff}}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:18px;margin-right:8px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:14px;min-width:14px;width:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:10px;min-width:10px;width:10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin-left:8px;margin-right:-4px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:10px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:4px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:3px;border-bottom-left-radius:3px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;align-items:center;background-color:#fff;height:36px;margin-left:-10px;margin-right:12px;min-width:36px;width:36px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c,.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:28px;margin-left:-8px;margin-right:10px;min-width:28px;width:28px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:16px;margin-left:-6px;margin-right:8px;min-width:16px;width:16px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:3px;margin-left:2px;margin-right:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:8px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-bN97Pc-sM5MNb{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;-webkit-flex-direction:row;-webkit-box-orient:horizontal;-webkit-box-direction:normal;flex-direction:row;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-flex-wrap:nowrap;flex-wrap:nowrap;height:100%;position:relative;width:100%}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX{-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:1;-webkit-box-flex:1;flex-grow:1;font-family:Google Sans,arial,sans-serif;font-weight:500;overflow:hidden;text-overflow:ellipsis;vertical-align:top}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-weight:300}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:0;-webkit-box-flex:0;flex-grow:0}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-MJoBVe{-webkit-transition:background-color .218s;transition:background-color .218s;bottom:0;left:0;position:absolute;right:0;top:0}.nsm7Bb-HzV7m-LgbsSe:focus,.nsm7Bb-HzV7m-LgbsSe:hover{box-shadow:none;border-color:rgb(210,227,252);outline:none}.nsm7Bb-HzV7m-LgbsSe:focus-within{outline:2px solid #00639b;border-color:transparent}.nsm7Bb-HzV7m-LgbsSe:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.08)}.nsm7Bb-HzV7m-LgbsSe:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.1)}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.08)}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.12)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.24)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.32)}.nsm7Bb-HzV7m-LgbsSe .n1UuX-DkfjY{border-radius:50%;display:-webkit-box;display:-webkit-flex;display:flex;height:20px;margin-left:-4px;margin-right:8px;min-width:20px;width:20px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-family:Roboto;font-size:12px;text-align:left}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .fmcmS,.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .ssJRIf{overflow:hidden;text-overflow:ellipsis}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;color:#5f6368;fill:#5f6368;font-size:11px;font-weight:400}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.i5vt6e-to915-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#c4c7c5;fill:#c4c7c5}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#e8eaed;fill:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff,.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#000;fill:#000}}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .Bz112c{height:18px;margin:-3px -3px -3px 2px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:0;border-bottom-left-radius:0;border-top-right-radius:3px;border-bottom-right-radius:3px;margin-left:12px;margin-right:-10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.L5Fo6c-sM5MNb{border:0;display:block;left:0;position:relative;top:0}.L5Fo6c-bF1uUb{border-radius:4px;bottom:0;cursor:pointer;left:0;position:absolute;right:0;top:0}.L5Fo6c-bF1uUb:focus{border:none;outline:none}sentinel{}</style><link rel="manifest" href="blob:https://ambientalepoliziaprovincialecr-ai.github.io/366818cc-cc2e-4dec-9774-dcce8f8df637"></head>
 <body>
 
 <!-- MODAL LOGIN GOOGLE — mostrato finché l'account non è verificato -->
-<div id="modalLoginGoogle" style="display:flex;position:fixed;inset:0;z-index:99999;background:rgba(13,27,42,0.97);align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center;">
+<div id="modalLoginGoogle" style="display: none; position: fixed; inset: 0px; z-index: 99999; background: rgba(13, 27, 42, 0.97); align-items: center; justify-content: center; flex-direction: column; padding: 24px; text-align: center;">
   <div style="font-size:40px;margin-bottom:12px;">🔒</div>
   <h2 style="color:#f0d060;font-family:Arial,sans-serif;font-size:20px;margin-bottom:8px;">Accesso riservato</h2>
   <p style="color:#ccc;font-size:13px;max-width:320px;margin-bottom:20px;">Accedi con un account Google autorizzato per usare Registro Flotta.</p>
@@ -210,7 +213,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
       </div>
     </div>
     <div id="agentiManagerSection" style="display:none;">
-      <div class="agenti-manager-list" id="agentiManagerListFlotta"><div class="agenti-manager-item"><span>ARISI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>BANDERA</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>BORRINI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>CAMBIATI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>CHIODA</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>COLLA</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>FORESTI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>FUSARI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>GUARNERI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>PREANI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>RIZZI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>TORTINI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>TRENTAROSSI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>VIVIANI</span><button class="btn-del-ag2">Rimuovi</button></div></div>
+      <div class="agenti-manager-list" id="agentiManagerListFlotta"><div class="agenti-manager-item"><span>ARISI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>BANDERA</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>BORRINI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>CAMBIATI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>CHIODA</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>COLLA</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>FUSARI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>GUARNERI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>PREANI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>RIZZI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>TRENTAROSSI</span><button class="btn-del-ag2">Rimuovi</button></div><div class="agenti-manager-item"><span>VIVIANI</span><button class="btn-del-ag2">Rimuovi</button></div></div>
       <div class="agenti-add-row2" style="flex-direction:column;gap:8px;">
         <div style="display:flex;gap:8px;">
           <input type="text" class="form-input" id="nuovoAgenteFlotta" placeholder="Nome conducente..." style="font-size:13px;padding:8px 10px;flex:2;">
@@ -299,11 +302,14 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <div class="form-header-title"><span>Inserimento</span>Registra KM</div>
   </div>
   <div class="form-group">
-    <label class="form-label">Data e ora <span class="req">*</span></label>
-    <div class="data-row">
-      <input type="datetime-local" class="form-input" id="kmDataOra">
-      <button class="btn-adesso" onclick="setOra(&#39;kmDataOra&#39;)">🕐 Adesso</button>
+    <label class="form-label">Data e turno <span class="req">*</span></label>
+    <input type="date" class="form-input" id="kmDataSolo">
+    <div class="turno-row">
+      <button type="button" class="btn-turno" id="btnTurnoMattina" onclick="setTurnoKm('mattina')">🌅 Mattino</button>
+      <button type="button" class="btn-turno" id="btnTurnoPomeriggio" onclick="setTurnoKm('pomeriggio')">☀️ Pomeriggio</button>
+      <button type="button" class="btn-turno" id="btnTurnoSera" onclick="setTurnoKm('sera')">🌙 Sera</button>
     </div>
+    <input type="hidden" id="kmDataOra">
   </div>
   <div class="form-group">
     <label class="form-label">Targa <span class="req">*</span></label>
@@ -311,7 +317,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="form-group">
     <label class="form-label">Conducente <span class="req">*</span></label>
-    <div class="agenti-grid" id="kmAgentiGrid"><button class="agente-btn">ARISI</button><button class="agente-btn">BANDERA</button><button class="agente-btn">BORRINI</button><button class="agente-btn">CAMBIATI</button><button class="agente-btn">CHIODA</button><button class="agente-btn">COLLA</button><button class="agente-btn">FORESTI</button><button class="agente-btn">FUSARI</button><button class="agente-btn">GUARNERI</button><button class="agente-btn">PREANI</button><button class="agente-btn">RIZZI</button><button class="agente-btn">TORTINI</button><button class="agente-btn">TRENTAROSSI</button><button class="agente-btn">VIVIANI</button></div>
+    <div class="agenti-grid" id="kmAgentiGrid"><button class="agente-btn">ARISI</button><button class="agente-btn">BANDERA</button><button class="agente-btn">BORRINI</button><button class="agente-btn">CAMBIATI</button><button class="agente-btn">CHIODA</button><button class="agente-btn">COLLA</button><button class="agente-btn">FUSARI</button><button class="agente-btn">GUARNERI</button><button class="agente-btn">PREANI</button><button class="agente-btn">RIZZI</button><button class="agente-btn">TRENTAROSSI</button><button class="agente-btn">VIVIANI</button></div>
     <button class="btn-gestisci-f" onclick="apriGestioneAgentiFlotta()">⚙️ Gestisci conducenti</button>
   </div>
   <div class="form-group">
@@ -344,7 +350,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="form-group">
     <label class="form-label">Conducente <span class="req">*</span></label>
-    <div class="agenti-grid" id="rifAgentiGrid"><button class="agente-btn">ARISI</button><button class="agente-btn">BANDERA</button><button class="agente-btn">BORRINI</button><button class="agente-btn">CAMBIATI</button><button class="agente-btn">CHIODA</button><button class="agente-btn">COLLA</button><button class="agente-btn">FORESTI</button><button class="agente-btn">FUSARI</button><button class="agente-btn">GUARNERI</button><button class="agente-btn">PREANI</button><button class="agente-btn">RIZZI</button><button class="agente-btn">TORTINI</button><button class="agente-btn">TRENTAROSSI</button><button class="agente-btn">VIVIANI</button></div>
+    <div class="agenti-grid" id="rifAgentiGrid"><button class="agente-btn">ARISI</button><button class="agente-btn">BANDERA</button><button class="agente-btn">BORRINI</button><button class="agente-btn">CAMBIATI</button><button class="agente-btn">CHIODA</button><button class="agente-btn">COLLA</button><button class="agente-btn">FUSARI</button><button class="agente-btn">GUARNERI</button><button class="agente-btn">PREANI</button><button class="agente-btn">RIZZI</button><button class="agente-btn">TRENTAROSSI</button><button class="agente-btn">VIVIANI</button></div>
   </div>
   <div class="form-group">
     <label class="form-label">KM veicolo (odometro)</label>
@@ -742,6 +748,12 @@ function inizializzaBottoneGoogle(){
 }
 
 window.onload = function(){
+  var kds = document.getElementById('kmDataSolo');
+  if (kds && !kds.value) {
+    var oggi = new Date();
+    var loc = new Date(oggi.getTime() - oggi.getTimezoneOffset() * 60000);
+    kds.value = loc.toISOString().slice(0, 10);
+  }
   var tokenCondiviso = leggiTokenCondiviso();
   if (tokenCondiviso) {
     idTokenCorrente = tokenCondiviso;
@@ -912,6 +924,19 @@ function setOra(id) {
   document.getElementById(id).value = loc.toISOString().slice(0, 16);
 }
 
+// Fasce orarie coerenti con calcolaTurno() usata in stampa:
+// mattina 7-13, pomeriggio 13-19, sera/notte 19-7.
+var ORA_TURNO_KM = { mattina: '08:00', pomeriggio: '14:00', sera: '20:00' };
+function setTurnoKm(turno) {
+  var dataSolo = document.getElementById('kmDataSolo').value;
+  if (!dataSolo) { toast('Seleziona prima la data', true); return; }
+  document.getElementById('kmDataOra').value = dataSolo + 'T' + ORA_TURNO_KM[turno];
+  ['mattina','pomeriggio','sera'].forEach(function(t){
+    var id = 'btnTurno' + t.charAt(0).toUpperCase() + t.slice(1);
+    document.getElementById(id).className = 'btn-turno' + (t === turno ? ' active' : '');
+  });
+}
+
 function fmtDT(val) {
   if (!val) return '';
   var d = new Date(val);
@@ -945,6 +970,13 @@ async function submitKm() {
   document.getElementById('kmFinali').value = '';
   document.getElementById('kmNote').value = '';
   document.getElementById('kmDataOra').value = '';
+  var oggiReset = new Date();
+  var locReset = new Date(oggiReset.getTime() - oggiReset.getTimezoneOffset() * 60000);
+  document.getElementById('kmDataSolo').value = locReset.toISOString().slice(0, 10);
+  ['mattina','pomeriggio','sera'].forEach(function(t){
+    var id = 'btnTurno' + t.charAt(0).toUpperCase() + t.slice(1);
+    document.getElementById(id).className = 'btn-turno';
+  });
   kmSel = [];
   vai('screenHome');
 }
