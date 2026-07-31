@@ -99,6 +99,7 @@ body{margin:0;background:var(--bg);color:#e8e8e8;font-family:Arial,Helvetica,san
           <button type="button" class="btn-turno" onclick="selTurno('13/19')">13 — 19</button>
           <button type="button" class="btn-turno" onclick="selTurno('19/7')">19 — 7</button>
           <button type="button" class="btn-turno" onclick="selTurno('RIPOSO')">Riposo</button>
+          <button type="button" class="btn-turno" onclick="selTurno('FERIE')">Ferie</button>
         </div>
       </div>
       <div class="form-group">
@@ -300,7 +301,7 @@ async function caricaStorico() {
       oreTot += ore;
       var parts = g.data.split('-');
       var dataObj = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
-      var isRiposo = g.turno === 'RIPOSO';
+      var isRiposo = g.turno === 'RIPOSO' || g.turno === 'FERIE';
       var straordTxt = '';
       if (g.straordDalle && g.straordAlle) {
         var minStr = calcolaDurataStraord(g.straordDalle, g.straordAlle);
@@ -310,7 +311,7 @@ async function caricaStorico() {
       html += '<div class="giorno-riga">' +
         '<div class="giorno-data">' + parts[2] + '/' + parts[1] + ' <span style="opacity:.6;">' + nomeGiorno(dataObj.getDay()) + '</span></div>' +
         '<div style="flex:1;">' +
-          '<div class="giorno-turno' + (isRiposo?' riposo':'') + '">' + (g.turno === 'RIPOSO' ? 'Riposo' : g.turno.replace('/', ' – ')) + (isFestivo(g.data) && !isRiposo ? ' <span style="color:var(--yellow);font-size:10px;">(FESTIVO)</span>' : '') + '</div>' +
+          '<div class="giorno-turno' + (isRiposo?' riposo':'') + '">' + (isRiposo ? (g.turno === 'FERIE' ? 'Ferie' : 'Riposo') : g.turno.replace('/', ' – ')) + (isFestivo(g.data) && !isRiposo ? ' <span style="color:var(--yellow);font-size:10px;">(FESTIVO)</span>' : '') + '</div>' +
           (g.note ? '<div class="giorno-note">' + g.note + '</div>' : '') +
           straordTxt +
         '</div>' +
@@ -326,7 +327,7 @@ async function caricaStorico() {
 }
 
 function calcolaOreDiurne(turno) {
-  if (!turno || turno === 'RIPOSO') return 0;
+  if (!turno || turno === 'RIPOSO' || turno === 'FERIE') return 0;
   var m = turno.match(/(\d+)\/(\d+)/);
   if (!m) return 0;
   var dalle = parseInt(m[1]), alle = parseInt(m[2]);
@@ -376,7 +377,7 @@ async function generaRapporto() {
       var g = mappaGiorni[dstr];
       var turno = g ? g.turno : '';
       var note = g ? (g.note||'') : '';
-      var isRiposo = turno === 'RIPOSO';
+      var isRiposo = turno === 'RIPOSO' || turno === 'FERIE';
       var festivo = isFestivo(dstr);
       var dalle = '', alle = '', oreDiurne = '', oreFestive = '';
       if (turno && !isRiposo) {
@@ -395,7 +396,7 @@ async function generaRapporto() {
         totStraordMin += minStra;
         straTot = formatMinutiHHMM(minStra);
       }
-      var noteFinale = isRiposo ? 'RIPOSO' : note + (g && g.straordMotivo ? (note ? ' — ' : '') + g.straordMotivo : '');
+      var noteFinale = isRiposo ? turno : note + (g && g.straordMotivo ? (note ? ' — ' : '') + g.straordMotivo : '');
       rows += '<tr>' +
         '<td>' + gg + '</td>' +
         '<td>' + nomeGiorno(dataObj.getDay()) + '</td>' +
