@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapporto Fine Mese — Personale</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{
+  --bg:#0f1115; --panel:#161a22; --panel2:#1c212b; --border:rgba(255,255,255,0.08);
+  --yellow:#f0d060; --yellow-bright:#ffeb3b; --muted:#8a8f98; --success:#4ade80; --danger:#e74c3c;
+  --mono:'Courier New',monospace;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--bg);color:#e8e8e8;font-family:Arial,Helvetica,sans-serif;min-height:100vh;}
+.wrap{max-width:520px;margin:0 auto;padding:16px 16px 60px;}
+.header{text-align:center;padding:18px 0 14px;border-bottom:2px solid var(--yellow);margin-bottom:18px;}
+.header .badge{font-size:34px;}
+.header .title{font-family:Georgia,serif;font-size:26px;letter-spacing:2px;color:var(--yellow);font-weight:bold;margin-top:4px;}
+.header .sub{font-size:11px;letter-spacing:2px;color:var(--muted);margin-top:2px;text-transform:uppercase;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:14px;}
+.card-title{font-size:12px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.form-group{margin-bottom:12px;}
+.form-label{display:block;font-size:11px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:5px;}
+.form-input,.form-select,.form-textarea{width:100%;padding:11px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;color:#fff;font-size:15px;}
+.form-textarea{resize:vertical;min-height:50px;font-family:inherit;}
+.turno-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.btn-turno{padding:12px 4px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;color:#ccc;font-size:13px;cursor:pointer;text-align:center;}
+.btn-turno.active{background:rgba(240,208,96,0.18);border-color:var(--yellow);color:var(--yellow);font-weight:bold;}
+.btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,#1a1a2e,var(--yellow));color:#0f1115;font-weight:bold;border:none;border-radius:10px;font-size:15px;cursor:pointer;letter-spacing:0.5px;}
+.btn-secondary{width:100%;padding:12px;background:var(--panel2);border:1px solid var(--border);color:#ddd;border-radius:10px;font-size:14px;cursor:pointer;margin-top:8px;}
+.btn-danger{background:rgba(231,76,60,0.15);border-color:rgba(231,76,60,0.4);color:#f87171;}
+.giorno-riga{display:flex;justify-content:space-between;align-items:center;padding:10px 4px;border-bottom:1px solid var(--border);font-size:13px;}
+.giorno-riga:last-child{border-bottom:none;}
+.giorno-data{color:var(--muted);width:70px;flex-shrink:0;}
+.giorno-turno{flex:1;font-weight:bold;}
+.giorno-turno.riposo{color:var(--muted);font-weight:normal;font-style:italic;}
+.giorno-note{font-size:11px;color:var(--muted);}
+.giorno-del{background:none;border:none;color:#f87171;font-size:16px;cursor:pointer;padding:4px 8px;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1c212b;border:1px solid var(--border);padding:12px 20px;border-radius:10px;font-size:14px;z-index:999;max-width:90%;text-align:center;}
+.toast.err{border-color:var(--danger);color:#f87171;}
+.toast.ok{border-color:var(--success);color:var(--success);}
+#loginOverlay{position:fixed;inset:0;background:#0f1115;display:flex;align-items:center;justify-content:center;z-index:500;flex-direction:column;gap:16px;}
+.screen{display:none;}
+.screen.active{display:block;}
+.top-nav{display:flex;gap:8px;margin-bottom:14px;}
+.top-nav button{flex:1;padding:10px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;cursor:pointer;}
+.top-nav button.active{background:rgba(240,208,96,0.15);border-color:var(--yellow);color:var(--yellow);}
+.mese-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.mese-nav button{background:var(--panel2);border:1px solid var(--border);color:#ddd;border-radius:8px;width:36px;height:36px;font-size:16px;cursor:pointer;}
+.mese-label{font-weight:bold;color:var(--yellow);letter-spacing:1px;}
+.stat-box{text-align:center;background:var(--panel2);border-radius:10px;padding:10px;}
+.stat-box .num{font-size:22px;font-weight:bold;color:var(--yellow);}
+.stat-box .lbl{font-size:10px;color:var(--muted);letter-spacing:1px;}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+</style>
+</head>
+<body>
+
+<div id="loginOverlay">
+  <div style="font-size:40px;">🛡️</div>
+  <div style="color:#f0d060;font-size:18px;letter-spacing:1px;">RAPPORTO FINE MESE</div>
+  <div style="color:#8a8f98;font-size:12px;">Accesso personale — solo tu puoi usare questa app</div>
+  <div id="googleSignInButton"></div>
+  <div id="loginErrore" style="color:#f87171;font-size:12px;"></div>
+</div>
+
+<div class="wrap" id="appWrap" style="display:none;">
+  <div class="header">
+    <div class="badge">🛡️</div>
+    <div class="title">RAPPORTO FINE MESE</div>
+    <div class="sub">Uso personale</div>
+  </div>
+
+  <div class="top-nav">
+    <button id="navHome" class="active" onclick="vai('home')">Oggi</button>
+    <button id="navStorico" onclick="vai('storico')">Storico mese</button>
+    <button id="navStampa" onclick="vai('stampa')">Rapporto</button>
+  </div>
+
+  <div class="screen active" id="screenHome">
+    <div class="card">
+      <div class="card-title">Registra turno</div>
+      <div class="form-group">
+        <label class="form-label">Data</label>
+        <input type="date" class="form-input" id="dataInput">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Turno</label>
+        <div class="turno-grid" id="turnoGrid">
+          <button type="button" class="btn-turno" onclick="selTurno('7/13')">7 — 13</button>
+          <button type="button" class="btn-turno" onclick="selTurno('13/19')">13 — 19</button>
+          <button type="button" class="btn-turno" onclick="selTurno('19/7')">19 — 7</button>
+          <button type="button" class="btn-turno" onclick="selTurno('RIPOSO')">Riposo</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Note (facoltativo — es. recupero, R35, straordinario...)</label>
+        <textarea class="form-textarea" id="noteInput" placeholder="Es. RECUPERO 19/07, R35, STRAORDINARIO viabilità..."></textarea>
+      </div>
+      <button class="btn-primary" onclick="salvaTurno()">💾 Salva turno</button>
+    </div>
+  </div>
+
+  <div class="screen" id="screenStorico">
+    <div class="mese-nav">
+      <button onclick="cambiaMese(-1)">‹</button>
+      <div class="mese-label" id="meseLabelStorico">—</div>
+      <button onclick="cambiaMese(1)">›</button>
+    </div>
+    <div class="stat-row">
+      <div class="stat-box"><div class="num" id="statGiorni">0</div><div class="lbl">GIORNI REGISTRATI</div></div>
+      <div class="stat-box"><div class="num" id="statOre">0</div><div class="lbl">ORE DIURNE TOT.</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Registrazioni del mese</div>
+      <div id="listaGiorni"><div style="text-align:center;color:#8a8f98;padding:12px;">Caricamento...</div></div>
+    </div>
+  </div>
+
+  <div class="screen" id="screenStampa">
+    <div class="mese-nav">
+      <button onclick="cambiaMeseStampa(-1)">‹</button>
+      <div class="mese-label" id="meseLabelStampa">—</div>
+      <button onclick="cambiaMeseStampa(1)">›</button>
+    </div>
+    <div class="card">
+      <div class="card-title">Genera rapporto stampabile</div>
+      <p style="font-size:12px;color:#8a8f98;">Crea il modulo mensile pronto da stampare, con lo stesso formato usato per la liquidazione dei compensi.</p>
+      <button class="btn-primary" onclick="generaRapporto()">🖨️ Genera rapporto del mese</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var URL_GS = 'https://script.google.com/macros/s/AKfycbw_rjF3buB6mMZ6JSW-i7w0KefxULLxh7gz_00e-qKE2MPhXT9Ae58guIXCBNItoy0c/exec'; // dopo aver pubblicato Code.gs
+var idTokenCorrente = null;
+var operatoreCorrente = null;
+var turnoSelezionato = null;
+var viewYearStorico, viewMonthStorico, viewYearStampa, viewMonthStampa;
+
+function toast(msg, isErr) {
+  var t = document.createElement('div');
+  t.className = 'toast' + (isErr ? ' err' : ' ok');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.remove(); }, 3500);
+}
+
+function pad(n){ return n<10 ? '0'+n : String(n); }
+
+function vai(screen) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('.top-nav button').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('screen'+screen.charAt(0).toUpperCase()+screen.slice(1)).classList.add('active');
+  document.getElementById('nav'+screen.charAt(0).toUpperCase()+screen.slice(1)).classList.add('active');
+  if (screen === 'storico') caricaStorico();
+}
+
+function selTurno(t) {
+  turnoSelezionato = t;
+  document.querySelectorAll('#turnoGrid .btn-turno').forEach(function(b){ b.classList.remove('active'); });
+  event.target.classList.add('active');
+}
+
+async function salvaTurno() {
+  var data = document.getElementById('dataInput').value;
+  var note = document.getElementById('noteInput').value.trim();
+  if (!data || !turnoSelezionato) { toast('Seleziona data e turno', true); return; }
+  try {
+    var res = await fetch(URL_GS, {
+      method: 'POST',
+      body: JSON.stringify({ idToken: idTokenCorrente, tipo: 'REGISTRA', data: data, turno: turnoSelezionato, note: note })
+    });
+    var d = await res.json();
+    if (d.success) {
+      toast('Turno salvato');
+      document.getElementById('noteInput').value = '';
+      turnoSelezionato = null;
+      document.querySelectorAll('#turnoGrid .btn-turno').forEach(function(b){ b.classList.remove('active'); });
+    } else {
+      toast(d.error || 'Errore', true);
+    }
+  } catch(e) { toast('Errore di connessione', true); }
+}
+
+function nomeMese(n){ return ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'][n]; }
+function nomeGiorno(d){ return ['dom','lun','mar','mer','gio','ven','sab'][d]; }
+
+async function caricaStorico() {
+  document.getElementById('meseLabelStorico').textContent = nomeMese(viewMonthStorico-1) + ' ' + viewYearStorico;
+  var lista = document.getElementById('listaGiorni');
+  lista.innerHTML = '<div style="text-align:center;color:#8a8f98;padding:12px;">Caricamento...</div>';
+  try {
+    var res = await fetch(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente) + '&anno=' + viewYearStorico + '&mese=' + viewMonthStorico);
+    var d = await res.json();
+    var giorni = d.giorni || [];
+    giorni.sort(function(a,b){ return a.data < b.data ? -1 : 1; });
+    if (!giorni.length) {
+      lista.innerHTML = '<div style="text-align:center;color:#8a8f98;padding:12px;">Nessuna registrazione questo mese</div>';
+      document.getElementById('statGiorni').textContent = '0';
+      document.getElementById('statOre').textContent = '0';
+      return;
+    }
+    var oreTot = 0;
+    var html = '';
+    giorni.forEach(function(g){
+      var ore = calcolaOreDiurne(g.turno);
+      oreTot += ore;
+      var parts = g.data.split('-');
+      var dataObj = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+      var isRiposo = g.turno === 'RIPOSO';
+      html += '<div class="giorno-riga">' +
+        '<div class="giorno-data">' + parts[2] + '/' + parts[1] + ' <span style="opacity:.6;">' + nomeGiorno(dataObj.getDay()) + '</span></div>' +
+        '<div style="flex:1;">' +
+          '<div class="giorno-turno' + (isRiposo?' riposo':'') + '">' + (g.turno === 'RIPOSO' ? 'Riposo' : g.turno.replace('/', ' – ')) + '</div>' +
+          (g.note ? '<div class="giorno-note">' + g.note + '</div>' : '') +
+        '</div>' +
+        '<button class="giorno-del" onclick="eliminaGiorno(\'' + g.data + '\')">🗑️</button>' +
+      '</div>';
+    });
+    lista.innerHTML = html;
+    document.getElementById('statGiorni').textContent = giorni.length;
+    document.getElementById('statOre').textContent = oreTot;
+  } catch(e) {
+    lista.innerHTML = '<div style="text-align:center;color:#f87171;padding:12px;">Errore di caricamento</div>';
+  }
+}
+
+function calcolaOreDiurne(turno) {
+  if (!turno || turno === 'RIPOSO') return 0;
+  var m = turno.match(/(\d+)\/(\d+)/);
+  if (!m) return 0;
+  var dalle = parseInt(m[1]), alle = parseInt(m[2]);
+  var diff = alle - dalle;
+  if (diff <= 0) diff += 24;
+  return diff;
+}
+
+async function eliminaGiorno(data) {
+  if (!confirm('Eliminare la registrazione del ' + data + '?')) return;
+  try {
+    var res = await fetch(URL_GS, { method: 'POST', body: JSON.stringify({ idToken: idTokenCorrente, tipo: 'ELIMINA', data: data }) });
+    var d = await res.json();
+    if (d.success) { toast('Eliminato'); caricaStorico(); }
+    else toast(d.error || 'Errore', true);
+  } catch(e) { toast('Errore di connessione', true); }
+}
+
+function cambiaMese(delta) {
+  viewMonthStorico += delta;
+  if (viewMonthStorico > 12) { viewMonthStorico = 1; viewYearStorico++; }
+  if (viewMonthStorico < 1) { viewMonthStorico = 12; viewYearStorico--; }
+  caricaStorico();
+}
+function cambiaMeseStampa(delta) {
+  viewMonthStampa += delta;
+  if (viewMonthStampa > 12) { viewMonthStampa = 1; viewYearStampa++; }
+  if (viewMonthStampa < 1) { viewMonthStampa = 12; viewYearStampa--; }
+  document.getElementById('meseLabelStampa').textContent = nomeMese(viewMonthStampa-1) + ' ' + viewYearStampa;
+}
+
+async function generaRapporto() {
+  try {
+    var res = await fetch(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente) + '&anno=' + viewYearStampa + '&mese=' + viewMonthStampa);
+    var d = await res.json();
+    var giorni = d.giorni || [];
+    var meseLabel = nomeMese(viewMonthStampa-1) + ' ' + viewYearStampa;
+    var giorniInMese = new Date(viewYearStampa, viewMonthStampa, 0).getDate();
+    var mappaGiorni = {};
+    giorni.forEach(function(g){ mappaGiorni[g.data] = g; });
+
+    var rows = '';
+    var oreTotali = 0;
+    for (var gg = 1; gg <= giorniInMese; gg++) {
+      var dstr = viewYearStampa + '-' + pad(viewMonthStampa) + '-' + pad(gg);
+      var dataObj = new Date(viewYearStampa, viewMonthStampa-1, gg);
+      var g = mappaGiorni[dstr];
+      var turno = g ? g.turno : '';
+      var note = g ? (g.note||'') : '';
+      var isRiposo = turno === 'RIPOSO';
+      var dalle = '', alle = '', ore = '';
+      if (turno && !isRiposo) {
+        var m = turno.match(/(\d+)\/(\d+)/);
+        if (m) { dalle = m[1]; alle = m[2]; ore = calcolaOreDiurne(turno); oreTotali += ore; }
+      }
+      rows += '<tr>' +
+        '<td>' + gg + '</td>' +
+        '<td>' + nomeGiorno(dataObj.getDay()) + '</td>' +
+        '<td>' + dalle + '</td>' +
+        '<td>' + alle + '</td>' +
+        '<td>' + ore + '</td>' +
+        '<td style="text-align:left;">' + (isRiposo ? 'RIPOSO' : note) + '</td>' +
+      '</tr>';
+    }
+
+    var html = '<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Rapporto ' + meseLabel + '</title>' +
+      '<style>@page{margin:15mm;size:A4 portrait;}body{font-family:Arial,sans-serif;font-size:11px;color:#000;margin:0;}' +
+      '.intest{text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:10px;}' +
+      '.titolo{font-size:16px;font-weight:bold;letter-spacing:1px;}' +
+      '.info{margin:8px 0;font-size:12px;}.info b{display:inline-block;min-width:110px;}' +
+      'table{width:100%;border-collapse:collapse;margin-top:8px;}' +
+      'th{background:#e0e0e0;font-size:10px;font-weight:bold;padding:5px 3px;border:1px solid #000;}' +
+      'td{font-size:10px;padding:4px 3px;border:1px solid #000;text-align:center;}' +
+      'tfoot td{font-weight:bold;background:#f0f0f0;}' +
+      '.no-print{margin-top:20px;text-align:center;}@media print{.no-print{display:none;}}' +
+      '</style></head><body>' +
+      '<div class="intest"><div class="titolo">RAPPORTO FINE MESE — TURNI</div><div style="font-size:11px;color:#333;">Provincia di Cremona — Polizia Locale</div></div>' +
+      '<div class="info"><b>Dipendente</b> ' + (operatoreCorrente||'') + '</div>' +
+      '<div class="info"><b>Periodo</b> ' + meseLabel + '</div>' +
+      '<table><thead><tr><th>Data</th><th>Giorno</th><th>Dalle</th><th>Alle</th><th>Ore</th><th style="text-align:left;">Note</th></tr></thead>' +
+      '<tbody>' + rows + '</tbody>' +
+      '<tfoot><tr><td colspan="4">TOTALE ORE DIURNE</td><td>' + oreTotali + '</td><td></td></tr></tfoot></table>' +
+      '<div style="display:flex;justify-content:space-between;margin-top:40px;font-size:11px;">' +
+      '<div>___________________<br>Il Dipendente</div><div>___________________<br>Il Comandante</div></div>' +
+      '<div class="no-print"><button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#1a1a2e;color:#ffeb3b;border:none;border-radius:8px;margin-top:20px;">🖨️ Stampa / Salva PDF</button></div>' +
+      '</body></html>';
+
+    var win = window.open('', '_blank');
+    if (!win) { toast('Il browser ha bloccato la finestra di stampa: consenti i popup e riprova', true); return; }
+    win.document.write(html);
+    win.document.close();
+  } catch(e) { toast('Errore nel generare il rapporto', true); }
+}
+
+function handleGoogleCredentialResponse(response) {
+  idTokenCorrente = response.credential;
+  fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(idTokenCorrente))
+    .then(function(r){ return r.json(); })
+    .then(function(v){
+      if (v.ok) {
+        operatoreCorrente = v.nome;
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('appWrap').style.display = 'block';
+        var oggi = new Date();
+        document.getElementById('dataInput').value = oggi.getFullYear() + '-' + pad(oggi.getMonth()+1) + '-' + pad(oggi.getDate());
+        viewYearStorico = oggi.getFullYear(); viewMonthStorico = oggi.getMonth()+1;
+        viewYearStampa = oggi.getFullYear(); viewMonthStampa = oggi.getMonth()+1;
+        document.getElementById('meseLabelStampa').textContent = nomeMese(viewMonthStampa-1) + ' ' + viewYearStampa;
+      } else {
+        document.getElementById('loginErrore').textContent = '❌ ' + v.message;
+      }
+    })
+    .catch(function(){ document.getElementById('loginErrore').textContent = '❌ Errore di verifica, riprova.'; });
+}
+
+window.onload = function() {
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.initialize({
+      client_id: '226909521211-tk40j8dfcr6dr428uqb4sd4s2lt5qbi6.apps.googleusercontent.com',
+      callback: handleGoogleCredentialResponse
+    });
+    google.accounts.id.renderButton(document.getElementById('googleSignInButton'), { theme: 'outline', size: 'large', text: 'signin_with', width: 280 });
+    google.accounts.id.prompt();
+  }
+};
+</script>
+</body>
+</html>
