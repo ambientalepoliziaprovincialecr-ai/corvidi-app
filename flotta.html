@@ -947,6 +947,16 @@ function fmtDT(val) {
   return d.toLocaleString('it-IT', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
 }
 
+// Converte una stringa "gg/mm/aaaa, hh:mm" (o "gg/mm/aaaa" senza ora)
+// in un timestamp completo, per ordinare correttamente più
+// registrazioni fatte nello stesso giorno.
+function parseTsIt(str) {
+  if (!str) return 0;
+  var m = str.toString().match(/(\d{1,2})\/(\d{1,2})\/(\d{4})(?:[, ]+(\d{1,2}):(\d{2}))?/);
+  if (!m) return 0;
+  return new Date(parseInt(m[3]), parseInt(m[2])-1, parseInt(m[1]), parseInt(m[4])||0, parseInt(m[5])||0).getTime();
+}
+
 function calcolaLitri() {
   var costo = parseFloat((document.getElementById('rifCosto').value||'').replace(',','.')) || 0;
   var importo = parseFloat((document.getElementById('rifImporto').value||'').replace(',','.')) || 0;
@@ -1292,7 +1302,16 @@ async function generaStampaRif(){
     
     var carburante=righe[0].carburante||'BENZINA';
     var isBenzina=carburante.toUpperCase().includes('BENZ');
-    var kmFineMese=parseFloat(righe[righe.length-1].km)||0;
+    // "Km fine mese" deve venire dall'ultima registrazione KM (fine
+    // turno) per quella targa in quel mese, non dall'ultimo
+    // rifornimento — sono due cose diverse.
+    var kmRegistrazioni=(d.km||[]).filter(function(r){
+      if(!r.dataOra)return false;
+      var p=r.dataOra.split('/');if(p.length<3)return false;
+      var m=parseInt(p[1]),a=parseInt(p[2]);if(a<100)a+=2000;
+      return m===meseNum&&a===anno&&r.targa&&r.targa.toUpperCase()===targa.toUpperCase();
+    }).sort(function(x,y){return parseTsIt(x.dataOra)-parseTsIt(y.dataOra);});
+    var kmFineMese = kmRegistrazioni.length ? (parseFloat(kmRegistrazioni[kmRegistrazioni.length-1].kmFinali)||0) : (parseFloat(righe[righe.length-1].km)||0);
     var kmInizioMese=parseFloat(righe[0].km)||0;
     var kmTotali=kmFineMese-kmInizioMese;
     
@@ -1377,7 +1396,13 @@ async function generaStampaRif(){
     var carburante=righe[0].carburante||'BENZINA';
     var isBenzina=carburante.toUpperCase().includes('BENZ');
     var kmInizioMese=righe.length>0?(parseFloat(righe[0].km)||0)-(parseFloat(righe[0].kmPercorsi)||0):0;
-    var kmFineMese=parseFloat(righe[righe.length-1].km)||0;
+    var kmRegistrazioni2=(d.km||[]).filter(function(r){
+      if(!r.dataOra)return false;
+      var p=r.dataOra.split('/');if(p.length<3)return false;
+      var m=parseInt(p[1]),a=parseInt(p[2]);if(a<100)a+=2000;
+      return m===meseNum&&a===anno&&r.targa&&r.targa.toUpperCase()===targa.toUpperCase();
+    }).sort(function(x,y){return parseTsIt(x.dataOra)-parseTsIt(y.dataOra);});
+    var kmFineMese = kmRegistrazioni2.length ? (parseFloat(kmRegistrazioni2[kmRegistrazioni2.length-1].kmFinali)||0) : (parseFloat(righe[righe.length-1].km)||0);
     var kmTotali=righe.reduce(function(s,r){return s+(parseFloat(r.kmPercorsi)||0);},0);
     var rows='';
     righe.forEach(function(r){rows+='<tr><td>'+r.dataOra.split(',')[0]+'</td><td>'+(r.importo||'')+'</td><td>'+(r.km||'')+'</td><td>'+(r.costoLitro||'')+'</td></tr>';});
@@ -1587,15 +1612,16 @@ async function generaStampaTutto(){
       // --- FOGLIO CARBURANTE ---
       var rowsRif='';
       var isBenzina=true;
+      var kmTargaOrdinati=kmTarga.slice().sort(function(x,y){return parseTsIt(x.dataOra)-parseTsIt(y.dataOra);});
       var kmFineMese=0,kmInizioMese=0;
       if(rifTarga.length>0){
         isBenzina=(rifTarga[0].carburante||'BENZINA').toUpperCase().includes('BENZ');
         kmInizioMese=parseFloat(rifTarga[0].km)||0;
-        kmFineMese=parseFloat(rifTarga[rifTarga.length-1].km)||0;
         rifTarga.forEach(function(r){
           rowsRif+='<tr><td>'+dataStr(r.dataOra)+'</td><td>'+(r.importo||'')+'</td><td>'+(r.km||'')+'</td><td>'+(r.costoLitro||'')+'</td></tr>';
         });
       }
+      kmFineMese = kmTargaOrdinati.length ? (parseFloat(kmTargaOrdinati[kmTargaOrdinati.length-1].kmFinali)||0) : (rifTarga.length ? (parseFloat(rifTarga[rifTarga.length-1].km)||0) : 0);
       for(var j=rifTarga.length;j<10;j++) rowsRif+='<tr><td>&nbsp;</td><td></td><td></td><td></td></tr>';
       var kmTotali=kmFineMese-kmInizioMese;
 
