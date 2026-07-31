@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Rapporto Fine Mese — Personale</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f1115">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Rapporto">
+<link rel="apple-touch-icon" href="icon-192.png">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 :root{
@@ -461,6 +468,9 @@ function handleGoogleCredentialResponse(response) {
 }
 
 window.onload = function() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw-rapporto.js').catch(function(){});
+  }
   if (window.google && google.accounts && google.accounts.id) {
     google.accounts.id.initialize({
       client_id: '226909521211-tk40j8dfcr6dr428uqb4sd4s2lt5qbi6.apps.googleusercontent.com',
