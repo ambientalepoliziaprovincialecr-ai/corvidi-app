@@ -95,8 +95,31 @@ body{margin:0;background:var(--bg);color:#e8e8e8;font-family:Arial,Helvetica,san
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">Note (facoltativo — es. recupero, R35, straordinario...)</label>
-        <textarea class="form-textarea" id="noteInput" placeholder="Es. RECUPERO 19/07, R35, STRAORDINARIO viabilità..."></textarea>
+        <label class="form-label">Note (facoltativo — es. recupero, R35...)</label>
+        <textarea class="form-textarea" id="noteInput" placeholder="Es. RECUPERO 19/07, R35..."></textarea>
+      </div>
+      <div class="form-group" style="border-top:1px solid var(--border);padding-top:12px;">
+        <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+          <input type="checkbox" id="straordCheck" onchange="toggleStraord()" style="width:18px;height:18px;">
+          Ho fatto uno straordinario oggi
+        </label>
+        <div id="straordFields" style="display:none;margin-top:10px;">
+          <div style="display:flex;gap:8px;">
+            <div style="flex:1;">
+              <label class="form-label">Dalle (ore)</label>
+              <input type="number" step="0.01" class="form-input" id="straordDalle" placeholder="es. 19" oninput="aggiornaTotaleStraord()">
+            </div>
+            <div style="flex:1;">
+              <label class="form-label">Alle (ore)</label>
+              <input type="number" step="0.01" class="form-input" id="straordAlle" placeholder="es. 20" oninput="aggiornaTotaleStraord()">
+            </div>
+          </div>
+          <div style="text-align:center;color:var(--yellow);font-size:13px;margin-top:8px;" id="straordTotaleTxt">Totale: —</div>
+          <div class="form-group" style="margin-top:8px;">
+            <label class="form-label">Motivo straordinario</label>
+            <input type="text" class="form-input" id="straordMotivo" placeholder="Es. STRAORDINARIO VIABILITÀ...">
+          </div>
+        </div>
       </div>
       <button class="btn-primary" onclick="salvaTurno()">💾 Salva turno</button>
     </div>
@@ -163,19 +186,55 @@ function selTurno(t) {
   event.target.classList.add('active');
 }
 
+function toggleStraord() {
+  var attivo = document.getElementById('straordCheck').checked;
+  document.getElementById('straordFields').style.display = attivo ? 'block' : 'none';
+}
+
+function aggiornaTotaleStraord() {
+  var dalle = parseFloat(document.getElementById('straordDalle').value);
+  var alle = parseFloat(document.getElementById('straordAlle').value);
+  var box = document.getElementById('straordTotaleTxt');
+  if (isNaN(dalle) || isNaN(alle)) { box.textContent = 'Totale: —'; return; }
+  var tot = alle - dalle;
+  box.textContent = 'Totale straordinario: ' + tot.toFixed(2).replace(/\.?0+$/,'') + ' ore';
+}
+
+// La domenica conta come festivo: le ore del turno normale vanno
+// nella colonna "notturno/festivo" invece che "diurno", come nel
+// modulo cartaceo.
+function isFestivo(dataStr) {
+  var p = dataStr.split('-');
+  var d = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+  return d.getDay() === 0;
+}
+
 async function salvaTurno() {
   var data = document.getElementById('dataInput').value;
   var note = document.getElementById('noteInput').value.trim();
   if (!data || !turnoSelezionato) { toast('Seleziona data e turno', true); return; }
+  var straordAttivo = document.getElementById('straordCheck').checked;
+  var straordDalle = straordAttivo ? document.getElementById('straordDalle').value : '';
+  var straordAlle = straordAttivo ? document.getElementById('straordAlle').value : '';
+  var straordMotivo = straordAttivo ? document.getElementById('straordMotivo').value.trim() : '';
+  if (straordAttivo && (!straordDalle || !straordAlle)) { toast('Compila Dalle e Alle dello straordinario', true); return; }
   try {
     var res = await fetch(URL_GS, {
       method: 'POST',
-      body: JSON.stringify({ idToken: idTokenCorrente, tipo: 'REGISTRA', data: data, turno: turnoSelezionato, note: note })
+      body: JSON.stringify({
+        idToken: idTokenCorrente, tipo: 'REGISTRA', data: data, turno: turnoSelezionato, note: note,
+        straordDalle: straordDalle, straordAlle: straordAlle, straordMotivo: straordMotivo
+      })
     });
     var d = await res.json();
     if (d.success) {
       toast('Turno salvato');
       document.getElementById('noteInput').value = '';
+      document.getElementById('straordCheck').checked = false;
+      document.getElementById('straordDalle').value = '';
+      document.getElementById('straordAlle').value = '';
+      document.getElementById('straordMotivo').value = '';
+      toggleStraord();
       turnoSelezionato = null;
       document.querySelectorAll('#turnoGrid .btn-turno').forEach(function(b){ b.classList.remove('active'); });
     } else {
@@ -210,11 +269,17 @@ async function caricaStorico() {
       var parts = g.data.split('-');
       var dataObj = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
       var isRiposo = g.turno === 'RIPOSO';
+      var straordTxt = '';
+      if (g.straordDalle && g.straordAlle) {
+        var totStr = (parseFloat(g.straordAlle) - parseFloat(g.straordDalle)).toFixed(2).replace(/\.?0+$/,'');
+        straordTxt = '<div class="giorno-note" style="color:var(--yellow);">⏱️ Straordinario ' + g.straordDalle + '–' + g.straordAlle + ' (' + totStr + ' ore)' + (g.straordMotivo ? ' — ' + g.straordMotivo : '') + '</div>';
+      }
       html += '<div class="giorno-riga">' +
         '<div class="giorno-data">' + parts[2] + '/' + parts[1] + ' <span style="opacity:.6;">' + nomeGiorno(dataObj.getDay()) + '</span></div>' +
         '<div style="flex:1;">' +
-          '<div class="giorno-turno' + (isRiposo?' riposo':'') + '">' + (g.turno === 'RIPOSO' ? 'Riposo' : g.turno.replace('/', ' – ')) + '</div>' +
+          '<div class="giorno-turno' + (isRiposo?' riposo':'') + '">' + (g.turno === 'RIPOSO' ? 'Riposo' : g.turno.replace('/', ' – ')) + (isFestivo(g.data) && !isRiposo ? ' <span style="color:var(--yellow);font-size:10px;">(FESTIVO)</span>' : '') + '</div>' +
           (g.note ? '<div class="giorno-note">' + g.note + '</div>' : '') +
+          straordTxt +
         '</div>' +
         '<button class="giorno-del" onclick="eliminaGiorno(\'' + g.data + '\')">🗑️</button>' +
       '</div>';
@@ -271,7 +336,7 @@ async function generaRapporto() {
     giorni.forEach(function(g){ mappaGiorni[g.data] = g; });
 
     var rows = '';
-    var oreTotali = 0;
+    var totDiurno = 0, totFestivo = 0, totStraord = 0;
     for (var gg = 1; gg <= giorniInMese; gg++) {
       var dstr = viewYearStampa + '-' + pad(viewMonthStampa) + '-' + pad(gg);
       var dataObj = new Date(viewYearStampa, viewMonthStampa-1, gg);
@@ -279,38 +344,63 @@ async function generaRapporto() {
       var turno = g ? g.turno : '';
       var note = g ? (g.note||'') : '';
       var isRiposo = turno === 'RIPOSO';
-      var dalle = '', alle = '', ore = '';
+      var festivo = isFestivo(dstr);
+      var dalle = '', alle = '', oreDiurne = '', oreFestive = '';
       if (turno && !isRiposo) {
         var m = turno.match(/(\d+)\/(\d+)/);
-        if (m) { dalle = m[1]; alle = m[2]; ore = calcolaOreDiurne(turno); oreTotali += ore; }
+        if (m) {
+          dalle = m[1]; alle = m[2];
+          var ore = calcolaOreDiurne(turno);
+          if (festivo) { oreFestive = ore; totFestivo += ore; }
+          else { oreDiurne = ore; totDiurno += ore; }
+        }
       }
+      var straDalle = '', straAlle = '', straTot = '';
+      if (g && g.straordDalle && g.straordAlle) {
+        straDalle = g.straordDalle; straAlle = g.straordAlle;
+        straTot = (parseFloat(g.straordAlle) - parseFloat(g.straordDalle));
+        totStraord += straTot;
+        straTot = straTot.toFixed(2).replace(/\.?0+$/,'');
+      }
+      var noteFinale = isRiposo ? 'RIPOSO' : note + (g && g.straordMotivo ? (note ? ' — ' : '') + g.straordMotivo : '');
       rows += '<tr>' +
         '<td>' + gg + '</td>' +
         '<td>' + nomeGiorno(dataObj.getDay()) + '</td>' +
         '<td>' + dalle + '</td>' +
         '<td>' + alle + '</td>' +
-        '<td>' + ore + '</td>' +
-        '<td style="text-align:left;">' + (isRiposo ? 'RIPOSO' : note) + '</td>' +
+        '<td>' + oreDiurne + '</td>' +
+        '<td>' + oreFestive + '</td>' +
+        '<td>' + straDalle + '</td>' +
+        '<td>' + straAlle + '</td>' +
+        '<td>' + straTot + '</td>' +
+        '<td style="text-align:left;">' + noteFinale + '</td>' +
       '</tr>';
     }
+    var oreDiurneTxt = totDiurno.toFixed(2).replace(/\.?0+$/,'');
+    var oreFestiveTxt = totFestivo.toFixed(2).replace(/\.?0+$/,'');
+    var oreStraordTxt = totStraord.toFixed(2).replace(/\.?0+$/,'');
 
     var html = '<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Rapporto ' + meseLabel + '</title>' +
-      '<style>@page{margin:15mm;size:A4 portrait;}body{font-family:Arial,sans-serif;font-size:11px;color:#000;margin:0;}' +
+      '<style>@page{margin:12mm;size:A4 landscape;}body{font-family:Arial,sans-serif;font-size:10px;color:#000;margin:0;}' +
       '.intest{text-align:center;border-bottom:2px solid #000;padding-bottom:8px;margin-bottom:10px;}' +
       '.titolo{font-size:16px;font-weight:bold;letter-spacing:1px;}' +
       '.info{margin:8px 0;font-size:12px;}.info b{display:inline-block;min-width:110px;}' +
       'table{width:100%;border-collapse:collapse;margin-top:8px;}' +
-      'th{background:#e0e0e0;font-size:10px;font-weight:bold;padding:5px 3px;border:1px solid #000;}' +
-      'td{font-size:10px;padding:4px 3px;border:1px solid #000;text-align:center;}' +
+      'th{background:#e0e0e0;font-size:9px;font-weight:bold;padding:4px 2px;border:1px solid #000;}' +
+      'td{font-size:9px;padding:3px 2px;border:1px solid #000;text-align:center;}' +
       'tfoot td{font-weight:bold;background:#f0f0f0;}' +
       '.no-print{margin-top:20px;text-align:center;}@media print{.no-print{display:none;}}' +
       '</style></head><body>' +
       '<div class="intest"><div class="titolo">RAPPORTO FINE MESE — TURNI</div><div style="font-size:11px;color:#333;">Provincia di Cremona — Polizia Locale</div></div>' +
       '<div class="info"><b>Dipendente</b> ' + (operatoreCorrente||'') + '</div>' +
       '<div class="info"><b>Periodo</b> ' + meseLabel + '</div>' +
-      '<table><thead><tr><th>Data</th><th>Giorno</th><th>Dalle</th><th>Alle</th><th>Ore</th><th style="text-align:left;">Note</th></tr></thead>' +
+      '<table><thead><tr>' +
+        '<th rowspan="2">Data</th><th rowspan="2">Giorno</th>' +
+        '<th colspan="2">Turno</th><th rowspan="2">Diurno</th><th rowspan="2">Festivo</th>' +
+        '<th colspan="3">Straordinario</th><th rowspan="2" style="text-align:left;">Note</th>' +
+      '</tr><tr><th>Dalle</th><th>Alle</th><th>Dalle</th><th>Alle</th><th>Tot.</th></tr></thead>' +
       '<tbody>' + rows + '</tbody>' +
-      '<tfoot><tr><td colspan="4">TOTALE ORE DIURNE</td><td>' + oreTotali + '</td><td></td></tr></tfoot></table>' +
+      '<tfoot><tr><td colspan="4">TOTALI</td><td>' + oreDiurneTxt + '</td><td>' + oreFestiveTxt + '</td><td colspan="2"></td><td>' + oreStraordTxt + '</td><td></td></tr></tfoot></table>' +
       '<div style="display:flex;justify-content:space-between;margin-top:40px;font-size:11px;">' +
       '<div>___________________<br>Il Dipendente</div><div>___________________<br>Il Comandante</div></div>' +
       '<div class="no-print"><button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#1a1a2e;color:#ffeb3b;border:none;border-radius:8px;margin-top:20px;">🖨️ Stampa / Salva PDF</button></div>' +
