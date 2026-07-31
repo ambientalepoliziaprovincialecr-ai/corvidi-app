@@ -1277,65 +1277,9 @@ async function generaStampaKm(){
     });
     for(var i=righe.length;i<30;i++) rows+='<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>';
     var html='<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Scheda Viaggio - '+targa+' - '+meseLabel+'</title><style>@page{margin:12mm;size:A4 portrait;}body{font-family:Arial,sans-serif;font-size:10px;color:#000;margin:0;padding:0;}.header{text-align:center;margin-bottom:8px;border-bottom:2px solid #000;padding-bottom:6px;}.titolo{font-size:16px;font-weight:bold;letter-spacing:1px;}.sub{font-size:14px;font-weight:bold;}.prov{font-size:11px;text-align:left;margin-bottom:4px;}.mese-targa{display:flex;gap:40px;margin:6px 0;font-size:11px;}.mese-targa strong{min-width:100px;border-bottom:1px solid #000;display:inline-block;}table{width:100%;border-collapse:collapse;margin-top:6px;}th{background:#e0e0e0;font-size:9px;font-weight:bold;text-align:center;padding:4px 2px;border:1px solid #000;}td{font-size:9px;padding:2px 3px;border:1px solid #000;height:13px;}td:nth-child(1){width:11%;text-align:center;}td:nth-child(2){width:28%;}td:nth-child(3){width:9%;text-align:center;}td:nth-child(4){width:13%;text-align:right;}td:nth-child(5){width:13%;text-align:right;}td:nth-child(6){width:13%;text-align:right;}.no-print{margin-top:20px;text-align:center;}@media print{.no-print{display:none;}}</style></head><body><div class="header"><div class="titolo">POLIZIA LOCALE</div><div class="sub">SCHEDA VIAGGIO MENSILE</div></div><div class="prov">Provincia di Cremona</div><div class="mese-targa"><div>MESE &nbsp;<strong>'+meseLabel+'</strong></div><div>TARGA VEICOLO &nbsp;<strong>'+targa+'</strong></div></div><table><thead><tr><th>DATA</th><th>PERSONE A BORDO</th><th>TURNO</th><th>KM INIZIO</th><th>KM FINE</th><th>KM PERCORSI</th></tr></thead><tbody>'+rows+'</tbody></table><div class="no-print"><button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#1a1a2e;color:#ffeb3b;border:none;border-radius:8px;">🖨️ Stampa / Salva PDF</button><button onclick="window.close()" style="margin-left:12px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Chiudi</button></div></body></html>';
-    var win=window.open('','_blank');win.document.write(html);win.document.close();
+    var win=window.open('','_blank');if(!win){toast('Il browser ha bloccato la finestra di stampa: consenti i popup per questo sito e riprova',true);return;}win.document.write(html);win.document.close();
     document.getElementById('anteprimaKm').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">✅ '+righe.length+' righe per '+targa+' in '+meseLabel+'</div>';
   }catch(e){document.getElementById('anteprimaKm').innerHTML='<div style="text-align:center;color:#e74c3c;padding:16px;">⚠️ Errore: '+e.message+'</div>';}
-}
-
-async function generaStampaRif(){
-  var mese=document.getElementById('rifStampaMese').value;
-  var targa=document.getElementById('rifStampaTarga').value;
-  if(!mese||!targa){toast('Seleziona mese e targa',true);return;}
-  var parts=mese.split('-'); var anno=parseInt(parts[0]),meseNum=parseInt(parts[1]);
-  var meseLabel=nomeMese(meseNum-1)+' '+anno;
-  document.getElementById('anteprimaRif').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento...</div>';
-  try{
-    var res=await fetch(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));
-    var d=await res.json();
-    var righe=(d.rif||[]).filter(function(r){
-      if(!r.dataOra)return false;
-      var p=r.dataOra.split('/');if(p.length<3)return false;
-      var m=parseInt(p[1]),a=parseInt(p[2]);if(a<100)a+=2000;
-      return m===meseNum&&a===anno&&r.targa&&r.targa.toUpperCase()===targa.toUpperCase();
-    });
-    if(!righe.length){document.getElementById('anteprimaRif').innerHTML='<div style="text-align:center;color:#e74c3c;padding:16px;">⚠️ Nessun rifornimento per '+targa+' in '+meseLabel+'</div>';return;}
-    
-    var carburante=righe[0].carburante||'BENZINA';
-    var isBenzina=carburante.toUpperCase().includes('BENZ');
-    // "Km fine mese" deve venire dall'ultima registrazione KM (fine
-    // turno) per quella targa in quel mese, non dall'ultimo
-    // rifornimento — sono due cose diverse.
-    var kmRegistrazioni=(d.km||[]).filter(function(r){
-      if(!r.dataOra)return false;
-      var p=r.dataOra.split('/');if(p.length<3)return false;
-      var m=parseInt(p[1]),a=parseInt(p[2]);if(a<100)a+=2000;
-      return m===meseNum&&a===anno&&r.targa&&r.targa.toUpperCase()===targa.toUpperCase();
-    }).sort(function(x,y){return parseTsIt(x.dataOra)-parseTsIt(y.dataOra);});
-    var kmFineMese = kmRegistrazioni.length ? (parseFloat(kmRegistrazioni[kmRegistrazioni.length-1].kmFinali)||0) : (parseFloat(righe[righe.length-1].km)||0);
-    var kmInizioMese=parseFloat(righe[0].km)||0;
-    var kmTotali=kmFineMese-kmInizioMese;
-    
-    var rows='';
-    righe.forEach(function(r){
-      // Data senza orario
-      var dataStr=r.dataOra?r.dataOra.split(',')[0].trim():'';
-      rows+='<tr><td>'+dataStr+'</td><td>'+(r.importo||'')+'</td><td>'+(r.km||'')+'</td><td>'+(r.costoLitro||'')+'</td></tr>';
-    });
-    for(var i=righe.length;i<15;i++) rows+='<tr><td>&nbsp;</td><td></td><td></td><td></td></tr>';
-    
-    var html='<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Foglio Carburante - '+targa+' - '+meseLabel+'</title><style>@page{margin:15mm;size:A4 portrait;}body{font-family:Arial,sans-serif;font-size:11px;color:#000;max-width:420px;margin:0 auto;padding:0;}.header{display:flex;align-items:center;gap:16px;margin-bottom:10px;border-bottom:2px solid #000;padding-bottom:8px;}.logo-txt{font-size:28px;}.titolo-h{font-size:18px;font-weight:bold;letter-spacing:1px;}.subtitle{font-size:10px;color:#333;margin-top:2px;}.info-block{margin:8px 0;font-size:11px;}.info-row{display:flex;gap:8px;align-items:baseline;margin-bottom:4px;}.info-row span{font-size:9px;}.info-row strong{min-width:120px;border-bottom:1px solid #000;display:inline-block;font-size:12px;}.carb-row{display:flex;gap:24px;margin:8px 0;}.chk{width:12px;height:12px;border:1px solid #000;display:inline-block;text-align:center;line-height:11px;font-size:10px;margin-right:4px;}table{width:100%;border-collapse:collapse;margin-top:6px;}th{background:#e0e0e0;font-size:10px;font-weight:bold;text-align:center;padding:4px 3px;border:1px solid #000;}td{font-size:10px;padding:3px 4px;border:1px solid #000;height:16px;text-align:right;}td:first-child{text-align:center;}.tot-table{width:100%;border-collapse:collapse;margin-top:10px;}.tot-table td{border:1px solid #000;padding:4px 8px;font-size:10px;}.tot-table td:first-child{font-weight:bold;background:#f0f0f0;width:55%;}.firma-table{width:100%;border-collapse:collapse;margin-top:4px;}.firma-table td{border:1px solid #000;padding:18px 8px 4px;font-size:10px;}.no-print{margin-top:20px;text-align:center;}@media print{.no-print{display:none;}}</style></head><body>'
-    +'<div class="header"><div class="logo-txt">🏛️</div><div><div class="titolo-h">FOGLIO CARBURANTE</div><div class="subtitle">Provincia di Cremona — POLIZIA LOCALE</div></div></div>'
-    +'<div class="info-block"><div class="info-row"><span>MESE</span>&nbsp;<strong>'+meseLabel+'</strong></div><div class="info-row"><span>TARGA</span>&nbsp;<strong>'+targa+'</strong></div></div>'
-    +'<div class="carb-row"><span><span class="chk">'+(isBenzina?'✓':'')+'</span>BENZINA</span><span><span class="chk">'+(!isBenzina?'✓':'')+'</span>GASOLIO</span></div>'
-    +'<table><thead><tr><th>DATA</th><th>IMPORTO</th><th>KM VEICOLO</th><th>COSTO AL LITRO</th></tr></thead><tbody>'+rows+'</tbody></table>'
-    +'<table class="tot-table"><tr><td>KM FINE MESE</td><td>'+kmFineMese+'</td></tr><tr><td>KM INIZIO MESE</td><td>'+kmInizioMese+'</td></tr><tr><td>KM PERCORSI MESE</td><td>'+Math.round(kmTotali)+'</td></tr></table>'
-    +'<table class="firma-table"><tr><td>Firma conducente</td><td>Firma responsabile</td></tr></table>'
-    +'<div class="no-print"><button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#1a1a2e;color:#ffeb3b;border:none;border-radius:8px;margin-top:20px;">🖨️ Stampa / Salva PDF</button><button onclick="window.close()" style="margin-left:12px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Chiudi</button></div>'
-    +'</body></html>';
-    
-    var win=window.open('','_blank');win.document.write(html);win.document.close();
-    document.getElementById('anteprimaRif').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">✅ '+righe.length+' rifornimenti per '+targa+' in '+meseLabel+'</div>';
-  }catch(e){document.getElementById('anteprimaRif').innerHTML='<div style="text-align:center;color:#e74c3c;padding:16px;">⚠️ Errore: '+e.message+'</div>';}
 }
 
 
@@ -1371,7 +1315,7 @@ async function generaStampaKm(){
     });
     for(var i=righe.length;i<30;i++) rows+='<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>';
     var html='<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Scheda Viaggio - '+targa+' - '+meseLabel+'</title><style>@page{margin:12mm;size:A4 portrait;}body{font-family:Arial,sans-serif;font-size:10px;color:#000;margin:0;padding:0;}.header{text-align:center;margin-bottom:8px;border-bottom:2px solid #000;padding-bottom:6px;}.titolo{font-size:16px;font-weight:bold;letter-spacing:1px;}.sub{font-size:14px;font-weight:bold;}.prov{font-size:11px;text-align:left;margin-bottom:4px;}.mese-targa{display:flex;gap:40px;margin:6px 0;font-size:11px;}.mese-targa strong{min-width:100px;border-bottom:1px solid #000;display:inline-block;}table{width:100%;border-collapse:collapse;margin-top:6px;}th{background:#e0e0e0;font-size:9px;font-weight:bold;text-align:center;padding:4px 2px;border:1px solid #000;}td{font-size:9px;padding:2px 3px;border:1px solid #000;height:13px;}td:nth-child(1){width:11%;text-align:center;}td:nth-child(2){width:28%;}td:nth-child(3){width:9%;text-align:center;}td:nth-child(4){width:13%;text-align:right;}td:nth-child(5){width:13%;text-align:right;}td:nth-child(6){width:13%;text-align:right;}.no-print{margin-top:20px;text-align:center;}@media print{.no-print{display:none;}}</style></head><body><div class="header"><div class="titolo">POLIZIA LOCALE</div><div class="sub">SCHEDA VIAGGIO MENSILE</div></div><div class="prov">Provincia di Cremona</div><div class="mese-targa"><div>MESE &nbsp;<strong>'+meseLabel+'</strong></div><div>TARGA VEICOLO &nbsp;<strong>'+targa+'</strong></div></div><table><thead><tr><th>DATA</th><th>PERSONE A BORDO</th><th>TURNO</th><th>KM INIZIO</th><th>KM FINE</th><th>KM PERCORSI</th></tr></thead><tbody>'+rows+'</tbody></table><div class="no-print"><button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#1a1a2e;color:#ffeb3b;border:none;border-radius:8px;">🖨️ Stampa / Salva PDF</button><button onclick="window.close()" style="margin-left:12px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Chiudi</button></div></body></html>';
-    var win=window.open('','_blank');win.document.write(html);win.document.close();
+    var win=window.open('','_blank');if(!win){toast('Il browser ha bloccato la finestra di stampa: consenti i popup per questo sito e riprova',true);return;}win.document.write(html);win.document.close();
     document.getElementById('anteprimaKm').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">✅ '+righe.length+' righe per '+targa+' in '+meseLabel+'</div>';
   }catch(e){document.getElementById('anteprimaKm').innerHTML='<div style="text-align:center;color:#e74c3c;padding:16px;">⚠️ Errore: '+e.message+'</div>';}
 }
@@ -1403,12 +1347,12 @@ async function generaStampaRif(){
       return m===meseNum&&a===anno&&r.targa&&r.targa.toUpperCase()===targa.toUpperCase();
     }).sort(function(x,y){return parseTsIt(x.dataOra)-parseTsIt(y.dataOra);});
     var kmFineMese = kmRegistrazioni2.length ? (parseFloat(kmRegistrazioni2[kmRegistrazioni2.length-1].kmFinali)||0) : (parseFloat(righe[righe.length-1].km)||0);
-    var kmTotali=righe.reduce(function(s,r){return s+(parseFloat(r.kmPercorsi)||0);},0);
+    var kmTotali=kmFineMese-kmInizioMese;
     var rows='';
     righe.forEach(function(r){rows+='<tr><td>'+r.dataOra.split(',')[0]+'</td><td>'+(r.importo||'')+'</td><td>'+(r.km||'')+'</td><td>'+(r.costoLitro||'')+'</td></tr>';});
     for(var i=righe.length;i<15;i++) rows+='<tr><td>&nbsp;</td><td></td><td></td><td></td></tr>';
     var html='<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Foglio Carburante - '+targa+' - '+meseLabel+'</title><style>@page{margin:15mm;size:A4 portrait;}body{font-family:Arial,sans-serif;font-size:11px;color:#000;max-width:420px;margin:0 auto;padding:0;}.header{display:flex;align-items:center;gap:16px;margin-bottom:10px;border-bottom:2px solid #000;padding-bottom:8px;}.logo-txt{font-size:28px;}.titolo-h{font-size:18px;font-weight:bold;letter-spacing:1px;}.subtitle{font-size:10px;color:#333;margin-top:2px;}.info-block{margin:8px 0;font-size:11px;}.info-row{display:flex;gap:8px;align-items:baseline;margin-bottom:4px;}.info-row span{font-size:9px;}.info-row strong{min-width:120px;border-bottom:1px solid #000;display:inline-block;font-size:12px;}.carb-row{display:flex;gap:24px;margin:8px 0;}.chk{width:12px;height:12px;border:1px solid #000;display:inline-block;text-align:center;line-height:11px;font-size:10px;margin-right:4px;}table{width:100%;border-collapse:collapse;margin-top:6px;}th{background:#e0e0e0;font-size:10px;font-weight:bold;text-align:center;padding:4px 3px;border:1px solid #000;}td{font-size:10px;padding:3px 4px;border:1px solid #000;height:16px;text-align:right;}td:first-child{text-align:center;}.tot-table{width:100%;border-collapse:collapse;margin-top:10px;}.tot-table td{border:1px solid #000;padding:4px 8px;font-size:10px;}.tot-table td:first-child{font-weight:bold;background:#f0f0f0;width:55%;}.firma-table{width:100%;border-collapse:collapse;margin-top:4px;}.firma-table td{border:1px solid #000;padding:18px 8px 4px;font-size:10px;}.no-print{margin-top:20px;text-align:center;}@media print{.no-print{display:none;}}</style></head><body><div class="header"><div class="logo-txt">🏛️</div><div><div class="titolo-h">FOGLIO CARBURANTE</div><div class="subtitle">Provincia di Cremona — POLIZIA LOCALE</div></div></div><div class="info-block"><div class="info-row"><span>MESE</span>&nbsp;<strong>'+meseLabel+'</strong></div><div class="info-row"><span>TARGA</span>&nbsp;<strong>'+targa+'</strong></div></div><div class="carb-row"><span><span class="chk">'+(isBenzina?'✓':'')+'</span>BENZINA</span><span><span class="chk">'+(!isBenzina?'✓':'')+'</span>GASOLIO</span></div><table><thead><tr><th>DATA</th><th>IMPORTO</th><th>KM VEICOLO</th><th>COSTO AL LITRO</th></tr></thead><tbody>'+rows+'</tbody></table><table class="tot-table"><tr><td>KM FINE MESE</td><td>'+kmFineMese+'</td></tr><tr><td>KM INIZIO MESE</td><td>'+Math.round(kmInizioMese)+'</td></tr><tr><td>KM PERCORSI MESE</td><td>'+Math.round(kmTotali)+'</td></tr></table><table class="firma-table"><tr><td>Firma conducente</td><td>Firma responsabile</td></tr></table><div class="no-print"><button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#1a1a2e;color:#ffeb3b;border:none;border-radius:8px;margin-top:20px;">🖨️ Stampa / Salva PDF</button><button onclick="window.close()" style="margin-left:12px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Chiudi</button></div></body></html>';
-    var win=window.open('','_blank');win.document.write(html);win.document.close();
+    var win=window.open('','_blank');if(!win){toast('Il browser ha bloccato la finestra di stampa: consenti i popup per questo sito e riprova',true);return;}win.document.write(html);win.document.close();
     document.getElementById('anteprimaRif').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">✅ '+righe.length+' rifornimenti per '+targa+' in '+meseLabel+'</div>';
   }catch(e){document.getElementById('anteprimaRif').innerHTML='<div style="text-align:center;color:#e74c3c;padding:16px;">⚠️ Errore: '+e.message+'</div>';}
 }
@@ -1639,7 +1583,7 @@ async function generaStampaTutto(){
 
     var html='<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Report Flotta - '+meseLabel+'</title><style>'+css+'</style></head><body>'+bodyHtml+'<div class="no-print" style="margin-top:20px;text-align:center;"><button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#1a1a2e;color:#ffeb3b;border:none;border-radius:8px;">🖨️ Stampa / Salva PDF</button><button onclick="window.close()" style="margin-left:12px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Chiudi</button></div></body></html>';
 
-    var win=window.open('','_blank');win.document.write(html);win.document.close();
+    var win=window.open('','_blank');if(!win){toast('Il browser ha bloccato la finestra di stampa: consenti i popup per questo sito e riprova',true);return;}win.document.write(html);win.document.close();
     document.getElementById('anteprimaTutto').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">✅ '+targheList.length+' veicoli trovati — '+totPagine+' pagine totali per '+meseLabel+'</div>';
 
   }catch(e){
