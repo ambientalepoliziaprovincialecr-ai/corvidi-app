@@ -106,12 +106,12 @@ body{margin:0;background:var(--bg);color:#e8e8e8;font-family:Arial,Helvetica,san
         <div id="straordFields" style="display:none;margin-top:10px;">
           <div style="display:flex;gap:8px;">
             <div style="flex:1;">
-              <label class="form-label">Dalle (ore)</label>
-              <input type="number" step="0.01" class="form-input" id="straordDalle" placeholder="es. 19" oninput="aggiornaTotaleStraord()">
+              <label class="form-label">Dalle (orario)</label>
+              <input type="time" class="form-input" id="straordDalle" oninput="aggiornaTotaleStraord()">
             </div>
             <div style="flex:1;">
-              <label class="form-label">Alle (ore)</label>
-              <input type="number" step="0.01" class="form-input" id="straordAlle" placeholder="es. 20" oninput="aggiornaTotaleStraord()">
+              <label class="form-label">Alle (orario)</label>
+              <input type="time" class="form-input" id="straordAlle" oninput="aggiornaTotaleStraord()">
             </div>
           </div>
           <div style="text-align:center;color:var(--yellow);font-size:13px;margin-top:8px;" id="straordTotaleTxt">Totale: —</div>
@@ -192,12 +192,12 @@ function toggleStraord() {
 }
 
 function aggiornaTotaleStraord() {
-  var dalle = parseFloat(document.getElementById('straordDalle').value);
-  var alle = parseFloat(document.getElementById('straordAlle').value);
+  var dalle = document.getElementById('straordDalle').value;
+  var alle = document.getElementById('straordAlle').value;
   var box = document.getElementById('straordTotaleTxt');
-  if (isNaN(dalle) || isNaN(alle)) { box.textContent = 'Totale: —'; return; }
-  var tot = alle - dalle;
-  box.textContent = 'Totale straordinario: ' + tot.toFixed(2).replace(/\.?0+$/,'') + ' ore';
+  var min = calcolaDurataStraord(dalle, alle);
+  if (min === null) { box.textContent = 'Totale: —'; return; }
+  box.textContent = 'Totale straordinario: ' + formatMinutiHHMM(min) + ' (' + formatMinutiDecimale(min) + ' ore)';
 }
 
 // La domenica conta come festivo: le ore del turno normale vanno
@@ -207,6 +207,31 @@ function isFestivo(dataStr) {
   var p = dataStr.split('-');
   var d = new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
   return d.getDay() === 0;
+}
+
+// Calcolo reale (ore e minuti) per lo straordinario, non decimale.
+// Gestisce anche il caso di straordinario a cavallo di mezzanotte.
+function minutiDaOrario(hhmm) {
+  if (!hhmm) return null;
+  var parts = hhmm.split(':');
+  if (parts.length < 2) return null;
+  return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+}
+function calcolaDurataStraord(dalle, alle) {
+  var mDalle = minutiDaOrario(dalle), mAlle = minutiDaOrario(alle);
+  if (mDalle === null || mAlle === null) return null;
+  var diff = mAlle - mDalle;
+  if (diff < 0) diff += 24 * 60; // a cavallo di mezzanotte
+  return diff; // in minuti
+}
+function formatMinutiHHMM(min) {
+  if (min === null) return '';
+  var h = Math.floor(min / 60), m = min % 60;
+  return h + ':' + (m < 10 ? '0' + m : m);
+}
+function formatMinutiDecimale(min) {
+  if (min === null) return '';
+  return (min / 60).toFixed(2).replace(/\.?0+$/,'');
 }
 
 async function salvaTurno() {
@@ -271,8 +296,9 @@ async function caricaStorico() {
       var isRiposo = g.turno === 'RIPOSO';
       var straordTxt = '';
       if (g.straordDalle && g.straordAlle) {
-        var totStr = (parseFloat(g.straordAlle) - parseFloat(g.straordDalle)).toFixed(2).replace(/\.?0+$/,'');
-        straordTxt = '<div class="giorno-note" style="color:var(--yellow);">⏱️ Straordinario ' + g.straordDalle + '–' + g.straordAlle + ' (' + totStr + ' ore)' + (g.straordMotivo ? ' — ' + g.straordMotivo : '') + '</div>';
+        var minStr = calcolaDurataStraord(g.straordDalle, g.straordAlle);
+        var totStr = formatMinutiHHMM(minStr);
+        straordTxt = '<div class="giorno-note" style="color:var(--yellow);">⏱️ Straordinario ' + g.straordDalle + '–' + g.straordAlle + ' (' + totStr + ')' + (g.straordMotivo ? ' — ' + g.straordMotivo : '') + '</div>';
       }
       html += '<div class="giorno-riga">' +
         '<div class="giorno-data">' + parts[2] + '/' + parts[1] + ' <span style="opacity:.6;">' + nomeGiorno(dataObj.getDay()) + '</span></div>' +
@@ -336,7 +362,7 @@ async function generaRapporto() {
     giorni.forEach(function(g){ mappaGiorni[g.data] = g; });
 
     var rows = '';
-    var totDiurno = 0, totFestivo = 0, totStraord = 0;
+    var totDiurno = 0, totFestivo = 0, totStraordMin = 0;
     for (var gg = 1; gg <= giorniInMese; gg++) {
       var dstr = viewYearStampa + '-' + pad(viewMonthStampa) + '-' + pad(gg);
       var dataObj = new Date(viewYearStampa, viewMonthStampa-1, gg);
@@ -358,9 +384,9 @@ async function generaRapporto() {
       var straDalle = '', straAlle = '', straTot = '';
       if (g && g.straordDalle && g.straordAlle) {
         straDalle = g.straordDalle; straAlle = g.straordAlle;
-        straTot = (parseFloat(g.straordAlle) - parseFloat(g.straordDalle));
-        totStraord += straTot;
-        straTot = straTot.toFixed(2).replace(/\.?0+$/,'');
+        var minStra = calcolaDurataStraord(g.straordDalle, g.straordAlle);
+        totStraordMin += minStra;
+        straTot = formatMinutiHHMM(minStra);
       }
       var noteFinale = isRiposo ? 'RIPOSO' : note + (g && g.straordMotivo ? (note ? ' — ' : '') + g.straordMotivo : '');
       rows += '<tr>' +
@@ -378,7 +404,7 @@ async function generaRapporto() {
     }
     var oreDiurneTxt = totDiurno.toFixed(2).replace(/\.?0+$/,'');
     var oreFestiveTxt = totFestivo.toFixed(2).replace(/\.?0+$/,'');
-    var oreStraordTxt = totStraord.toFixed(2).replace(/\.?0+$/,'');
+    var oreStraordTxt = formatMinutiHHMM(totStraordMin);
 
     var html = '<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Rapporto ' + meseLabel + '</title>' +
       '<style>@page{margin:12mm;size:A4 landscape;}body{font-family:Arial,sans-serif;font-size:10px;color:#000;margin:0;}' +
