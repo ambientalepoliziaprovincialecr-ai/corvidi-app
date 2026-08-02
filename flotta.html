@@ -48,9 +48,11 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
 .form-header-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;line-height:1.1;}
 .form-header-title span{display:block;font-family:'Barlow',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.35);font-weight:300;}
 .form-group{margin-bottom:13px;}
-.form-label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.45);margin-bottom:4px;}
+.form-label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.75);margin-bottom:5px;font-weight:600;}
 .form-label .req{color:#ffeb3b;}
-.form-input,.form-select,.form-textarea{width:100%;background:var(--grigio);border:1px solid var(--bordo);border-radius:8px;color:var(--crema);font-family:'Barlow',sans-serif;font-size:15px;padding:10px 12px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--grigio);border:1px solid var(--bordo);border-radius:8px;color:var(--crema);font-family:'Barlow',sans-serif;font-size:17px;font-weight:500;padding:12px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
+.form-input::placeholder,.form-textarea::placeholder{color:rgba(255,235,59,0.55);opacity:1;}
+.form-select{color:var(--crema);}
 .form-input:focus,.form-select:focus{border-color:#ffeb3b;}
 .form-select option{background:#0D1B2E;}
 .form-textarea{resize:none;height:70px;}
@@ -63,8 +65,8 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
 input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 /* AGENTI */
 .agenti-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;}
-.agente-btn{padding:9px 6px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.45);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;text-align:center;}
-.agente-btn.sel{background:rgba(245,166,35,0.2);border-color:#ffeb3b;color:#ffeb3b;}
+.agente-btn{padding:11px 6px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:600;letter-spacing:1px;cursor:pointer;text-align:center;}
+.agente-btn.sel{background:rgba(245,166,35,0.25);border-color:#ffeb3b;color:#ffeb3b;}
 .agenti-manager{background:rgba(255,255,255,0.04);border:1px solid var(--bordo);border-radius:8px;padding:10px;}
 .agenti-manager-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.4);margin-bottom:8px;}
 .agenti-add-row{display:flex;gap:8px;}
@@ -78,7 +80,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 .btn-submit.km{background:linear-gradient(135deg,#1a3a5c,var(--oro));color:#0d1b2e;font-weight:bold;}
 .btn-submit.rif{background:linear-gradient(135deg,#2d5a1a,var(--oro));color:#0d1b2e;font-weight:bold;}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.tab-btn{padding:10px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.4);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;}
+.tab-btn{padding:10px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.7);font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;}
 .tab-btn.active{background:rgba(245,166,35,0.12);border-color:#ffeb3b;color:#ffeb3b;}
 .filter-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
 .record-card{background:var(--grigio);border:1px solid var(--bordo);border-radius:10px;padding:12px;margin-bottom:8px;}
