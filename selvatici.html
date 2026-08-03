@@ -1513,7 +1513,19 @@ async function eliminaUltimoInserimento(tipo){
     var lista = tipo === 'CRAS' ? (d.cras || []) : (d.zoo || []);
     if (!lista.length) { toast('Nessuna pratica ' + etichetta + ' da eliminare', true); return; }
 
-    var ultima = lista[lista.length - 1];
+    // L'ordine delle righe nel foglio non sempre coincide con
+    // l'ordine dei numeri pratica (bozze inviate in ritardo,
+    // problemi di rete...) — cerchiamo quindi il numero PIÙ ALTO,
+    // non semplicemente l'ultima riga scritta.
+    function numeroDiPratica(np){
+      var m = (np || '').toString().match(/(\d+)\s*$/);
+      return m ? parseInt(m[1]) : -1;
+    }
+    var ultima = lista[0];
+    lista.forEach(function(r){
+      if (numeroDiPratica(r.numeroPratica) > numeroDiPratica(ultima.numeroPratica)) ultima = r;
+    });
+
     var conferma = confirm(
       '⚠️ ELIMINA ULTIMO INSERIMENTO (' + etichetta + ')\n\n' +
       'Pratica: ' + (ultima.numeroPratica || '—') + '\n' +
@@ -1541,8 +1553,9 @@ async function eliminaUltimoInserimento(tipo){
     }
     if (ok) {
       toast('🗑️ Pratica ' + (ultima.numeroPratica || '') + ' eliminata');
-      if (tipo === 'CRAS') allRecords.cras = lista.slice(0, -1);
-      else allRecords.zoo = lista.slice(0, -1);
+      var listaSenzaUltima = lista.filter(function(r){ return r.numeroPratica !== ultima.numeroPratica; });
+      if (tipo === 'CRAS') allRecords.cras = listaSenzaUltima;
+      else allRecords.zoo = listaSenzaUltima;
     }
   } catch(e) {
     toast('Errore durante l\'eliminazione', true);
