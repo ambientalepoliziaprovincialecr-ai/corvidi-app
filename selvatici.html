@@ -436,6 +436,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   <div class="form-header">
     <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
     <div class="form-header-title"><span>Nuova registrazione</span>Istituto Zooprofilassi</div>
+    <button class="btn-back" style="background:rgba(231,76,60,0.15);border-color:rgba(231,76,60,0.4);color:#f87171;margin-left:auto;" onclick="eliminaUltimoInserimento(&#39;ZOO&#39;)" title="Elimina ultimo inserimento">🗑️</button>
   </div>
   <div class="form-group">
     <label class="form-label">Data e ora <span class="req">*</span></label>
@@ -517,6 +518,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   <div class="form-header">
     <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
     <div class="form-header-title"><span>Nuova registrazione</span>CRAS</div>
+    <button class="btn-back" style="background:rgba(231,76,60,0.15);border-color:rgba(231,76,60,0.4);color:#f87171;margin-left:auto;" onclick="eliminaUltimoInserimento(&#39;CRAS&#39;)" title="Elimina ultimo inserimento">🗑️</button>
   </div>
   <div class="form-group">
     <label class="form-label">Data e ora <span class="req">*</span></label>
@@ -1494,6 +1496,57 @@ async function loadStorico(){
   try{var res=await fetch(URL_GS+'?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));var d=await res.json();
     allRecords.zoo=d.zoo||[];allRecords.cras=d.cras||[];renderRecords(storicoTab);}
   catch(e){document.getElementById('recordsList').innerHTML='<div class="empty-state"><div>⚠️</div>Errore</div>';}
+}
+
+// ============================================================
+// ELIMINA ULTIMO INSERIMENTO — bottone 🗑️ nell'intestazione dei
+// form CRAS e IZP. Recupera sempre dati freschi dal foglio (non
+// la cache locale) per essere sicuri che sia davvero l'ultima
+// pratica inserita, poi chiede conferma con i dettagli prima di
+// cancellarla per sempre.
+// ============================================================
+async function eliminaUltimoInserimento(tipo){
+  var etichetta = tipo === 'CRAS' ? 'CRAS' : 'IZP';
+  try {
+    var res = await fetch(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));
+    var d = await res.json();
+    var lista = tipo === 'CRAS' ? (d.cras || []) : (d.zoo || []);
+    if (!lista.length) { toast('Nessuna pratica ' + etichetta + ' da eliminare', true); return; }
+
+    var ultima = lista[lista.length - 1];
+    var conferma = confirm(
+      '⚠️ ELIMINA ULTIMO INSERIMENTO (' + etichetta + ')\n\n' +
+      'Pratica: ' + (ultima.numeroPratica || '—') + '\n' +
+      'Data: ' + (ultima.dataOra || '—') + '\n' +
+      'Animale: ' + (ultima.animale || '—') + '\n' +
+      'Agente: ' + (ultima.agente || '—') + '\n\n' +
+      'Questa operazione NON si può annullare. Confermi di voler eliminare questa pratica?'
+    );
+    if (!conferma) return;
+
+    var ok = false;
+    try {
+      loading(true);
+      var resDel = await fetch(URL_GS, {
+        method: 'POST',
+        body: JSON.stringify({ idToken: idTokenCorrente, tipo: 'ELIMINA_ULTIMO', tipoPratica: tipo, numeroPratica: ultima.numeroPratica })
+      });
+      var dDel = await resDel.json();
+      ok = dDel.status === 'ok';
+      if (!ok) toast('Errore: ' + (dDel.message || '?'), true);
+    } catch(err) {
+      toast('Errore di connessione', true);
+    } finally {
+      loading(false);
+    }
+    if (ok) {
+      toast('🗑️ Pratica ' + (ultima.numeroPratica || '') + ' eliminata');
+      if (tipo === 'CRAS') allRecords.cras = lista.slice(0, -1);
+      else allRecords.zoo = lista.slice(0, -1);
+    }
+  } catch(e) {
+    toast('Errore durante l\'eliminazione', true);
+  }
 }
 
 function switchTab(tab){
