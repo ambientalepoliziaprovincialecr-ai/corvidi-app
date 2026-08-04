@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <!-- saved from url=(0075)https://ambientalepoliziaprovincialecr-ai.github.io/corvidi-app/flotta.html -->
 <html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="color-scheme" content="light">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0D1B2E">
@@ -1117,7 +1118,9 @@ function renderStorico() {
   var el = document.getElementById('storicoList');
   var lista = storicoTab === 'km' ? datiKm : datiRif;
   if (targa) lista = lista.filter(function(r) { return r.targa === targa; });
-  if (conducente) lista = lista.filter(function(r) { return r.conducente === conducente; });
+  if (conducente) lista = lista.filter(function(r) {
+    return (r.conducente || '').split(',').map(function(s){ return s.trim(); }).indexOf(conducente) !== -1;
+  });
   if (!lista.length) { el.innerHTML = '<div class="empty-state"><div>📂</div>Nessuna registrazione</div>'; return; }
   el.innerHTML = lista.slice().reverse().map(function(r) {
     if (storicoTab === 'km') {
