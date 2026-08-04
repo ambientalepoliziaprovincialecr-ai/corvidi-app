@@ -560,10 +560,10 @@ async function caricaTargheDalFoglio(){
       var firstOpt = sel.options[0];
       sel.innerHTML = '';
       sel.appendChild(firstOpt);
-      targhe.forEach(function(t){
+      targhe.forEach(function(t, i){
         var opt = document.createElement('option');
         opt.value = t;
-        opt.textContent = t;
+        opt.textContent = t + ' (AUTO ' + (i+1) + ')';
         sel.appendChild(opt);
       });
       if(val) sel.value = val;
@@ -578,10 +578,10 @@ async function caricaTargheDalFoglio(){
       var firstOpt = sel.options[0];
       sel.innerHTML = '';
       sel.appendChild(firstOpt);
-      TARGHE_DEFAULT.forEach(function(t){
+      TARGHE_DEFAULT.forEach(function(t, i){
         var opt = document.createElement('option');
         opt.value = t;
-        opt.textContent = t;
+        opt.textContent = t + ' (AUTO ' + (i+1) + ')';
         sel.appendChild(opt);
       });
     });
@@ -593,7 +593,7 @@ function renderSelectTarghe(selectId, withAll){
   if(!sel) return;
   var current = sel.value;
   sel.innerHTML = withAll ? '<option value="">Tutte le targhe</option>' : '<option value="">— Seleziona —</option>';
-  targhe.forEach(function(t){ sel.innerHTML += '<option'+(t===current?' selected':'')+'>'+t+'</option>'; });
+  targhe.forEach(function(t, i){ sel.innerHTML += '<option value="'+t+'"'+(t===current?' selected':'')+'>'+t+' (AUTO '+(i+1)+')</option>'; });
 }
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1mfferoe17zbeW0Pe_WLhe1GM3oNr00YEkMHOdF16fL4/edit';
 
