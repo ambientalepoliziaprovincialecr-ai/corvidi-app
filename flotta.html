@@ -53,7 +53,8 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
 .form-input,.form-select,.form-textarea{width:100%;background:#ffffff;border:3px solid #000000;border-radius:12px;color:#000000;font-family:'Barlow',sans-serif;font-size:20px;font-weight:700;padding:16px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;box-shadow:0 2px 0 rgba(0,0,0,0.5);}
 .form-input::placeholder,.form-textarea::placeholder{color:#000000;opacity:0.55;font-weight:700;}
 .form-input::-webkit-input-placeholder,.form-textarea::-webkit-input-placeholder{color:#000000;opacity:0.55;}
-.form-select{color:#000000;}
+.form-select{color:#000000;color-scheme:light;}
+.form-select option{background:#ffffff;color:#000000;}
 .form-input:focus,.form-select:focus{border-color:#ffeb3b;}
 .form-select option{background:#0D1B2E;}
 .form-textarea{resize:none;height:70px;}
@@ -399,8 +400,8 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <select class="form-select" id="filtraConducente" onchange="renderStorico()">
       <option value="">Tutti</option>
       <option>ARISI</option><option>BANDERA</option><option>BORRINI</option>
-      <option>CAMBIATI</option><option>COLLA</option><option>FUSARI</option>
-      <option>GUARNERI</option><option>RIZZI</option><option>TRENTAROSSI</option><option>VIVIANI</option>
+      <option>CAMBIATI</option><option>CHIODA</option><option>COLLA</option><option>FUSARI</option>
+      <option>GUARNERI</option><option>PREANI</option><option>RIZZI</option><option>TRENTAROSSI</option><option>VIVIANI</option>
     </select>
   </div>
   <div id="storicoList"><div class="empty-state"><div>📋</div>Caricamento...</div></div>
