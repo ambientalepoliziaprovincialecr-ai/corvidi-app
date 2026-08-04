@@ -333,7 +333,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <label class="form-label">Note</label>
     <textarea class="form-textarea" id="kmNote" placeholder="Destinazione, servizio..."></textarea>
   </div>
-  <button class="btn-submit km" onclick="submitKm()">🛣️ Salva Percorso</button>
+  <button class="btn-submit km" id="btnSalvaKm" onclick="submitKm()">🛣️ Salva Percorso</button>
 </div>
 
 <!-- RIFORNIMENTO -->
@@ -383,7 +383,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
       <option>Diesel</option><option>Benzina</option><option>GPL</option><option>Metano</option><option>Elettrico</option>
     </select>
   </div>
-  <button class="btn-submit rif" onclick="submitRif()">⛽ Salva Rifornimento</button>
+  <button class="btn-submit rif" id="btnSalvaRif" onclick="submitRif()">⛽ Salva Rifornimento</button>
 </div>
 
 <!-- STORICO -->
@@ -978,12 +978,22 @@ function calcolaLitri() {
 }
 
 async function submitKm() {
+  var btnSalva = document.getElementById('btnSalvaKm');
+  if (btnSalva.disabled) return; // blocca un secondo tocco mentre il primo è ancora in corso
+  btnSalva.disabled = true;
+  var testoOriginale = btnSalva.textContent;
+  btnSalva.textContent = '⏳ Salvataggio...';
+
   var dataOra = document.getElementById('kmDataOra').value;
   var targa = document.getElementById('kmTarga').value;
   var conducente = kmSel.join(', ');
   var km = document.getElementById('kmFinali').value;
   var note = document.getElementById('kmNote').value.trim();
-  if (!dataOra || !targa || !conducente || !km) { toast('Seleziona almeno un conducente e compila tutti i campi', true); return; }
+  if (!dataOra || !targa || !conducente || !km) {
+    toast('Seleziona almeno un conducente e compila tutti i campi', true);
+    btnSalva.disabled = false; btnSalva.textContent = testoOriginale;
+    return;
+  }
 
   // Controllo preventivo: avvisa se il km inserito implica un
   // percorso anomalo (oltre 300 km rispetto all'ultima registrazione
@@ -1010,7 +1020,7 @@ async function submitKm() {
           'Se sei sicuro che targa e km siano corretti, premi OK per registrare comunque.\n' +
           'Altrimenti premi Annulla e ricontrolla la targa selezionata.'
         );
-        if (!confermatoNegativo) { return; }
+        if (!confermatoNegativo) { btnSalva.disabled = false; btnSalva.textContent = testoOriginale; return; }
       } else if (deltaOggi > SOGLIA_AVVISO_KM) {
         var confermato = confirm(
           '⚠️ ATTENZIONE\n\n' +
@@ -1020,7 +1030,7 @@ async function submitKm() {
           'Se hai fatto davvero un percorso lungo, premi OK per confermare.\n' +
           'Se pensi di aver digitato un numero sbagliato, premi Annulla e ricontrolla il contachilometri.'
         );
-        if (!confermato) { return; }
+        if (!confermato) { btnSalva.disabled = false; btnSalva.textContent = testoOriginale; return; }
       }
     }
   } catch(e) {
@@ -1042,15 +1052,26 @@ async function submitKm() {
     document.getElementById(id).className = 'btn-turno';
   });
   kmSel = [];
+  btnSalva.disabled = false; btnSalva.textContent = testoOriginale;
   vai('screenHome');
 }
 
 async function submitRif() {
+  var btnSalvaR = document.getElementById('btnSalvaRif');
+  if (btnSalvaR.disabled) return;
+  btnSalvaR.disabled = true;
+  var testoOrigR = btnSalvaR.textContent;
+  btnSalvaR.textContent = '⏳ Salvataggio...';
+
   var dataOra = document.getElementById('rifDataOra').value;
   var targa = document.getElementById('rifTarga').value;
   var conducente = rifSel;
   var carburante = document.getElementById('rifCarburante').value;
-  if (!dataOra || !targa || !conducente || !carburante) { toast('Seleziona conducente e compila tutti i campi', true); return; }
+  if (!dataOra || !targa || !conducente || !carburante) {
+    toast('Seleziona conducente e compila tutti i campi', true);
+    btnSalvaR.disabled = false; btnSalvaR.textContent = testoOrigR;
+    return;
+  }
   var rifCosto = (document.getElementById('rifCosto').value || '').replace(',','.');
   var rifImporto = (document.getElementById('rifImporto').value || '').replace(',','.');
   var rifKm = document.getElementById('rifKm').value || '';
@@ -1065,6 +1086,7 @@ async function submitRif() {
   document.getElementById('rifDataOra').value = '';
   document.getElementById('calcBox').style.display = 'none';
   rifSel = '';
+  btnSalvaR.disabled = false; btnSalvaR.textContent = testoOrigR;
   vai('screenHome');
 }
 
