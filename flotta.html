@@ -1392,11 +1392,15 @@ async function generaStampaRif(){
 //  GESTIONE TARGHE VEICOLI
 // ============================================================
 function apriGestioneTarghe(){
-  document.getElementById('pwdTarghe').value='';
-  document.getElementById('errTarghe').textContent='';
-  document.getElementById('targhePwdSection').style.display='block';
-  document.getElementById('targheManagerSection').style.display='none';
-  document.getElementById('modalTarghe').classList.add('show');
+  try {
+    document.getElementById('pwdTarghe').value='';
+    document.getElementById('errTarghe').textContent='';
+    document.getElementById('targhePwdSection').style.display='block';
+    document.getElementById('targheManagerSection').style.display='none';
+    document.getElementById('modalTarghe').classList.add('show');
+  } catch(e) {
+    toast('Errore apertura Gestisci veicoli: ' + e.message, true);
+  }
 }
 function chiudiModalTarghe(){ document.getElementById('modalTarghe').classList.remove('show'); }
 function verificaPasswordTarghe(){
