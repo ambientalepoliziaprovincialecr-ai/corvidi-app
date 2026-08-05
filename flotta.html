@@ -157,7 +157,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div class="loading-text">Salvataggio...</div></div>
 <div class="toast" id="toast">👤 Benvenuto, BORRINI</div>
 
-<div class="modal-overlay" id="modalSheet">
+<div class="modal-overlay" id="modalSheet" style="display:none;">
   <div class="modal-box">
     <div class="modal-title">🔒 Accesso protetto</div>
     <div class="modal-text">Inserisci la password per accedere al Google Sheet</div>
@@ -205,7 +205,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
 </div>
 
-<div class="modal-overlay" id="modalAgenti">
+<div class="modal-overlay" id="modalAgenti" style="display:none;">
   <div class="modal-box large">
     <div class="modal-title">🔒 Gestione Conducenti</div>
     <div class="modal-text">Inserisci la password per modificare i conducenti</div>
@@ -232,7 +232,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
 
 <!-- MODAL GESTIONE TARGHE -->
-<div class="modal-overlay" id="modalTarghe">
+<div class="modal-overlay" id="modalTarghe" style="display:none;">
   <div class="modal-box large">
     <div id="targhePwdSection">
       <div class="modal-title">🔒 Gestione Targhe</div>
@@ -1170,8 +1170,8 @@ async function loadConsumi() {
 }
 
 // GOOGLE SHEET
-function apriModalSheet() { document.getElementById('inputPassword').value = ''; document.getElementById('errPassword').textContent = ''; document.getElementById('modalSheet').classList.add('show'); }
-function chiudiModalSheet() { document.getElementById('modalSheet').classList.remove('show'); }
+function apriModalSheet() { document.getElementById('inputPassword').value = ''; document.getElementById('errPassword').textContent = ''; document.getElementById('modalSheet').style.display='flex'; }
+function chiudiModalSheet() { document.getElementById('modalSheet').style.display='none'; }
 function verificaPassword() {
   var pwd = document.getElementById('inputPassword').value;
   if (pwd === '12345611') { chiudiModalSheet(); window.open(SHEET_URL, '_blank'); }
@@ -1185,9 +1185,9 @@ function apriGestioneAgentiFlotta(){
   document.getElementById('errAgentiFlotta').textContent='';
   document.getElementById('agentiPwdSection').style.display='block';
   document.getElementById('agentiManagerSection').style.display='none';
-  document.getElementById('modalAgenti').classList.add('show');
+  document.getElementById('modalAgenti').style.display='flex';
 }
-function chiudiModalAgenti(){document.getElementById('modalAgenti').classList.remove('show');}
+function chiudiModalAgenti(){document.getElementById('modalAgenti').style.display='none';}
 function verificaAgentiFlotta(){
   if(document.getElementById('pwdAgentiFlotta').value==='12345611'){
     document.getElementById('agentiPwdSection').style.display='none';
@@ -1392,18 +1392,17 @@ async function generaStampaRif(){
 //  GESTIONE TARGHE VEICOLI
 // ============================================================
 function apriGestioneTarghe(){
-  alert('TEST: il bottone funziona, la funzione è partita');
   try {
     document.getElementById('pwdTarghe').value='';
     document.getElementById('errTarghe').textContent='';
     document.getElementById('targhePwdSection').style.display='block';
     document.getElementById('targheManagerSection').style.display='none';
-    document.getElementById('modalTarghe').classList.add('show');
+    document.getElementById('modalTarghe').style.display='flex';
   } catch(e) {
     toast('Errore apertura Gestisci veicoli: ' + e.message, true);
   }
 }
-function chiudiModalTarghe(){ document.getElementById('modalTarghe').classList.remove('show'); }
+function chiudiModalTarghe(){ document.getElementById('modalTarghe').style.display='none'; }
 function verificaPasswordTarghe(){
   if(document.getElementById('pwdTarghe').value==='12345611'){
     document.getElementById('targhePwdSection').style.display='none';
