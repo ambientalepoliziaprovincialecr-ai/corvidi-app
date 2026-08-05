@@ -1414,7 +1414,7 @@ if(document.getElementById('pwdTarghe')){document.getElementById('pwdTarghe').ad
 function renderTargheManager(){
   var list=document.getElementById('targheManagerList');
   list.innerHTML='';
-  targhe.forEach(function(t){
+  TARGHE_CORRENTI.forEach(function(t){
     var div=document.createElement('div');
     div.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:13px;';
     var sp=document.createElement('span');sp.textContent='🚗 '+t;
@@ -1422,14 +1422,10 @@ function renderTargheManager(){
     btn.textContent='Rimuovi';
     btn.style.cssText='background:rgba(231,76,60,0.2);border:1px solid rgba(231,76,60,0.4);border-radius:6px;color:#e74c3c;cursor:pointer;font-size:12px;padding:3px 8px;font-family:Barlow Condensed,sans-serif;';
     btn.onclick=(function(targa){return function(){
-      var idx=targhe.indexOf(targa);
-      if(idx>=0){ 
-      fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'TARGA_REMOVE', targa:targa, idToken:idTokenCorrente})}).catch(function(){});
-      targhe.splice(idx,1); salvaTarghe(); renderTargheManager();
-      ['kmTarga','rifTarga','filtraTarga','kmStampaTarga','rifStampaTarga'].forEach(function(id){
-        renderSelectTarghe(id, id==='filtraTarga');
-      });
-    }
+      fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'TARGA_REMOVE', targa:targa, idToken:idTokenCorrente})})
+        .then(function(){ return caricaTargheDalFoglio(); })
+        .then(function(){ renderTargheManager(); toast('✅ Targa '+targa+' rimossa'); })
+        .catch(function(){ toast('Errore di connessione', true); });
     };})(t);
     div.appendChild(sp);div.appendChild(btn);list.appendChild(div);
   });
@@ -1441,17 +1437,15 @@ function aggiungiTarga(){
   var val=input.value.trim().toUpperCase();
   errEl.textContent='';
   if(!val){ errEl.textContent='⚠️ Inserisci una targa'; return; }
-  if(targhe.indexOf(val)>=0){ errEl.textContent='⚠️ Targa già presente'; return; }
-  targhe.push(val);
-  targhe.sort();
-  salvaTarghe();
-  fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'TARGA_ADD', targa:val, idToken:idTokenCorrente})}).catch(function(){});
-  input.value='';
-  renderTargheManager();
-  ['kmTarga','rifTarga','filtraTarga','kmStampaTarga','rifStampaTarga'].forEach(function(id){
-    renderSelectTarghe(id, id==='filtraTarga');
-  });
-  toast('✅ Targa '+val+' aggiunta!');
+  if(TARGHE_CORRENTI.indexOf(val)>=0){ errEl.textContent='⚠️ Targa già presente'; return; }
+  fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'TARGA_ADD', targa:val, idToken:idTokenCorrente})})
+    .then(function(){ return caricaTargheDalFoglio(); })
+    .then(function(){
+      input.value='';
+      renderTargheManager();
+      toast('✅ Targa '+val+' aggiunta!');
+    })
+    .catch(function(){ errEl.textContent='⚠️ Errore di connessione'; });
 }
 document.addEventListener('DOMContentLoaded', function(){
   var nt=document.getElementById('nuovaTarga');
