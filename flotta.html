@@ -362,11 +362,11 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <input type="text" class="form-input" id="rifKm" placeholder="es. 45230" inputmode="numeric" pattern="[0-9]*" oninput="this.value=this.value.replace(/[^0-9]/g,&#39;&#39;)">
   </div>
   <div class="form-group">
-    <label class="form-label">Costo al litro (€)</label>
+    <label class="form-label">Costo al litro (€) <span class="req">*</span></label>
     <input type="text" class="form-input" id="rifCosto" placeholder="es. 1.789" inputmode="decimal" oninput="calcolaLitri()" onblur="this.value=this.value.replace(&#39;,&#39;,&#39;.&#39;);">
   </div>
   <div class="form-group">
-    <label class="form-label">Importo pagato (€)</label>
+    <label class="form-label">Importo pagato (€) <span class="req">*</span></label>
     <input type="text" class="form-input" id="rifImporto" placeholder="es. 65.50" inputmode="decimal" oninput="calcolaLitri()" onblur="this.value=this.value.replace(&#39;,&#39;,&#39;.&#39;);">
   </div>
   <div id="calcBox" style="display:none;background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);border-radius:8px;padding:12px;margin-bottom:13px;">
@@ -1073,8 +1073,20 @@ async function submitRif() {
     btnSalvaR.disabled = false; btnSalvaR.textContent = testoOrigR;
     return;
   }
-  var rifCosto = (document.getElementById('rifCosto').value || '').replace(',','.');
-  var rifImporto = (document.getElementById('rifImporto').value || '').replace(',','.');
+  var rifCosto = (document.getElementById('rifCosto').value || '').trim().replace(',','.');
+  var rifImporto = (document.getElementById('rifImporto').value || '').trim().replace(',','.');
+  var costoNum = parseFloat(rifCosto);
+  var importoNum = parseFloat(rifImporto);
+  if (!rifCosto || isNaN(costoNum) || costoNum <= 0) {
+    toast('Inserisci il costo al litro (obbligatorio)', true);
+    btnSalvaR.disabled = false; btnSalvaR.textContent = testoOrigR;
+    return;
+  }
+  if (!rifImporto || isNaN(importoNum) || importoNum <= 0) {
+    toast('Inserisci l\'importo pagato (obbligatorio)', true);
+    btnSalvaR.disabled = false; btnSalvaR.textContent = testoOrigR;
+    return;
+  }
   var rifKm = document.getElementById('rifKm').value || '';
   var litri = (rifCosto && rifImporto) ? (parseFloat(rifImporto) / parseFloat(rifCosto)).toFixed(2) : '';
   var kmL = (litri && rifKm && parseFloat(litri) > 0) ? (parseFloat(rifKm) / parseFloat(litri)).toFixed(1) : '';
