@@ -917,6 +917,14 @@ async function esegui(){
     cacciatori.sort(function(a,b){return a.cognome.localeCompare(b.cognome);});
     // Il backend salva automaticamente nel foglio Cacciatori tramite aggiornaOInserisciCacciatore
   }
+  if(pendingPayload.comune){
+    var comuneMaiuscolo=pendingPayload.comune.toUpperCase();
+    var giaPresente=aziende.some(function(a){return a.toUpperCase()===comuneMaiuscolo;});
+    if(!giaPresente){
+      aziende.push(pendingPayload.comune);
+      aziende.sort(function(a,b){return a.localeCompare(b);});
+    }
+  }
   loading(true);
   try{
     pendingPayload.idToken = idTokenCorrente;
