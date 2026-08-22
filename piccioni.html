@@ -66,6 +66,10 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
 .toggle-btn.active-q{background:rgba(245,166,35,0.2);border-color:var(--oro2);color:var(--oro2);}
 .piccioni-row{display:flex;align-items:center;gap:10px;}
 .piccioni-row .form-input{flex:1;font-size:24px;text-align:center;font-family:'Bebas Neue',sans-serif;color:var(--oro2);}
+.data-row{display:flex;gap:8px;align-items:stretch;}
+.data-row .form-input{flex:1;}
+.btn-oggi{padding:0 14px;background:rgba(245,166,35,0.15);border:1px solid rgba(245,166,35,0.4);border-radius:8px;color:var(--oro2);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;white-space:nowrap;}
+.btn-giorno{width:38px;background:var(--grigio);border:1px solid var(--bordo);border-radius:8px;color:var(--crema);font-size:18px;cursor:pointer;flex-shrink:0;}
 .piccioni-btn{width:48px;height:48px;border:1px solid var(--bordo);background:var(--grigio);border-radius:8px;color:var(--crema);font-size:26px;cursor:pointer;flex-shrink:0;}
 .btn-submit{width:100%;padding:16px;border:none;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;margin-top:20px;margin-bottom:30px;background:linear-gradient(135deg,#0f3460,#e94560);color:var(--crema);}
 .btn-submit:hover{opacity:0.85;}
@@ -270,7 +274,12 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
   </div>
   <div class="form-group">
     <label class="form-label">Data <span class="req">*</span></label>
-    <input type="date" class="form-input" id="fData">
+    <div class="data-row">
+      <button type="button" class="btn-giorno" onclick="spostaGiorno(-1)" title="Giorno precedente">‹</button>
+      <input type="text" class="form-input" id="fData" placeholder="GG/MM/AAAA" inputmode="numeric" maxlength="10" oninput="formattaDataInput(this)">
+      <button type="button" class="btn-giorno" onclick="spostaGiorno(1)" title="Giorno successivo">›</button>
+      <button type="button" class="btn-oggi" onclick="impostaOggi()">📅 Oggi</button>
+    </div>
   </div>
   <div class="form-group">
     <label class="form-label">Comune / Azienda <span class="req">*</span></label>
@@ -773,9 +782,51 @@ function vai(id){
 }
 
 function initForm(){
-  const oggi=new Date(),loc=new Date(oggi.getTime()-oggi.getTimezoneOffset()*60000);
-  document.getElementById('fData').value=loc.toISOString().slice(0,10);
+  var ultima=null;
+  try{ ultima=localStorage.getItem('piccioni_ultima_data'); }catch(e){}
+  document.getElementById('fData').value = ultima || formattaDataOggi();
   resetForm();
+}
+
+// Restituisce la data di oggi come stringa GG/MM/AAAA
+function formattaDataOggi(){
+  var oggi=new Date();
+  var gg=String(oggi.getDate()).padStart(2,'0');
+  var mm=String(oggi.getMonth()+1).padStart(2,'0');
+  return gg+'/'+mm+'/'+oggi.getFullYear();
+}
+
+// Inserisce automaticamente le barre mentre si digita (solo cifre),
+// tipo "16082026" -> "16/08/2026", senza calendario a comparsa.
+function formattaDataInput(el){
+  var cifre=el.value.replace(/\D/g,'').slice(0,8);
+  var out=cifre;
+  if(cifre.length>4) out=cifre.slice(0,2)+'/'+cifre.slice(2,4)+'/'+cifre.slice(4);
+  else if(cifre.length>2) out=cifre.slice(0,2)+'/'+cifre.slice(2);
+  el.value=out;
+}
+
+function impostaOggi(){
+  document.getElementById('fData').value=formattaDataOggi();
+}
+
+// Converte "GG/MM/AAAA" in un oggetto Date, o null se non valida
+function parseDataDigitale(s){
+  if(!s) return null;
+  var m=s.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(!m) return null;
+  var d=new Date(parseInt(m[3]),parseInt(m[2])-1,parseInt(m[1]));
+  if(isNaN(d.getTime())) return null;
+  return d;
+}
+
+function spostaGiorno(delta){
+  var el=document.getElementById('fData');
+  var d=parseDataDigitale(el.value) || new Date();
+  d.setDate(d.getDate()+delta);
+  var gg=String(d.getDate()).padStart(2,'0');
+  var mm=String(d.getMonth()+1).padStart(2,'0');
+  el.value=gg+'/'+mm+'/'+d.getFullYear();
 }
 
 function setQualifica(val){
@@ -885,11 +936,12 @@ function setSmaltimento(val){
 }
 
 async function submitForm(){
-  const data=document.getElementById('fData').value;
+  const data=document.getElementById('fData').value.trim();
   const comune=document.getElementById('fComune').value.trim();
   const cognome=document.getElementById('fCognome').value.trim();
   const piccioni=document.getElementById('fPiccioni').value;
   if(!data||!comune||!cognome||!qualifica){toast('Compila tutti i campi obbligatori',true);return;}
+  if(!parseDataDigitale(data)){toast('Data non valida: usa il formato GG/MM/AAAA',true);return;}
   let nome=document.getElementById('fNome').value.trim();
   let cf=document.getElementById('fCF').value.trim();
   let email=document.getElementById('fEmail').value.trim();
@@ -901,7 +953,7 @@ async function submitForm(){
   }
   const censiti=document.getElementById('fCensiti').value;
   const responsabile=document.getElementById('fResponsabile').value.trim();
-  pendingPayload={tipo:'PICCIONI',data:fmt(data),comune,cognome,nome,cf,email,qualifica,censiti:censiti===''?0:parseInt(censiti),piccioni:piccioni===''?'':parseInt(piccioni),responsabile,smaltimento:tipoSmaltimento,isNuovo:true,inseritoDa:operatoreCorrente};
+  pendingPayload={tipo:'PICCIONI',data,comune,cognome,nome,cf,email,qualifica,censiti:censiti===''?0:parseInt(censiti),piccioni:piccioni===''?'':parseInt(piccioni),responsabile,smaltimento:tipoSmaltimento,isNuovo:true,inseritoDa:operatoreCorrente};
   if(piccioni===''){document.getElementById('confirmPiccioni').classList.add('show');return;}
   await esegui();
 }
@@ -930,7 +982,10 @@ async function esegui(){
     pendingPayload.idToken = idTokenCorrente;
     const res=await fetch(URL_GS,{method:'POST',body:JSON.stringify(pendingPayload)});
     const d=await res.json();
-    if(d.status==='ok')toast('✅ Dati inviati!');
+    if(d.status==='ok'){
+      toast('✅ Dati inviati!');
+      try{ localStorage.setItem('piccioni_ultima_data', pendingPayload.data); }catch(e){}
+    }
     else toast('Errore: '+(d.message||'?'),true);
   }catch(e){toast('Errore di connessione',true);}
   finally{loading(false);}
