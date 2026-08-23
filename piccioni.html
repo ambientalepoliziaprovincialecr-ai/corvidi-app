@@ -956,8 +956,8 @@ function richiamaAzienda(){
   var n=parseInt(input.value);
   if(!n||n<1){toast('Inserisci un numero valido',true);return;}
   if(!elencoAziende.length){toast('Elenco aziende non ancora caricato, riprova tra poco',true);return;}
-  if(n>elencoAziende.length){toast('Numero azienda non trovato (in elenco ce ne sono '+elencoAziende.length+')',true);return;}
-  var a=elencoAziende[n-1];
+  var a=elencoAziende.find(function(x){return x.numero===n;});
+  if(!a){toast('Numero azienda '+n+' non trovato in elenco',true);return;}
   var parti=[a.denominazione,a.sede,a.via].filter(function(x){return x;});
   document.getElementById('fComune').value=parti.join(', ');
   if(a.responsabile) document.getElementById('fResponsabile').value=a.responsabile;
