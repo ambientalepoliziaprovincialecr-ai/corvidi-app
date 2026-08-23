@@ -930,16 +930,25 @@ function cercaAzienda(val){
   var lista=document.getElementById('autocompleteListAzienda');
   var q=val.trim().toUpperCase();
   if(q.length<2){lista.classList.remove('show');return;}
-  var trovate=aziende.filter(function(a){return a.toUpperCase().indexOf(q)!==-1;}).slice(0,8);
+  // Cerca nell'elenco aziende curato (ELENCO AZIENDE), non nei
+  // vecchi inserimenti già fatti — quelli possono contenere piccole
+  // varianti/doppioni dello stesso nome.
+  var trovate=elencoAziende.filter(function(a){
+    return (a.denominazione||'').toUpperCase().indexOf(q)!==-1 || (a.sede||'').toUpperCase().indexOf(q)!==-1;
+  }).slice(0,8);
   lista.innerHTML='';
   if(trovate.length===0){lista.classList.remove('show');return;}
-  trovate.forEach(function(nome){
+  trovate.forEach(function(a){
+    var parti=[a.denominazione,a.sede,a.via].filter(function(x){return x;});
+    var combinato=parti.join(', ');
     var div=document.createElement('div');
     div.className='autocomplete-item';
-    div.innerHTML='<strong>'+nome+'</strong>';
+    div.innerHTML='<strong>'+a.denominazione+'</strong> — '+a.sede;
     div.addEventListener('mousedown', function(e){
       e.preventDefault();
-      document.getElementById('fComune').value=nome;
+      document.getElementById('fComune').value=combinato;
+      if(a.responsabile) document.getElementById('fResponsabile').value=a.responsabile;
+      if(a.numero) document.getElementById('fNumAzienda').value=a.numero;
       lista.classList.remove('show');
     });
     lista.appendChild(div);
