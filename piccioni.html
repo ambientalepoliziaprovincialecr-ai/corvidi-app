@@ -282,6 +282,13 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
     </div>
   </div>
   <div class="form-group">
+    <label class="form-label">N. Azienda (elenco) <span style="font-weight:400;color:rgba(240,240,240,0.5);">— opzionale, per richiamo rapido</span></label>
+    <div class="data-row">
+      <input type="text" class="form-input" id="fNumAzienda" placeholder="Es. 1" inputmode="numeric" onkeydown="if(event.key==='Enter'){event.preventDefault();richiamaAzienda();}">
+      <button type="button" class="btn-oggi" onclick="richiamaAzienda()">🔎 Richiama</button>
+    </div>
+  </div>
+  <div class="form-group">
     <label class="form-label">Comune / Azienda <span class="req">*</span></label>
     <input type="text" class="form-input" id="fComune" placeholder="Es. Cremona, Azienda Rossi..." autocomplete="off" oninput="cercaAzienda(this.value)" onblur="setTimeout(()=&gt;chiudiListaAzienda(),200)">
     <div class="autocomplete-list" id="autocompleteListAzienda"></div>
@@ -460,6 +467,7 @@ const SHEET_URL='https://docs.google.com/spreadsheets/d/1AYzDw-z-YGQlUolYlcy7vB5
 
 var cacciatori = [];
 var aziende = [];
+var elencoAziende = [];
 
 async function caricaCacciatoriDalFoglio(){
   try{
@@ -477,6 +485,18 @@ async function caricaAziendeDalFoglio(){
     var d = await res.json();
     if(d.aziende && Array.isArray(d.aziende)){
       aziende = d.aziende;
+    }
+  }catch(e){}
+}
+
+// Elenco aziende curato a parte (foglio "ELENCO AZIENDE"), usato
+// per il richiamo rapido per numero nel modulo.
+async function caricaElencoAziendeDalFoglio(){
+  try{
+    var res = await fetch(URL_GS + '?action=elencoAziende&idToken=' + encodeURIComponent(idTokenCorrente));
+    var d = await res.json();
+    if(d.elenco && Array.isArray(d.elenco)){
+      elencoAziende = d.elenco;
     }
   }catch(e){}
 }
@@ -558,6 +578,7 @@ function caricaDatiDopoLogin(){
   if (typeof syncPinMapDaSheet === 'function') syncPinMapDaSheet();
   if (typeof caricaCacciatoriDalFoglio === 'function') caricaCacciatoriDalFoglio();
   if (typeof caricaAziendeDalFoglio === 'function') caricaAziendeDalFoglio();
+  if (typeof caricaElencoAziendeDalFoglio === 'function') caricaElencoAziendeDalFoglio();
 }
 
 function handleGoogleCredentialResponse(response) {
@@ -926,6 +947,22 @@ function cercaAzienda(val){
   lista.classList.add('show');
 }
 function chiudiListaAzienda(){document.getElementById('autocompleteListAzienda').classList.remove('show');}
+
+// Richiama un'azienda dall'ELENCO AZIENDE per numero di riga
+// (1 = prima azienda in elenco) e compila da sola Comune/Azienda
+// (nome + comune + via uniti in un unico campo) e Responsabile Smaltimento.
+function richiamaAzienda(){
+  var input=document.getElementById('fNumAzienda');
+  var n=parseInt(input.value);
+  if(!n||n<1){toast('Inserisci un numero valido',true);return;}
+  if(!elencoAziende.length){toast('Elenco aziende non ancora caricato, riprova tra poco',true);return;}
+  if(n>elencoAziende.length){toast('Numero azienda non trovato (in elenco ce ne sono '+elencoAziende.length+')',true);return;}
+  var a=elencoAziende[n-1];
+  var parti=[a.denominazione,a.sede,a.via].filter(function(x){return x;});
+  document.getElementById('fComune').value=parti.join(', ');
+  if(a.responsabile) document.getElementById('fResponsabile').value=a.responsabile;
+  toast('✅ Azienda '+n+' richiamata');
+}
 function cambiaNum(delta){const el=document.getElementById('fPiccioni'),v=parseInt(el.value)||0;el.value=Math.max(0,v+delta);}
 function cambiaCensiti(delta){const el=document.getElementById('fCensiti'),v=parseInt(el.value)||0;el.value=Math.max(0,v+delta);}
 var tipoSmaltimento='';
@@ -1043,7 +1080,7 @@ function mesiNome(i){return['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giug
 function fmt(val){if(!val)return'';const d=new Date(val+'T00:00:00');return d.toLocaleDateString('it-IT');}
 
 function resetForm(){
-  ['fComune','fCognome','fNome','fCF','fEmail','fNuovoNome','fNuovoCF','fNuovaEmail','fResponsabile'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['fComune','fCognome','fNome','fCF','fEmail','fNuovoNome','fNuovoCF','fNuovaEmail','fResponsabile','fNumAzienda'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('fPiccioni').value='';
   document.getElementById('fCensiti').value='';
   document.getElementById('nuovoCacBox').classList.remove('show');
