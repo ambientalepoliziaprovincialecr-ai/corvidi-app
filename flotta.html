@@ -964,14 +964,13 @@ function parseTsIt(str) {
 }
 
 function calcolaLitri() {
-  var costo = parseFloat((document.getElementById('rifCosto').value||'').replace(',','.')) || 0;
-  var importo = parseFloat((document.getElementById('rifImporto').value||'').replace(',','.')) || 0;
-  var km = parseFloat(document.getElementById('rifKm').value) || 0;
+  var costo = parseFloat((document.getElementById('rifCosto').value||'').replace(/\s+/g,'').replace(',','.')) || 0;
+  var importo = parseFloat((document.getElementById('rifImporto').value||'').replace(/\s+/g,'').replace(',','.')) || 0;
   var box = document.getElementById('calcBox');
   if (costo > 0 && importo > 0) {
     var litri = (importo / costo).toFixed(2);
     document.getElementById('calcLitri').textContent = litri;
-    document.getElementById('calcKmL').textContent = (km > 0 && parseFloat(litri) > 0) ? (km / parseFloat(litri)).toFixed(1) : '—';
+    document.getElementById('calcKmL').textContent = '—';
     box.style.display = 'block';
   } else {
     box.style.display = 'none';
@@ -1073,8 +1072,8 @@ async function submitRif() {
     btnSalvaR.disabled = false; btnSalvaR.textContent = testoOrigR;
     return;
   }
-  var rifCosto = (document.getElementById('rifCosto').value || '').trim().replace(',','.');
-  var rifImporto = (document.getElementById('rifImporto').value || '').trim().replace(',','.');
+  var rifCosto = (document.getElementById('rifCosto').value || '').replace(/\s+/g,'').replace(',','.');
+  var rifImporto = (document.getElementById('rifImporto').value || '').replace(/\s+/g,'').replace(',','.');
   var costoNum = parseFloat(rifCosto);
   var importoNum = parseFloat(rifImporto);
   if (!rifCosto || isNaN(costoNum) || costoNum <= 0) {
