@@ -383,6 +383,10 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
       <option>Diesel</option><option>Benzina</option><option>GPL</option><option>Metano</option><option>Elettrico</option>
     </select>
   </div>
+  <div class="form-group">
+    <label class="form-label">Note</label>
+    <textarea class="form-textarea" id="rifNote" placeholder="Es. scontrino non rilasciato..."></textarea>
+  </div>
   <button class="btn-submit rif" id="btnSalvaRif" onclick="submitRif()">⛽ Salva Rifornimento</button>
 </div>
 
@@ -1089,12 +1093,14 @@ async function submitRif() {
   var rifKm = document.getElementById('rifKm').value || '';
   var litri = (rifCosto && rifImporto) ? (parseFloat(rifImporto) / parseFloat(rifCosto)).toFixed(2) : '';
   var kmL = (litri && rifKm && parseFloat(litri) > 0) ? (parseFloat(rifKm) / parseFloat(litri)).toFixed(1) : '';
-  await invia({tipo:'RIF', dataOra:fmtDT(dataOra), targa, conducente, km:rifKm, costoLitro:rifCosto, importo:rifImporto, litri, kmL, carburante, inseritoDa:operatoreCorrente});
+  var noteRif = document.getElementById('rifNote').value.trim();
+  await invia({tipo:'RIF', dataOra:fmtDT(dataOra), targa, conducente, km:rifKm, costoLitro:rifCosto, importo:rifImporto, litri, kmL, carburante, note:noteRif, inseritoDa:operatoreCorrente});
   document.getElementById('rifTarga').value = '';
   document.getElementById('rifCarburante').value = '';
   document.getElementById('rifKm').value = '';
   document.getElementById('rifCosto').value = '';
   document.getElementById('rifImporto').value = '';
+  document.getElementById('rifNote').value = '';
   document.getElementById('rifDataOra').value = '';
   document.getElementById('calcBox').style.display = 'none';
   rifSel = '';
@@ -1160,7 +1166,7 @@ function renderStorico() {
     if (storicoTab === 'km') {
       return '<div class="record-card"><div class="record-top"><div class="record-targa">' + r.targa + '</div><div class="record-data">' + r.dataOra + '</div></div><div class="record-detail">👤 ' + r.conducente + (r.note ? '<br>📝 ' + r.note : '') + '</div><span class="badge badge-km">🛣️ ' + r.kmFinali + ' km</span></div>';
     } else {
-      return '<div class="record-card"><div class="record-top"><div class="record-targa">' + r.targa + '</div><div class="record-data">' + r.dataOra + '</div></div><div class="record-detail">👤 ' + r.conducente + (r.km ? '<br>📍 ' + r.km + ' km' : '') + '</div><span class="badge badge-rif">⛽ ' + r.carburante + (r.costoLitro ? ' — €' + r.costoLitro + '/L' : '') + '</span></div>';
+      return '<div class="record-card"><div class="record-top"><div class="record-targa">' + r.targa + '</div><div class="record-data">' + r.dataOra + '</div></div><div class="record-detail">👤 ' + r.conducente + (r.km ? '<br>📍 ' + r.km + ' km' : '') + (r.note ? '<br>📝 ' + r.note : '') + '</div><span class="badge badge-rif">⛽ ' + r.carburante + (r.costoLitro ? ' — €' + r.costoLitro + '/L' : '') + '</span></div>';
     }
   }).join('');
 }
