@@ -3169,7 +3169,7 @@ function stampaModuloRegione(idx){
   html += '<div class="riga"><label>Qualifica</label> &nbsp;<strong>POLIZIA PROVINCIALE</strong> &nbsp;&nbsp; <label>Recapito telefonico</label> &nbsp;<strong>0372 / 406450</strong></div>';
   html += '<div class="riga"><label>Comprensorio / Ambito territoriale di caccia</label> <strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></div>';
   html += '<div class="riga"><label>ATS</label> <strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> &nbsp;&nbsp; <label>distretto di</label> <strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong> &nbsp;&nbsp; <label>veterinario</label> <strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></div>';
-  html += '<div class="opz-row"><label>N&deg; campioni</label> <strong style="min-width:60px;display:inline-block;">&nbsp;</strong><label style="margin-left:10px;">Stato di conservazione</label><span class="box2"></span>FRESCO<span class="box2"></span>CONGELATO</div>';
+  html += '<div class="opz-row"><label>N&deg; campioni</label> <strong style="min-width:60px;display:inline-block;">'+(r.nCapi||1)+'</strong><label style="margin-left:10px;">Stato di conservazione</label><span class="box2"></span>FRESCO<span class="box2"></span>CONGELATO</div>';
   html += '<div class="opz-row"><label>Materiale:</label><span class="box2">'+chk(isCarcassa)+'</span>CARCASSA<span class="box2"></span>SANGUE<span class="box2"></span>MUSCOLO<span class="box2"></span>TESTA<span class="box2"></span>VISCERI<span class="box2"></span>FECI<span class="box2"></span>ALTRO</div>';
 
   html += '<table class="tbl"><tr><th style="width:26%;">SPECIE</th><th style="width:20%;">SESSO</th><th colspan="5">ET&Agrave;</th></tr>';
@@ -3190,7 +3190,9 @@ function stampaModuloRegione(idx){
   html += '<div class="opz-row"><label>Animale:</label><span class="box2">'+chk(isAbbattuto)+'</span>ABBATTUTO (Sorveglianza attiva)<span class="box2">'+chk(isTrovatoMorto)+'</span>TROVATO MORTO (Sorveglianza passiva)<span class="box2"></span>DA CATTURA</div>';
   html += '<div class="riga"><label>Data di Ritrovamento / Abbattimento</label> &nbsp;<strong>'+(dataStr||'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')+'</strong></div>';
   html += '<div class="riga"><label>Numero identificativo</label> <strong>'+(r.numIdentificativo||'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')+'</strong></div>';
-  html += '<div class="riga"><label>Luogo: Comune</label> &nbsp;<strong>'+(r.comune||'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')+'</strong> &nbsp;&nbsp; <label>Localit&agrave;</label> <strong>'+(r.via||r.localita||'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')+'</strong></div>';
+  var localitaConGps = (r.via || r.localita || '');
+  if (r.gps) localitaConGps += (localitaConGps ? ' ' : '') + '(GPS: ' + r.gps + ')';
+  html += '<div class="riga"><label>Luogo: Comune</label> &nbsp;<strong>'+(r.comune||'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')+'</strong> &nbsp;&nbsp; <label>Localit&agrave;</label> <strong>'+(localitaConGps||'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;')+'</strong></div>';
   html += '<div class="riga"><label>Riserva ZRC / ZRA / Oasi faunistica</label> <strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></div>';
 
   var isDecesso = (r.note||'').toLowerCase().indexOf('deceduto')>=0 && (r.note||'').toLowerCase().indexOf('rif. pratica cras')>=0;
