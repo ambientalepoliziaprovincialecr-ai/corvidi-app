@@ -371,8 +371,22 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <input type="text" class="form-input" id="fComune" placeholder="Nome comune">
   </div>
   <div class="form-group">
-    <label class="form-label">Ubicazione / Località</label>
-    <input type="text" class="form-input" id="fUbicazione" placeholder="Es. Via Bergamo, cascina Rossi...">
+    <label class="form-label">Via / Località</label>
+    <input type="text" class="form-input" id="fViaLocalita" placeholder="Es. Via Bergamo, cascina Rossi...">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Ubicazione terreno interessato</label>
+    <select class="form-select" id="fUbicazioneTerreno">
+      <option value="">— Seleziona (facoltativo) —</option>
+      <option>Oasi di protezione</option>
+      <option>ZRC (zone di ripopolamento e cattura)</option>
+      <option>ZRA (zone di rifugio e ambientamento)</option>
+      <option>AFV (aziende faunistico-venatorie)</option>
+      <option>Parco</option>
+      <option>Centro pubblico di produzione della selvaggina</option>
+      <option>Zona a caccia programmata</option>
+      <option>Area urbana/urbanizzata o sito industriale</option>
+    </select>
   </div>
   <div class="form-group">
     <label class="form-label">Coordinate GPS</label>
@@ -388,8 +402,10 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <label class="form-label">Specie <span class="req">*</span></label>
     <div class="specie-grid" style="grid-template-columns:1fr 1fr 1fr;">
       <button class="specie-btn" id="sCorn" onclick="setSpecie(&#39;CORNACCHIA GRIGIA&#39;)">🐦‍⬛ Cornacchia grigia</button>
+      <button class="specie-btn" id="sCornN" onclick="setSpecie(&#39;CORNACCHIA NERA&#39;)">⬛ Cornacchia nera</button>
       <button class="specie-btn" id="sGazz" onclick="setSpecie(&#39;GAZZA&#39;)">🐦 Gazza</button>
-      <button class="specie-btn" id="sPicc" onclick="setSpecie(&#39;PICCIONE&#39;)">🕊️ Piccione</button>
+      <button class="specie-btn" id="sGhia" onclick="setSpecie(&#39;GHIANDAIA&#39;)">🪶 Ghiandaia</button>
+      <button class="specie-btn" id="sPicc" onclick="setSpecie(&#39;PICCIONE DOMESTICO&#39;)">🕊️ Piccione domestico</button>
     </div>
   </div>
   <div class="form-group">
@@ -1680,7 +1696,8 @@ async function submitForm(){
   var payload={
     tipo:'CORVIDI', prov:'CR', anno:anno, mese:mese, giorno:giorno, ora:ora,
     cognome,nome,cf,qualifica,comune,
-    ubicazione:document.getElementById('fUbicazione').value.trim(),
+    ubicazioneTerreno:document.getElementById('fUbicazioneTerreno').value,
+    viaLocalita:document.getElementById('fViaLocalita').value.trim(),
     gpsLat:document.getElementById('fGpsLat').value,gpsLon:document.getElementById('fGpsLon').value,
     specie,scopo,usoSuolo:document.getElementById('fUsoSuolo').value.trim(),
     mezzi,codiceGabbia:document.getElementById('fCodiceGabbia').value.trim(),
@@ -1694,7 +1711,7 @@ async function submitForm(){
 }
 
 function resetForm(){
-  ['fCognome','fNome','fCF','fEmail','fNuovoNome','fNuovoCF','fNuovaEmail','fComune','fUbicazione','fGpsLat','fGpsLon','fUsoSuolo','fCodiceGabbia','fVisti','fNote','fOra'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  ['fCognome','fNome','fCF','fEmail','fNuovoNome','fNuovoCF','fNuovaEmail','fComune','fViaLocalita','fUbicazioneTerreno','fGpsLat','fGpsLon','fUsoSuolo','fCodiceGabbia','fVisti','fNote','fOra'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('nuovoCacBox').classList.remove('show');
   nuovoCacciatore=false;
   document.getElementById('fCapi').value='';document.getElementById('fScopo').value='';document.getElementById('fMezzi').value='';document.getElementById('fDestinazione').value='';
