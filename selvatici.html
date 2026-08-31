@@ -19,15 +19,15 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--crema);max
 .header-icon{font-size:24px;line-height:1;}
 .header h1{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:3px;color:var(--crema);line-height:1;}
 .header h1 span{color:#ffeb3b;}
-.header p{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,235,59,0.45);text-transform:uppercase;}
+.header p{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,235,59,0.92);font-weight:700;text-transform:uppercase;}
 .screen{display:none;padding:16px;}
 .screen.active{display:block;}
 .stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px;margin-top:12px;}
 .stat-card{background:var(--grigio);border:1px solid rgba(200,146,42,0.3);border-radius:10px;padding:12px 8px;text-align:center;}
 .stat-card .num{font-family:'Bebas Neue',sans-serif;font-size:34px;line-height:1;color:#ffeb3b;}
-.stat-card .label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,235,59,0.55);margin-top:3px;font-family:'Barlow Condensed',sans-serif;}
+.stat-card .label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,235,59,0.92);font-weight:700;margin-top:3px;font-family:'Barlow Condensed',sans-serif;}
 .stat-card.total{border-color:#ffeb3b;background:rgba(200,146,42,0.1);}
-.section-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,235,59,0.4);margin-bottom:10px;}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:10px;}
 .main-buttons{display:flex;flex-direction:column;gap:12px;margin-bottom:20px;}
 .btn-main{display:flex;align-items:center;gap:14px;padding:18px 16px;border:none;border-radius:14px;cursor:pointer;text-align:left;width:100%;transition:opacity 0.15s;}
 .btn-main:hover{opacity:0.85;}
@@ -35,7 +35,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--crema);max
 .btn-main.cras{background:linear-gradient(135deg,#1a3a5c,#0f2340);border:1px solid rgba(41,128,185,0.5);}
 .btn-main-icon{font-size:34px;flex-shrink:0;}
 .btn-main-text strong{display:block;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;line-height:1;color:var(--crema);}
-.btn-main-text span{font-size:11px;color:rgba(255,235,59,0.5);font-family:'Barlow Condensed',sans-serif;}
+.btn-main-text span{font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;font-family:'Barlow Condensed',sans-serif;}
 .btn-main-arrow{margin-left:auto;font-size:20px;opacity:0.35;}
 .btn-report{width:100%;padding:13px;background:rgba(200,146,42,0.1);border:1px solid rgba(200,146,42,0.3);border-radius:10px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:10px;display:block;}
 .btn-report:hover{background:rgba(200,146,42,0.2);}
@@ -48,27 +48,27 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--crema);max
 .form-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-top:12px;}
 .btn-back{background:var(--grigio);border:1px solid var(--bordo);border-radius:8px;color:var(--crema);width:38px;height:38px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .form-header-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;line-height:1.1;}
-.form-header-title span{display:block;font-family:'Barlow',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.35);font-weight:300;}
+.form-header-title span{display:block;font-family:'Barlow',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.92);font-weight:700;font-weight:300;}
 .form-group{margin-bottom:14px;}
-.form-label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.5);margin-bottom:5px;}
+.form-label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:5px;}
 .form-label .req{color:#ffeb3b;}
 .form-input,.form-select,.form-textarea{width:100%;background:var(--grigio);border:1px solid var(--bordo);border-radius:8px;color:#ffeb3b;font-family:'Barlow',sans-serif;font-size:15px;padding:11px 13px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
-.form-input::placeholder,.form-textarea::placeholder{color:rgba(255,235,59,0.55);opacity:1;}
+.form-input::placeholder,.form-textarea::placeholder{color:rgba(255,235,59,0.65);opacity:1;}
 .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:#ffeb3b;}
 .form-select option{background:#1c2b1a;}
 .form-textarea{resize:none;height:80px;}
 input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 .agenti-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px;}
-.agente-btn{padding:9px 6px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.45);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;text-align:center;}
+.agente-btn{padding:9px 6px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.92);font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;text-align:center;}
 .agente-btn.sel{background:rgba(200,146,42,0.25);border-color:#ffeb3b;color:#ffeb3b;}
-.btn-gestisci{width:100%;padding:9px;background:rgba(200,146,42,0.08);border:1px dashed rgba(200,146,42,0.3);border-radius:8px;color:rgba(255,235,59,0.4);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:6px;}
+.btn-gestisci{width:100%;padding:9px;background:rgba(200,146,42,0.08);border:1px dashed rgba(200,146,42,0.3);border-radius:8px;color:rgba(255,235,59,0.92);font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:6px;}
 .btn-gestisci:hover{background:rgba(200,146,42,0.15);color:#ffeb3b;}
 .tipo-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.tipo-btn{padding:10px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.45);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-align:center;}
+.tipo-btn{padding:10px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.92);font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-align:center;}
 .tipo-btn.active{background:rgba(200,146,42,0.2);border-color:#ffeb3b;color:#ffeb3b;}
 .tipo-btn.active-blue{background:rgba(41,128,185,0.2);border-color:#ffeb3b;color:#ffeb3b;}
 .toggle-group{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.toggle-btn{padding:11px 8px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.45);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
+.toggle-btn{padding:11px 8px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.92);font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
 .toggle-btn.active-zoo{background:rgba(45,90,39,0.5);border-color:#ffeb3b;color:#ffeb3b;}
 .toggle-btn.active-lib{background:rgba(41,128,185,0.3);border-color:#ffeb3b;color:#ffeb3b;}
 .liberazione-fields{display:none;margin-top:10px;padding:12px;background:rgba(41,128,185,0.07);border:1px solid rgba(41,128,185,0.2);border-radius:8px;}
@@ -81,20 +81,20 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 .btn-submit.zoo{background:linear-gradient(135deg,var(--verde2),var(--scuro));color:var(--crema);}
 .btn-submit.cras{background:linear-gradient(135deg,#2980b9,#1a5c8a);color:var(--crema);}
 .tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
-.tab-btn{padding:10px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.4);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;}
+.tab-btn{padding:10px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.92);font-weight:700;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;}
 .tab-btn.active{background:rgba(200,146,42,0.15);border-color:#ffeb3b;color:#ffeb3b;}
 .record-card{background:var(--grigio);border:1px solid var(--bordo);border-radius:10px;padding:13px;margin-bottom:8px;}
 .record-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px;}
 .record-animale{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;}
-.record-data{font-size:10px;color:rgba(255,235,59,0.4);text-align:right;}
-.record-detail{font-size:12px;color:rgba(255,235,59,0.55);line-height:1.7;}
+.record-data{font-size:10px;color:rgba(255,235,59,0.92);font-weight:700;text-align:right;}
+.record-detail{font-size:12px;color:rgba(255,235,59,0.92);font-weight:700;line-height:1.7;}
 .badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:9px;letter-spacing:1px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;margin-top:6px;}
 .badge-naturale{background:rgba(100,100,100,0.3);color:#ffeb3b;}
 .badge-investito{background:rgba(192,57,43,0.25);color:#e07060;}
 .badge-abbattuto{background:rgba(200,146,42,0.25);color:#ffeb3b;}
 .badge-consegnato{background:rgba(41,128,185,0.25);color:#ffeb3b;}
 .badge-liberato{background:rgba(45,90,39,0.4);color:#ffeb3b;}
-.empty-state{text-align:center;padding:40px 20px;color:rgba(255,235,59,0.28);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;}
+.empty-state{text-align:center;padding:40px 20px;color:rgba(255,235,59,0.92);font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;}
 .empty-state div{font-size:38px;margin-bottom:10px;}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);background:#27ae60;color:#ffeb3b;padding:11px 22px;border-radius:30px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;z-index:999999;transition:transform 0.3s;white-space:nowrap;pointer-events:none;}
 .toast.show{transform:translateX(-50%) translateY(0);}
@@ -103,12 +103,12 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 .loading-overlay.show{display:flex;}
 .spinner{width:42px;height:42px;border:3px solid rgba(255,255,255,0.1);border-top-color:#ffeb3b;border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.loading-text{font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:12px;color:rgba(255,235,59,0.6);text-transform:uppercase;}
+.loading-text{font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:12px;color:rgba(255,235,59,0.92);font-weight:700;text-transform:uppercase;}
 
 .modal-overlay.show{display:flex;}
 .modal-box{background:#1a3a15;border:1px solid var(--ocra);border-radius:16px;padding:24px;max-width:340px;width:100%;}
 .modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#ffeb3b;margin-bottom:12px;}
-.modal-text{font-size:13px;color:rgba(255,235,59,0.6);margin-bottom:14px;}
+.modal-text{font-size:13px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:14px;}
 .modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
 .modal-btn{padding:11px;border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
 .modal-btn.cancel{background:var(--grigio);border:1px solid var(--bordo);color:var(--crema);}
@@ -144,25 +144,25 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 .modal-istruzioni.show{display:flex;}
 .modal-istr-box{background:#1a2e1a;border:1px solid rgba(39,174,96,0.4);border-radius:16px;padding:24px 20px;max-width:480px;width:100%;margin:auto;}
 .modal-istr-box h2{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:#ffeb3b;margin-bottom:2px;}
-.modal-istr-box h3{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,235,59,0.6);margin-bottom:16px;text-transform:uppercase;}
+.modal-istr-box h3{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:16px;text-transform:uppercase;}
 .istr-section{margin-bottom:16px;}
 .istr-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#ffeb3b;margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid rgba(125,207,170,0.2);}
-.istr-text{font-size:16px;color:rgba(255,235,59,0.7);line-height:1.7;}
+.istr-text{font-size:16px;color:rgba(255,235,59,0.92);font-weight:700;line-height:1.7;}
 .istr-text strong{color:#ffeb3b;}
-.istr-firma{font-size:13px;color:rgba(255,235,59,0.4);margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);line-height:1.7;}
+.istr-firma{font-size:13px;color:rgba(255,235,59,0.92);font-weight:700;margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);line-height:1.7;}
 .btn-istr-close{width:100%;padding:12px;border:none;border-radius:10px;background:#27ae60;color:#ffeb3b;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:12px;}
 
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.show{display:flex;}
 .modal-box{background:#1a3a15;border:1px solid var(--ocra2);border-radius:16px;padding:24px;max-width:300px;width:100%;}
 .modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#ffeb3b;margin-bottom:12px;}
-.modal-text{font-size:13px;color:rgba(255,235,59,0.6);margin-bottom:14px;}
+.modal-text{font-size:13px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:14px;}
 .gps-box{background:var(--grigio);border:1px solid var(--bordo);border-radius:10px;padding:10px;margin-top:6px;}
 .gps-row{display:flex;gap:8px;margin-bottom:6px;}
 .gps-row input{flex:1;}
 .gps-btn{flex:0 0 auto;padding:9px 12px;border-radius:8px;border:1px solid var(--bordo);background:rgba(255,255,255,0.08);color:var(--crema);font-size:12px;cursor:pointer;white-space:nowrap;}
 .gps-btn.primary{background:var(--azzurro);border-color:#ffeb3b;}
-.gps-status{font-size:11px;color:rgba(255,235,59,0.5);margin-top:4px;}
+.gps-status{font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;margin-top:4px;}
 .gps-link{font-size:12px;color:#ffeb3b;margin-top:4px;display:none;}
 #mapModal{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:none;flex-direction:column;}
 #mapModal.show{display:flex;}
@@ -179,12 +179,12 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 .search-results{margin-top:8px;}
 .search-result-card{background:rgba(255,255,255,0.05);border:1px solid var(--bordo);border-radius:10px;padding:12px;margin-bottom:8px;}
 .search-result-name{font-weight:700;font-size:14px;margin-bottom:4px;}
-.search-result-detail{font-size:12px;color:rgba(255,235,59,0.7);line-height:1.6;}
+.search-result-detail{font-size:12px;color:rgba(255,235,59,0.92);font-weight:700;line-height:1.6;}
 .search-nav-btn{display:inline-block;margin-top:8px;padding:8px 14px;background:#4285f4;color:#ffeb3b;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;}
-.search-empty{text-align:center;padding:20px;color:rgba(255,235,59,0.4);font-size:13px;}
+.search-empty{text-align:center;padding:20px;color:rgba(255,235,59,0.92);font-weight:700;font-size:13px;}
 </style>
 <script src="./Registro Selvatici_files/client" async="" defer=""></script>
-<link rel="manifest" href="blob:https://ambientalepoliziaprovincialecr-ai.github.io/eaa2bec3-3a06-4ccd-b09b-6630f491fb6e"><style id="googleidentityservice_button_styles">.qJTHM{-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;color:#202124;direction:ltr;-webkit-touch-callout:none;font-family:Roboto-Regular,arial,sans-serif;-webkit-font-smoothing:antialiased;font-weight:400;margin:0;overflow:hidden;-webkit-text-size-adjust:100%}.ynRLnc{left:-9999px;position:absolute;top:-9999px}.L6cTce{display:none}.bltWBb{overflow-wrap:break-word;word-break:break-word}.hSRGPd{color:#1a73e8;cursor:pointer;font-weight:500;text-decoration:none}.Bz112c-W3lGp{height:16px;width:16px}.Bz112c-E3DyYd{height:20px;width:20px}.Bz112c-r9oPif{height:24px;width:24px}.Bz112c-u2z5K{height:36px;width:36px}.Bz112c-uaxL4e{border-radius:10px}.LgbsSe-Bz112c{display:block}.S9gUrf-YoZ4jf{border:none;margin:0;padding:0}.S9gUrf-YoZ4jf *{border:none;margin:0;padding:0}.fFW7wc-ibnC6b>.aZ2wEe>div{border-color:#4285f4}.P1ekSe-ZMv3u{-webkit-transition:height .2s linear;transition:height .2s linear}.P1ekSe-ZMv3u>div:first-child{background-color:#1a73e8!important;-webkit-transition:width .3s linear;transition:width .3s linear}.P1ekSe-ZMv3u>div:nth-child(2){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(90deg,#1a73e8,#1a73e8)!important}.P1ekSe-ZMv3u>div:nth-child(3){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(90deg,#1a73e8,#1a73e8)!important}.haAclf{display:inline-block}.nsm7Bb-HzV7m-LgbsSe{border-radius:4px;box-sizing:border-box;-webkit-transition:background-color .218s,border-color .218s;transition:background-color .218s,border-color .218s;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;-webkit-appearance:none;background-color:#fff;background-image:none;border:1px solid #dadce0;color:#3c4043;cursor:pointer;font-family:Google Sans,arial,sans-serif;font-size:.875rem;height:40px;letter-spacing:.25px;outline:none;overflow:hidden;padding:0 12px;position:relative;text-align:center;vertical-align:middle;white-space:nowrap;width:auto}@media screen and (-ms-high-contrast:active){.nsm7Bb-HzV7m-LgbsSe{border:2px solid windowText;color:windowText}}@media screen and (preferes-contrast:more){.nsm7Bb-HzV7m-LgbsSe{color:#000}}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe{font-size:.875rem;height:32px;letter-spacing:.25px;padding:0 10px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe{font-size:.6875rem;height:20px;letter-spacing:.3px;padding:0 8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe{padding:0;width:40px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe{width:32px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe{width:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK{border-radius:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.pSzOP-SxQuSe{border-radius:16px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.purZT-SxQuSe{border-radius:10px}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc{border:1px solid #8e918f;background-color:#131314;color:#e3e3e3}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc{border:none;color:#fff}.nsm7Bb-HzV7m-LgbsSe.MFS4be-v3pZbf-Ia7Qfc{background-color:#1a73e8}.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{background-color:#202124;color:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{color:#fff}}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:18px;margin-right:8px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:14px;min-width:14px;width:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:10px;min-width:10px;width:10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin-left:8px;margin-right:-4px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:10px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:4px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:3px;border-bottom-left-radius:3px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;align-items:center;background-color:#fff;height:36px;margin-left:-10px;margin-right:12px;min-width:36px;width:36px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c,.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:28px;margin-left:-8px;margin-right:10px;min-width:28px;width:28px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:16px;margin-left:-6px;margin-right:8px;min-width:16px;width:16px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:3px;margin-left:2px;margin-right:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:8px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-bN97Pc-sM5MNb{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;-webkit-flex-direction:row;-webkit-box-orient:horizontal;-webkit-box-direction:normal;flex-direction:row;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-flex-wrap:nowrap;flex-wrap:nowrap;height:100%;position:relative;width:100%}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX{-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:1;-webkit-box-flex:1;flex-grow:1;font-family:Google Sans,arial,sans-serif;font-weight:500;overflow:hidden;text-overflow:ellipsis;vertical-align:top}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-weight:300}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:0;-webkit-box-flex:0;flex-grow:0}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-MJoBVe{-webkit-transition:background-color .218s;transition:background-color .218s;bottom:0;left:0;position:absolute;right:0;top:0}.nsm7Bb-HzV7m-LgbsSe:focus,.nsm7Bb-HzV7m-LgbsSe:hover{box-shadow:none;border-color:rgb(210,227,252);outline:none}.nsm7Bb-HzV7m-LgbsSe:focus-within{outline:2px solid #00639b;border-color:transparent}.nsm7Bb-HzV7m-LgbsSe:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.08)}.nsm7Bb-HzV7m-LgbsSe:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.1)}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.08)}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.12)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.24)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.32)}.nsm7Bb-HzV7m-LgbsSe .n1UuX-DkfjY{border-radius:50%;display:-webkit-box;display:-webkit-flex;display:flex;height:20px;margin-left:-4px;margin-right:8px;min-width:20px;width:20px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-family:Roboto;font-size:12px;text-align:left}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .fmcmS,.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .ssJRIf{overflow:hidden;text-overflow:ellipsis}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;color:#5f6368;fill:#5f6368;font-size:11px;font-weight:400}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.i5vt6e-to915-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#c4c7c5;fill:#c4c7c5}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#e8eaed;fill:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff,.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#000;fill:#000}}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .Bz112c{height:18px;margin:-3px -3px -3px 2px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:0;border-bottom-left-radius:0;border-top-right-radius:3px;border-bottom-right-radius:3px;margin-left:12px;margin-right:-10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.L5Fo6c-sM5MNb{border:0;display:block;left:0;position:relative;top:0}.L5Fo6c-bF1uUb{border-radius:4px;bottom:0;cursor:pointer;left:0;position:absolute;right:0;top:0}.L5Fo6c-bF1uUb:focus{border:none;outline:none}sentinel{}</style></head>
+<link rel="manifest" href="blob:https://ambientalepoliziaprovincialecr-ai.github.io/eaa2bec3-3a06-4ccd-b09b-6630f491fb6e"><style id="googleidentityservice_button_styles">.qJTHM{-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;color:#202124;direction:ltr;-webkit-touch-callout:none;font-family:Roboto-Regular,arial,sans-serif;-webkit-font-smoothing:antialiased;font-weight:400;margin:0;overflow:hidden;-webkit-text-size-adjust:100%}.ynRLnc{left:-9999px;position:absolute;top:-9999px}.L6cTce{display:none}.bltWBb{overflow-wrap:break-word;word-break:break-word}.hSRGPd{color:#1a73e8;cursor:pointer;font-weight:500;text-decoration:none}.Bz112c-W3lGp{height:16px;width:16px}.Bz112c-E3DyYd{height:20px;width:20px}.Bz112c-r9oPif{height:24px;width:24px}.Bz112c-u2z5K{height:36px;width:36px}.Bz112c-uaxL4e{border-radius:10px}.LgbsSe-Bz112c{display:block}.S9gUrf-YoZ4jf{border:none;margin:0;padding:0}.S9gUrf-YoZ4jf *{border:none;margin:0;padding:0}.fFW7wc-ibnC6b>.aZ2wEe>div{border-color:#4285f4}.P1ekSe-ZMv3u{-webkit-transition:height .2s linear;transition:height .2s linear}.P1ekSe-ZMv3u>div:first-child{background-color:#1a73e8!important;-webkit-transition:width .3s linear;transition:width .3s linear}.P1ekSe-ZMv3u>div:nth-child(2){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(90deg,#1a73e8,#1a73e8)!important}.P1ekSe-ZMv3u>div:nth-child(3){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(90deg,#1a73e8,#1a73e8)!important}.haAclf{display:inline-block}.nsm7Bb-HzV7m-LgbsSe{border-radius:4px;box-sizing:border-box;-webkit-transition:background-color .218s,border-color .218s;transition:background-color .218s,border-color .218s;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;-webkit-appearance:none;background-color:#fff;background-image:none;border:1px solid #dadce0;color:#3c4043;cursor:pointer;font-family:Google Sans,arial,sans-serif;font-size:.875rem;height:40px;letter-spacing:.25px;outline:none;overflow:hidden;padding:0 12px;position:relative;text-align:center;vertical-align:middle;white-space:nowrap;width:auto}@media screen and (-ms-high-contrast:active){.nsm7Bb-HzV7m-LgbsSe{border:2px solid windowText;color:windowText}}@media screen and (preferes-contrast:more){.nsm7Bb-HzV7m-LgbsSe{color:#000}}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe{font-size:.875rem;height:32px;letter-spacing:.25px;padding:0 10px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe{font-size:.6875rem;height:20px;letter-spacing:.3px;padding:0 8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe{padding:0;width:40px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe{width:32px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe{width:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK{border-radius:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.pSzOP-SxQuSe{border-radius:16px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.purZT-SxQuSe{border-radius:10px}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc{border:1px solid #8e918f;background-color:#131314;color:#e3e3e3}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc{border:none;color:#fff}.nsm7Bb-HzV7m-LgbsSe.MFS4be-v3pZbf-Ia7Qfc{background-color:#1a73e8}.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{background-color:#202124;color:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{color:#fff}}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:18px;margin-right:8px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:14px;min-width:14px;width:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:10px;min-width:10px;width:10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin-left:8px;margin-right:-4px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:10px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:4px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:3px;border-bottom-left-radius:3px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;align-items:center;background-color:#fff;height:36px;margin-left:-10px;margin-right:12px;min-width:36px;width:36px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c,.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:28px;margin-left:-8px;margin-right:10px;min-width:28px;width:28px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:16px;margin-left:-6px;margin-right:8px;min-width:16px;width:16px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:3px;margin-left:2px;margin-right:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:8px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-bN97Pc-sM5MNb{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;-webkit-flex-direction:row;-webkit-box-orient:horizontal;-webkit-box-direction:normal;flex-direction:row;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-flex-wrap:nowrap;flex-wrap:nowrap;height:100%;position:relative;width:100%}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX{-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:1;-webkit-box-flex:1;flex-grow:1;font-family:Google Sans,arial,sans-serif;font-weight:500;overflow:hidden;text-overflow:ellipsis;vertical-align:top}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-weight:300}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:0;-webkit-box-flex:0;flex-grow:0}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-MJoBVe{-webkit-transition:background-color .218s;transition:background-color .218s;bottom:0;left:0;position:absolute;right:0;top:0}.nsm7Bb-HzV7m-LgbsSe:focus,.nsm7Bb-HzV7m-LgbsSe:hover{box-shadow:none;border-color:rgb(210,227,252);outline:none}.nsm7Bb-HzV7m-LgbsSe:focus-within{outline:2px solid #00639b;border-color:transparent}.nsm7Bb-HzV7m-LgbsSe:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.08)}.nsm7Bb-HzV7m-LgbsSe:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.1)}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.08)}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.12)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.24)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.32)}.nsm7Bb-HzV7m-LgbsSe .n1UuX-DkfjY{border-radius:50%;display:-webkit-box;display:-webkit-flex;display:flex;height:20px;margin-left:-4px;margin-right:8px;min-width:20px;width:20px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-family:Roboto;font-size:12px;text-align:left}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .fmcmS,.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .ssJRIf{overflow:hidden;text-overflow:ellipsis}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;color:#5f6368;fill:#5f6368;font-size:11px;font-weight:400}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.i5vt6e-to915-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#c4c7c5;fill:#c4c7c5}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#e8eaed;fill:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff,.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#000;fill:#000}}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .Bz112c{height:18px;margin:-3px -3px -3px 2px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:0;border-bottom-left-radius:0;border-top-right-radius:3px;border-bottom-right-radius:3px;margin-left:12px;margin-right:-10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.L5Fo6c-sM5MNb{border:0;display:block;left:0;position:relative;top:0}.L5Fo6c-bF1uUb{border-radius:4px;bottom:0;cursor:pointer;left:0;position:absolute;right:0;top:0}.L5Fo6c-bF1uUb:focus{border:none;outline:none}sentinel{}</style><link rel="manifest" href="blob:https://ambientalepoliziaprovincialecr-ai.github.io/9d5cb9c6-c971-43af-950f-7715ba9f3cd4"></head>
 <body>
 
 <!-- BANNER MODALITÀ PROVA — visibile su tutte le schermate -->
@@ -303,7 +303,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <div class="modal-title" style="color:#e07060;">🖨️ Stampa Ritiri CRAS</div>
     <div class="modal-text">Seleziona il giorno da stampare</div>
     <input type="date" id="dataStampaTutti" class="form-input" style="margin-bottom:12px;font-size:16px;">
-    <div style="font-size:11px;color:rgba(255,235,59,0.4);margin-bottom:12px;">Verranno stampati tutti gli interventi CRAS del giorno selezionato</div>
+    <div style="font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:12px;">Verranno stampati tutti gli interventi CRAS del giorno selezionato</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
       <button class="modal-btn cancel" onclick="document.getElementById(&#39;modalStampaTutti&#39;).style.display=&#39;none&#39;;">Annulla</button>
       <button class="modal-btn confirm" style="background:#e07060;" onclick="eseguiStampaTutti()">Stampa</button>
@@ -362,11 +362,11 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   <div class="modal-box">
     <div class="modal-title">🔑 Cambia PIN</div>
     <div class="modal-text">Scegli un PIN personale salvato solo su questo dispositivo.</div>
-    <div style="font-size:11px;color:rgba(255,235,59,0.5);margin-bottom:6px;">PIN attuale</div>
+    <div style="font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:6px;">PIN attuale</div>
     <input type="text" class="form-input" id="cp-attuale" placeholder="PIN attuale" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
-    <div style="font-size:11px;color:rgba(255,235,59,0.5);margin-bottom:6px;">Nuovo PIN</div>
+    <div style="font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:6px;">Nuovo PIN</div>
     <input type="text" class="form-input" id="cp-nuovo" placeholder="Nuovo PIN (4 cifre)" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
-    <div style="font-size:11px;color:rgba(255,235,59,0.5);margin-bottom:6px;">Conferma nuovo PIN</div>
+    <div style="font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:6px;">Conferma nuovo PIN</div>
     <input type="text" class="form-input" id="cp-conferma" placeholder="Ripeti nuovo PIN" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:8px;">
     <div id="cp-err" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:8px;"></div>
     <div class="modal-btns">
@@ -381,7 +381,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <div class="modal-title">👤 Identificazione</div>
     <div class="modal-text">Inserisci il tuo codice operatore (4 cifre).</div>
     <input type="text" class="form-input" id="pinLogin" placeholder="es. 1234" inputmode="numeric" maxlength="4" style="margin-bottom:6px;text-align:center;font-size:22px;letter-spacing:8px;font-family:&#39;Bebas Neue&#39;,sans-serif;">
-    <div style="font-size:11px;color:rgba(255,235,59,0.5);margin:6px 0 4px;">Parola segreta</div>
+    <div style="font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;margin:6px 0 4px;">Parola segreta</div>
     <input type="text" class="form-input" id="parolaLogin" placeholder="PAROLA" maxlength="5" style="margin-bottom:6px;text-align:center;font-size:20px;letter-spacing:6px;text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
     <div id="errLogin" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
     <div style="margin-top:10px;">
@@ -392,7 +392,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 <div class="header">
   <div class="header-icon">🦌</div>
   <h1>REGISTRO <span>SELVATICI</span></h1>
-  <p id="headerUtente">👮 AMMINISTRATORE</p>
+  <p id="headerUtente">👮 BORRINI</p>
 </div>
 
 <!-- HOME -->
@@ -403,11 +403,11 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <button onclick="var mi=document.getElementById(&#39;modalIstruzioni&#39;);mi.style.display=&#39;flex&#39;;mi.style.alignItems=&#39;flex-start&#39;;" style="width:100%;padding:11px;background:rgba(39,174,96,0.08);border:1px solid rgba(39,174,96,0.3);border-radius:10px;color:#ffeb3b;font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
   <div class="stats-row" style="grid-template-columns:1fr 1fr;">
-    <div class="stat-card"><div class="num" id="statZoo">343</div><div class="label">Zooprofilassi</div></div>
-    <div class="stat-card total"><div class="num" id="statTot">653</div><div class="label">Totale</div></div>
+    <div class="stat-card"><div class="num" id="statZoo">0</div><div class="label">Zooprofilassi</div></div>
+    <div class="stat-card total"><div class="num" id="statTot">0</div><div class="label">Totale</div></div>
   </div>
   <div class="stats-row" style="margin-top:8px;">
-    <div class="stat-card" style="border-color:rgba(39,174,96,0.35);"><div class="num" id="statConsegnati" style="color:#ffeb3b;">310</div><div class="label">Consegnati CRAS</div></div>
+    <div class="stat-card" style="border-color:rgba(39,174,96,0.35);"><div class="num" id="statConsegnati" style="color:#ffeb3b;">0</div><div class="label">Consegnati CRAS</div></div>
     <div class="stat-card" style="border-color:rgba(41,128,185,0.35);"><div class="num" id="statLiberati" style="color:#5dade2;">0</div><div class="label">Liberati</div></div>
   </div>
   <div class="section-title">Nuova registrazione</div>
@@ -452,7 +452,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <input type="text" class="form-input" id="zooAnimale" placeholder="Es. Capriolo, Cinghiale, Volpe...">
   </div>
   <div class="form-group">
-    <label class="form-label">Numero identificativo <span style="color:rgba(255,235,59,0.5);font-size:11px;">(obbligatorio per cinghiale — sorveglianza peste suina)</span></label>
+    <label class="form-label">Numero identificativo <span style="color:rgba(255,235,59,0.92);font-weight:700;font-size:11px;">(obbligatorio per cinghiale — sorveglianza peste suina)</span></label>
     <input type="text" class="form-input" id="zooNumIdentificativo" placeholder="Es. numero targhetta / crotto">
   </div>
   <div class="form-group">
@@ -491,7 +491,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
       <button class="num-selector-btn" onclick="cambiaMolt(&#39;zoo&#39;,-1)">−</button>
       <div class="num-selector-val" id="zooMoltVal">1</div>
       <button class="num-selector-btn" onclick="cambiaMolt(&#39;zoo&#39;,1)">+</button>
-      <span style="font-size:12px;color:rgba(255,235,59,0.4);font-family:&#39;Barlow Condensed&#39;,sans-serif;">animali identici</span>
+      <span style="font-size:12px;color:rgba(255,235,59,0.92);font-weight:700;font-family:&#39;Barlow Condensed&#39;,sans-serif;">animali identici</span>
     </div>
   </div>
   <div class="form-group">
@@ -599,7 +599,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
       <button class="num-selector-btn" onclick="cambiaMolt(&#39;cras&#39;,-1)">−</button>
       <div class="num-selector-val" id="crasMoltVal">1</div>
       <button class="num-selector-btn" onclick="cambiaMolt(&#39;cras&#39;,1)">+</button>
-      <span style="font-size:12px;color:rgba(255,235,59,0.4);font-family:&#39;Barlow Condensed&#39;,sans-serif;">animali identici</span>
+      <span style="font-size:12px;color:rgba(255,235,59,0.92);font-weight:700;font-family:&#39;Barlow Condensed&#39;,sans-serif;">animali identici</span>
     </div>
   </div>
   <div class="form-group">
@@ -694,8 +694,8 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 <div class="modal-overlay" id="modalDecesso" style="display: none;">
   <div class="modal-box" style="max-width:420px;">
     <h2>☠️ Segnala decesso</h2>
-    <h3 id="decessoInfoAnimale" style="margin-bottom:14px;color:rgba(255,235,59,0.7);font-size:13px;">Civetta — N. Pratica CRAS-2026-387 — 17/07/2026 10:00</h3>
-    <p style="font-size:13px;line-height:1.6;margin-bottom:16px;color:rgba(255,235,59,0.85);">
+    <h3 id="decessoInfoAnimale" style="margin-bottom:14px;color:rgba(255,235,59,0.92);font-weight:700;font-size:13px;">Civetta — N. Pratica CRAS-2026-387 — 17/07/2026 10:00</h3>
+    <p style="font-size:13px;line-height:1.6;margin-bottom:16px;color:rgba(255,235,59,0.92);font-weight:700;">
       Verrà creata automaticamente una nuova registrazione in <strong>Istituto Zooprofilassi</strong> con causa morte <strong>Naturale</strong>, tipo consegna <strong>Carcassa</strong>, e riferimento alla pratica CRAS originale nelle note.
     </p>
     <div class="form-group">
@@ -714,7 +714,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 <div class="modal-overlay" id="modalSceltaRistampa" style="display: none;">
   <div class="modal-box" style="max-width:340px;">
     <h2>🖨️ Ristampa schede di oggi</h2>
-    <p style="font-size:12px;color:rgba(255,235,59,0.7);margin-bottom:16px;">Quale tipo di pratica vuoi correggere e ristampare?</p>
+    <p style="font-size:12px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:16px;">Quale tipo di pratica vuoi correggere e ristampare?</p>
     <button onclick="document.getElementById(&#39;modalSceltaRistampa&#39;).style.display=&#39;none&#39;;apriRistampaCrasOggi();" style="width:100%;margin-bottom:10px;padding:14px;background:rgba(39,174,96,0.12);border:1px solid rgba(39,174,96,0.35);border-radius:8px;color:#7dcfaa;font-size:14px;cursor:pointer;">🦌 CRAS</button>
     <button onclick="document.getElementById(&#39;modalSceltaRistampa&#39;).style.display=&#39;none&#39;;apriRistampaIzpOggi();" style="width:100%;margin-bottom:10px;padding:14px;background:rgba(93,173,226,0.12);border:1px solid rgba(93,173,226,0.35);border-radius:8px;color:#5dade2;font-size:14px;cursor:pointer;">🔬 IZP (Zooprofilassi)</button>
     <button onclick="document.getElementById(&#39;modalSceltaRistampa&#39;).style.display=&#39;none&#39;;" style="width:100%;padding:12px;background:rgba(255,235,59,0.08);border:1px solid rgba(255,235,59,0.2);border-radius:8px;color:#ffeb3b;cursor:pointer;">Annulla</button>
@@ -724,7 +724,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 <div class="modal-overlay" id="modalCrasOggi" style="display:none;">
   <div class="modal-box" style="max-width:460px;max-height:85vh;overflow-y:auto;">
     <h2>🖨️ Ristampa schede CRAS di oggi</h2>
-    <p id="ristampaCrasOggiSottotitolo" style="font-size:12px;line-height:1.5;margin-bottom:14px;color:rgba(255,235,59,0.7);">Seleziona una pratica per confermare il centro CRAS corretto e ristampare il verbale con il registro aggiornato.</p>
+    <p id="ristampaCrasOggiSottotitolo" style="font-size:12px;line-height:1.5;margin-bottom:14px;color:rgba(255,235,59,0.92);font-weight:700;">Seleziona una pratica per confermare il centro CRAS corretto e ristampare il verbale con il registro aggiornato.</p>
     <div id="listaCrasOggi"></div>
     <button onclick="document.getElementById(&#39;modalCrasOggi&#39;).style.display=&#39;none&#39;;" style="width:100%;margin-top:14px;padding:12px;background:rgba(255,235,59,0.08);border:1px solid rgba(255,235,59,0.2);border-radius:8px;color:#ffeb3b;cursor:pointer;">Chiudi</button>
   </div>
@@ -734,8 +734,8 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 <div class="modal-overlay" id="modalConfermaCentro" style="display:none;align-items:flex-start;overflow-y:auto;">
   <div class="modal-box" style="max-width:440px;max-height:90vh;overflow-y:auto;margin:20px auto;">
     <h2>✏️ Correggi e ristampa pratica</h2>
-    <h3 id="confermaCentroInfo" style="margin-bottom:14px;color:rgba(255,235,59,0.7);font-size:13px;"></h3>
-    <p style="font-size:11px;color:rgba(255,235,59,0.5);margin-bottom:14px;">Il numero di pratica non può essere modificato. Tutti gli altri campi possono essere corretti prima della ristampa.</p>
+    <h3 id="confermaCentroInfo" style="margin-bottom:14px;color:rgba(255,235,59,0.92);font-weight:700;font-size:13px;"></h3>
+    <p style="font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:14px;">Il numero di pratica non può essere modificato. Tutti gli altri campi possono essere corretti prima della ristampa.</p>
 
     <div class="form-group">
       <label class="form-label">Data e ora intervento</label>
@@ -2844,7 +2844,7 @@ function renderBozze(bozze) {
   var badge = document.getElementById('bozzeBadge');
   if(badge) { badge.style.display='inline-block'; badge.textContent=bozze.length; }
 
-  var html = '<div style="font-size:12px;color:rgba(255,235,59,0.5);margin-bottom:12px;">'+bozze.length+' bozze in attesa</div>';
+  var html = '<div style="font-size:12px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:12px;">'+bozze.length+' bozze in attesa</div>';
 
   // Bottone stampa TUTTE in cima
   html += '<button onclick="stampaTutteLeBozze()" style="width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#1a3a5c,#0d2030);color:#ffeb3b;font-family:\'Bebas Neue\',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-bottom:14px;">🖨️ Stampa e registra tutte le bozze ('+bozze.length+')</button>';
@@ -3229,5 +3229,6 @@ syncPinMapDaSheet().then(function(){ checkLogin(); aggiornaBadgeBozze(); });
   </div>
   <div id="bozzeLista" style="padding:0 16px 20px;"><div class="empty-state"><div>✅</div>Nessuna bozza in attesa</div></div>
 </div>
+
 
 </body></html>
