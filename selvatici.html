@@ -53,7 +53,7 @@ body{font-family:'Barlow',sans-serif;background:var(--bg);color:var(--crema);max
 .form-label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:5px;}
 .form-label .req{color:#ffeb3b;}
 .form-input,.form-select,.form-textarea{width:100%;background:var(--grigio);border:1px solid var(--bordo);border-radius:8px;color:rgba(255,235,59,0.92);font-family:'Barlow',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;padding:11px 13px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
-.form-input::placeholder,.form-textarea::placeholder{color:rgba(255,235,59,0.65);opacity:1;}
+.form-input::placeholder,.form-textarea::placeholder{color:rgba(255,235,59,0.92);font-weight:700;text-transform:uppercase;opacity:1;}
 .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:#ffeb3b;}
 .form-select option{background:#1c2b1a;font-weight:700;text-transform:uppercase;color:rgba(255,235,59,0.92);}
 .form-textarea{resize:none;height:80px;}
@@ -397,6 +397,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 
 <!-- HOME -->
 <div class="screen active" id="screenHome">
+  <div id="badgeCodaOffline" onclick="sincronizzaCodaOffline()" style="display:none;align-items:center;justify-content:center;gap:8px;background:rgba(230,126,34,0.18);border:1px solid rgba(230,126,34,0.5);border-radius:10px;padding:11px;margin-bottom:12px;color:#e67e22;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;"></div>
   <div class="install-banner" id="installBanner">
     <span>📲 Installa l'app sulla schermata home</span>
     <button onclick="installApp()">INSTALLA</button>
@@ -995,6 +996,8 @@ function caricaDatiDopoLogin(){
   if (typeof loadStats === 'function') loadStats();
   if (typeof syncPinMapDaSheet === 'function') syncPinMapDaSheet();
   if (typeof aggiornaBadgeBozze === 'function') aggiornaBadgeBozze();
+  aggiornaBadgeCodaOffline();
+  sincronizzaCodaOffline();
 }
 
 function handleGoogleCredentialResponse(response) {
@@ -1045,6 +1048,7 @@ function inizializzaBottoneGoogle(){
 }
 
 window.onload = function(){
+  aggiornaBadgeCodaOffline();
   var tokenCondiviso = leggiTokenCondiviso();
   if (tokenCondiviso) {
     idTokenCorrente = tokenCondiviso;
@@ -1468,6 +1472,83 @@ function resetCras(){
 
 var ultimoNumeroPraticaGenerato = '';
 
+// ============================================================
+// CODA OFFLINE — se il salvataggio fallisce per mancanza di
+// connessione (non per un errore del server), il dato viene
+// scritto sul dispositivo stesso e inviato automaticamente appena
+// torna la linea, senza bisogno di rifare nulla a mano. Le
+// registrazioni salvate così mostreranno il numero di pratica solo
+// dopo la sincronizzazione (non è possibile assegnarlo offline).
+// ============================================================
+var CHIAVE_CODA_OFFLINE = 'selvatici_coda_offline_v1';
+
+function leggiCodaOffline() {
+  try {
+    var raw = localStorage.getItem(CHIAVE_CODA_OFFLINE);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e) { return []; }
+}
+
+function scriviCodaOffline(coda) {
+  try { localStorage.setItem(CHIAVE_CODA_OFFLINE, JSON.stringify(coda)); } catch(e) {}
+}
+
+function accodaOffline(payload) {
+  var coda = leggiCodaOffline();
+  coda.push({ payload: payload, timestamp: new Date().toISOString() });
+  scriviCodaOffline(coda);
+  aggiornaBadgeCodaOffline();
+}
+
+function aggiornaBadgeCodaOffline() {
+  var n = leggiCodaOffline().length;
+  var badge = document.getElementById('badgeCodaOffline');
+  if (!badge) return;
+  if (n > 0) {
+    badge.style.display = 'flex';
+    badge.textContent = '📤 ' + n + ' in attesa di invio';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// Prova a inviare tutta la coda, un elemento alla volta e in
+// ordine. Si ferma al primo che fallisce ancora (probabile assenza
+// di linea), lasciando il resto in coda per il prossimo tentativo —
+// così l'ordine cronologico degli inserimenti resta corretto.
+var sincronizzazioneInCorso = false;
+async function sincronizzaCodaOffline() {
+  if (sincronizzazioneInCorso) return;
+  var coda = leggiCodaOffline();
+  if (coda.length === 0) return;
+  sincronizzazioneInCorso = true;
+  try {
+    while (coda.length > 0) {
+      var elemento = coda[0];
+      var ok = false;
+      try {
+        elemento.payload.idToken = idTokenCorrente;
+        var res = await fetch(URL_GS, { method: 'POST', body: JSON.stringify(elemento.payload) });
+        var d = await res.json();
+        ok = (d.status === 'ok');
+      } catch(e) { ok = false; }
+      if (!ok) break; // ancora senza linea (o errore server): riprova più tardi, non perdere l'ordine
+      coda.shift();
+      scriviCodaOffline(coda);
+      aggiornaBadgeCodaOffline();
+    }
+    if (leggiCodaOffline().length === 0) {
+      toast('✅ Tutti gli inserimenti in sospeso sono stati inviati!');
+      if (typeof loadStats === 'function') loadStats();
+    }
+  } finally {
+    sincronizzazioneInCorso = false;
+  }
+}
+
+window.addEventListener('online', sincronizzaCodaOffline);
+setInterval(sincronizzaCodaOffline, 30000);
+
 async function invia(payload){
   loading(true);
   try{
@@ -1477,7 +1558,18 @@ async function invia(payload){
     if(d.status==='ok'){ultimoNumeroPraticaGenerato=d.numeroPratica||'';toast('✅ Registrazione salvata!');return true;}
     else{toast('Errore: '+(d.message||'?'),true);return false;}
   }
-  catch(e){toast('Errore di connessione',true);return false;}
+  catch(e){
+    // Fetch fallito: quasi certamente manca la connessione, non un
+    // errore dei dati. Salviamo sul dispositivo invece di bloccare
+    // il lavoro sul campo — il numero di pratica verrà assegnato
+    // solo alla sincronizzazione. Azzeriamo il numero dell'ultima
+    // pratica riuscita, altrimenti chi chiama invia() rischierebbe
+    // di associare dati di contatto alla pratica sbagliata.
+    ultimoNumeroPraticaGenerato = '';
+    accodaOffline(payload);
+    toast('💾 Salvato sul dispositivo — verrà inviato appena torna la connessione', false);
+    return true;
+  }
   finally{loading(false);}
 }
 
