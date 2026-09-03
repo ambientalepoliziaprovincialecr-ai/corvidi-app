@@ -590,7 +590,7 @@ function applicaTarghe(listaTarghe){
 
 async function caricaTargheDalFoglio(){
   try {
-    var res = await fetchConTimeout(URL_GS + '?action=targhe&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res = await fetchConTimeout(URL_GS + '?action=targhe&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
     var d = await res.json();
     applicaTarghe(d.targhe);
   } catch(e) {
@@ -657,7 +657,7 @@ function applicaPinMap(mappaRicevuta){
 
 async function syncPinMapDaSheet() {
   try {
-    var res = await fetchConTimeout(URL_GS + '?action=pinmap&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res = await fetchConTimeout(URL_GS + '?action=pinmap&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
     var d = await res.json();
     applicaPinMap(d.pinMap);
   } catch(e) { /* offline: usa la mappa locale già caricata */ }
@@ -742,7 +742,7 @@ function caricaDatiDopoLogin(){
 
 function handleGoogleCredentialResponse(response) {
   idTokenCorrente = response.credential;
-  fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(idTokenCorrente))
+  fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000)
     .then(function(r){ return r.json(); })
     .then(function(verifica){
       if (verifica.ok) {
@@ -1046,7 +1046,7 @@ async function submitKm() {
   var kmNum = parseInt(km);
   var SOGLIA_AVVISO_KM = 300;
   try {
-    var resUltimo = await fetch(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));
+    var resUltimo = await fetchConTimeout(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente), null, 5000);
     var dUltimo = await resUltimo.json();
     var registrazioniTarga = (dUltimo.km || []).filter(function(r){
       return (r.targa || '').toString().toUpperCase().trim() === targa.toString().toUpperCase().trim() && parseInt(r.kmFinali) > 0;
@@ -1202,7 +1202,7 @@ async function sincronizzaCodaOffline() {
       var ok = false;
       try {
         elemento.payload.idToken = idTokenCorrente;
-        var res = await fetch(URL_GS, { method: 'POST', body: JSON.stringify(elemento.payload) });
+        var res = await fetchConTimeout(URL_GS, { method: 'POST', body: JSON.stringify(elemento.payload) }, 8000);
         var d = await res.json();
         ok = (d.status === 'ok');
       } catch(e) { ok = false; }
@@ -1230,14 +1230,14 @@ async function invia(payload) {
   loading(true);
   try {
     payload.idToken = idTokenCorrente;
-    var res = await fetch(URL_GS, {method:'POST', body:JSON.stringify(payload)});
+    var res = await fetchConTimeout(URL_GS, {method:'POST', body:JSON.stringify(payload)}, 8000);
     var d = await res.json();
     if (d.status === 'ok') toast('✅ Salvato!');
     else toast('Errore: ' + (d.message || '?'), true);
   } catch(e) {
-    // Fetch fallito: quasi certamente manca la connessione, non un
-    // errore dei dati. Salviamo sul dispositivo invece di bloccare
-    // il lavoro sul campo.
+    // Fetch fallito O in timeout: quasi certamente manca la
+    // connessione, non un errore dei dati. Salviamo sul dispositivo
+    // invece di bloccare il lavoro sul campo.
     accodaOffline(payload);
     toast('💾 Salvato sul dispositivo — verrà inviato appena torna la connessione', false);
   }
@@ -1253,7 +1253,7 @@ function applicaStats(d) {
 
 async function loadStats() {
   try {
-    var res = await fetchConTimeout(URL_GS + '?action=stats&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res = await fetchConTimeout(URL_GS + '?action=stats&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
     var d = await res.json();
     applicaStats(d);
   } catch(e) {
@@ -1322,7 +1322,7 @@ function renderStorico() {
 async function loadConsumi() {
   document.getElementById('consumiList').innerHTML = '<div class="empty-state"><div>⛽</div>Caricamento...</div>';
   try {
-    var res = await fetch(URL_GS + '?action=consumi&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res = await fetchConTimeout(URL_GS + '?action=consumi&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
     var d = await res.json();
     var list = d.consumi || [];
     if (!list.length) { document.getElementById('consumiList').innerHTML = '<div class="empty-state"><div>📂</div>Nessun dato</div>'; return; }
@@ -1448,7 +1448,7 @@ async function generaStampaKm(){
   var meseLabel=nomeMese(meseNum-1)+' '+anno;
   document.getElementById('anteprimaKm').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento...</div>';
   try{
-    var res=await fetch(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res=await fetchConTimeout(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
     var d=await res.json();
     var righe=(d.km||[]).filter(function(r){
       if(!r.dataOra)return false;
@@ -1486,7 +1486,7 @@ async function generaStampaKm(){
   var meseLabel=nomeMese(meseNum-1)+' '+anno;
   document.getElementById('anteprimaKm').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento...</div>';
   try{
-    var res=await fetch(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res=await fetchConTimeout(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
     var d=await res.json();
     var righe=(d.km||[]).filter(function(r){
       if(!r.dataOra)return false;
@@ -1523,7 +1523,7 @@ async function generaStampaRif(){
   var meseLabel=nomeMese(meseNum-1)+' '+anno;
   document.getElementById('anteprimaRif').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento...</div>';
   try{
-    var res=await fetch(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res=await fetchConTimeout(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
     var d=await res.json();
     var righe=(d.rif||[]).filter(function(r){
       if(!r.dataOra)return false;
@@ -1676,7 +1676,7 @@ async function generaStampaTutto(){
   document.getElementById('anteprimaTutto').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento dati...</div>';
 
   try{
-    var res=await fetch(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res=await fetchConTimeout(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
     var d=await res.json();
     var tuttiKm=d.km||[];
     var tuttiRif=d.rif||[];
