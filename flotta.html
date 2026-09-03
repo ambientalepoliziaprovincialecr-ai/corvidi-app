@@ -553,7 +553,7 @@ async function caricaTargheDalFoglio(){
   try {
     var res = await fetch(URL_GS + '?action=targhe&idToken=' + encodeURIComponent(idTokenCorrente));
     var d = await res.json();
-    var targhe = d.targhe || TARGHE_DEFAULT;
+    targhe = d.targhe || TARGHE_DEFAULT;
     TARGHE_CORRENTI = targhe;
     // Popola tutte le select targhe
     var selects = ['kmTarga','rifTarga','filtraTarga','kmStampaTarga','rifStampaTarga'];
