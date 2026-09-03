@@ -410,6 +410,10 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
       <option>GUARNERI</option><option>PREANI</option><option>RIZZI</option><option>TRENTAROSSI</option><option>VIVIANI</option>
     </select>
   </div>
+  <div id="avvisoStoricoFiltrato" style="display:none;align-items:center;justify-content:space-between;gap:10px;background:rgba(41,128,185,0.12);border:1px solid rgba(41,128,185,0.35);border-radius:8px;padding:9px 12px;margin-bottom:10px;">
+    <span style="font-size:12px;color:#5dade2;font-family:'Barlow Condensed',sans-serif;"></span>
+    <button onclick="caricaStoricoCompleto()" style="background:rgba(41,128,185,0.2);border:1px solid rgba(41,128,185,0.5);border-radius:6px;color:#5dade2;font-size:11px;padding:5px 10px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;white-space:nowrap;">Carica tutto lo storico</button>
+  </div>
   <div id="storicoList"><div class="empty-state"><div>📋</div>Caricamento...</div></div>
 </div>
 
@@ -541,6 +545,20 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 
 <script>
 const URL_GS = 'https://script.google.com/macros/s/AKfycbzY8hcFw4FJueOFcFaTGJniKu64Y-36fFeJ6FDsGC1N_GpuxMYteCTrtknnsivOakY/exec';
+
+// Un fetch normale, se la connessione è lenta o il server non
+// risponde, può restare in attesa per moltissimo tempo senza dare
+// mai un errore — l'app resta bloccata a "Caricamento...". Questa
+// versione mette un limite massimo di attesa (10 secondi di
+// default): oltre quel limite, l'app smette di aspettare e mostra
+// subito un errore invece di restare ferma all'infinito.
+function fetchConTimeout(url, opzioni, msTimeout){
+  msTimeout = msTimeout || 10000;
+  var controller = new AbortController();
+  var timer = setTimeout(function(){ controller.abort(); }, msTimeout);
+  var opzioniComplete = Object.assign({}, opzioni || {}, { signal: controller.signal });
+  return fetch(url, opzioniComplete).finally(function(){ clearTimeout(timer); });
+}
 const URL_TURNI = 'https://script.google.com/macros/s/AKfycbyVBPIGRRJigXuoQsHialZiFugbN-jKRM-rB6jUnKHw7w52AE_H9rVr20TYxE-sazMs/exec';
 
 // TARGHE VEICOLI
@@ -549,30 +567,32 @@ var TARGHE_CORRENTI = [];
 // Usa sempre TARGHE_DEFAULT come base, merge con eventuali aggiunte salvate
 // Targhe caricate dal foglio Google
 var targhe = TARGHE_DEFAULT.slice();
+function applicaTarghe(listaTarghe){
+  targhe = listaTarghe || TARGHE_DEFAULT;
+  TARGHE_CORRENTI = targhe;
+  var selects = ['kmTarga','rifTarga','filtraTarga','kmStampaTarga','rifStampaTarga'];
+  selects.forEach(function(id){
+    var sel = document.getElementById(id);
+    if(!sel) return;
+    var val = sel.value;
+    var firstOpt = sel.options[0];
+    sel.innerHTML = '';
+    sel.appendChild(firstOpt);
+    targhe.forEach(function(t, i){
+      var opt = document.createElement('option');
+      opt.value = t;
+      opt.textContent = t + ' (AUTO ' + (i+1) + ')';
+      sel.appendChild(opt);
+    });
+    if(val) sel.value = val;
+  });
+}
+
 async function caricaTargheDalFoglio(){
   try {
-    var res = await fetch(URL_GS + '?action=targhe&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res = await fetchConTimeout(URL_GS + '?action=targhe&idToken=' + encodeURIComponent(idTokenCorrente));
     var d = await res.json();
-    targhe = d.targhe || TARGHE_DEFAULT;
-    TARGHE_CORRENTI = targhe;
-    // Popola tutte le select targhe
-    var selects = ['kmTarga','rifTarga','filtraTarga','kmStampaTarga','rifStampaTarga'];
-    selects.forEach(function(id){
-      var sel = document.getElementById(id);
-      if(!sel) return;
-      var val = sel.value;
-      // Mantieni la prima option (— Seleziona — o Tutte le targhe)
-      var firstOpt = sel.options[0];
-      sel.innerHTML = '';
-      sel.appendChild(firstOpt);
-      targhe.forEach(function(t, i){
-        var opt = document.createElement('option');
-        opt.value = t;
-        opt.textContent = t + ' (AUTO ' + (i+1) + ')';
-        sel.appendChild(opt);
-      });
-      if(val) sel.value = val;
-    });
+    applicaTarghe(d.targhe);
   } catch(e) {
     // Fallback: usa targhe default
     TARGHE_CORRENTI = TARGHE_DEFAULT;
@@ -627,16 +647,19 @@ function salvaPinMap() {
 }
 
 // Scarica la mappa PIN aggiornata dal Google Sheet (sorgente centrale)
+function applicaPinMap(mappaRicevuta){
+  if (mappaRicevuta && typeof mappaRicevuta === 'object') {
+    var merged = Object.assign({}, DEFAULT_PIN_MAP, mappaRicevuta);
+    PIN_MAP = merged;
+    salvaPinMap();
+  }
+}
+
 async function syncPinMapDaSheet() {
   try {
-    var res = await fetch(URL_GS + '?action=pinmap&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res = await fetchConTimeout(URL_GS + '?action=pinmap&idToken=' + encodeURIComponent(idTokenCorrente));
     var d = await res.json();
-    if (d.pinMap && typeof d.pinMap === 'object') {
-      // Unisce: i PIN dal foglio hanno priorità, ma mantiene i default come fallback
-      var merged = Object.assign({}, DEFAULT_PIN_MAP, d.pinMap);
-      PIN_MAP = merged;
-      salvaPinMap();
-    }
+    applicaPinMap(d.pinMap);
   } catch(e) { /* offline: usa la mappa locale già caricata */ }
 }
 
@@ -774,23 +797,36 @@ window.onload = function(){
   var tokenCondiviso = leggiTokenCondiviso();
   if (tokenCondiviso) {
     idTokenCorrente = tokenCondiviso;
-    fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(tokenCondiviso))
+    // Un'unica richiesta al posto di 4 separate (login, statistiche,
+    // targhe, PIN) — l'apertura dell'app aspetta una sola "partenza"
+    // invece di quattro in fila.
+    fetchConTimeout(URL_GS + '?action=datiIniziali&idToken=' + encodeURIComponent(tokenCondiviso), null, 10000)
       .then(function(r){ return r.json(); })
-      .then(function(verifica){
-        if (verifica.ok) {
-          nomeOperatoreGoogle = verifica.nome;
-          operatoreCorrente = verifica.nome;
-          try { localStorage.setItem('flotta_operatore_v1', verifica.nome); } catch(e) {}
+      .then(function(d){
+        if (d.ok) {
+          nomeOperatoreGoogle = d.nome;
+          operatoreCorrente = d.nome;
+          try { localStorage.setItem('flotta_operatore_v1', d.nome); } catch(e) {}
           var hU = document.getElementById('headerUtente');
-          if (hU) hU.textContent = verifica.nome;
+          if (hU) hU.textContent = d.nome;
           document.getElementById('modalLoginGoogle').style.display = 'none';
-          caricaDatiDopoLogin();
+          if (d.stats) applicaStats(d.stats);
+          if (d.targhe) applicaTarghe(d.targhe);
+          if (d.pinMap) applicaPinMap(d.pinMap);
+          sincronizzaCodaOffline();
         } else {
           idTokenCorrente = null;
           inizializzaBottoneGoogle();
         }
       })
-      .catch(function(){ inizializzaBottoneGoogle(); });
+      .catch(function(e){
+        // Timeout o errore di rete: non restiamo bloccati in
+        // attesa — mostriamo il pulsante di accesso e un avviso,
+        // così la persona può almeno riprovare invece di fissare
+        // una schermata ferma.
+        toast(e && e.name === 'AbortError' ? '⏱️ Connessione lenta — riprova' : 'Errore di connessione — riprova', true);
+        inizializzaBottoneGoogle();
+      });
   } else {
     inizializzaBottoneGoogle();
   }
@@ -1208,29 +1244,53 @@ async function invia(payload) {
   finally { loading(false); }
 }
 
+function applicaStats(d) {
+  document.getElementById('statKmOggi').textContent = d.kmOggi ?? '0';
+  document.getElementById('statKmMese').textContent = d.kmMese ?? '0';
+  document.getElementById('statRifMese').textContent = d.rifMese ?? '0';
+  document.getElementById('statKmAnno').textContent = d.kmAnno ?? '0';
+}
+
 async function loadStats() {
   try {
-    var res = await fetch(URL_GS + '?action=stats&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res = await fetchConTimeout(URL_GS + '?action=stats&idToken=' + encodeURIComponent(idTokenCorrente));
     var d = await res.json();
-    document.getElementById('statKmOggi').textContent = d.kmOggi ?? '0';
-    document.getElementById('statKmMese').textContent = d.kmMese ?? '0';
-    document.getElementById('statRifMese').textContent = d.rifMese ?? '0';
-    document.getElementById('statKmAnno').textContent = d.kmAnno ?? '0';
+    applicaStats(d);
   } catch(e) {
     ['statKmOggi','statKmMese','statRifMese','statKmAnno'].forEach(function(id) { document.getElementById(id).textContent = '—'; });
   }
 }
 
+var storicoCompleto = false; // false = solo ultimi 2 giorni, true = tutto lo storico
+
 async function loadStorico() {
   document.getElementById('storicoList').innerHTML = '<div class="empty-state"><div>📋</div>Caricamento...</div>';
   try {
-    var res = await fetch(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));
+    var parametroTutto = storicoCompleto ? '&tutto=1' : '';
+    var res = await fetchConTimeout(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente) + parametroTutto);
     var d = await res.json();
     datiKm = d.km || []; datiRif = d.rif || [];
     renderStorico();
+    aggiornaAvvisoStoricoFiltrato(d.filtrato, d.giorni);
   } catch(e) {
     document.getElementById('storicoList').innerHTML = '<div class="empty-state"><div>⚠️</div>Errore</div>';
   }
+}
+
+function aggiornaAvvisoStoricoFiltrato(filtrato, giorni) {
+  var box = document.getElementById('avvisoStoricoFiltrato');
+  if (!box) return;
+  if (filtrato) {
+    box.style.display = 'flex';
+    box.querySelector('span').textContent = '📅 Ultimi ' + giorni + ' giorni';
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+function caricaStoricoCompleto() {
+  storicoCompleto = true;
+  loadStorico();
 }
 
 function switchTab(tab) {
