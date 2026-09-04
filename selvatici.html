@@ -237,7 +237,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
         2. Compila data/ora, agenti, specie, causa e località<br>
         3. Se recuperi più esemplari identici, usa il <strong>+</strong> per indicare il numero di capi (una sola scheda con il totale, non una per animale)<br>
         4. Aggiungi il <strong>punto GPS</strong> se vuoi salvare la posizione esatta del ritrovamento<br>
-        5. Tocca <strong>🔬 Registra consegna</strong> — i dati vengono inviati subito al foglio, in forma anonima (solo iniziali del consegnante)
+        5. Tocca <strong>💾 Salva bozza</strong> per accodarla e stamparla insieme alle altre in "Bozze da stampare", oppure <strong>🖨️ Stampa e registra</strong> per stampare e registrare subito questa scheda — in entrambi i casi i dati vengono salvati in forma anonima (solo iniziali del consegnante)
       </div>
     </div>
 
@@ -513,7 +513,10 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <label class="form-label">Note</label>
     <textarea class="form-textarea" id="zooNote" placeholder="Tipo campioni, osservazioni..."></textarea>
   </div>
-  <button class="btn-submit zoo" onclick="submitZoo()">🔬 Registra consegna</button>
+  <div style="display:flex;gap:10px;margin-top:18px;margin-bottom:30px;">
+    <button class="btn-submit zoo" style="flex:1;margin:0;" onclick="salvaBozzaZoo()">💾 Salva bozza</button>
+    <button class="btn-submit zoo" style="flex:1;margin:0;background:linear-gradient(135deg,#1a6b3a,#0d3d20);" onclick="stampaERegistraZoo()">🖨️ Stampa e registra</button>
+  </div>
 </div>
 
 <!-- CRAS -->
