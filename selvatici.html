@@ -8,9 +8,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Selvatici">
 <title>Registro Selvatici</title>
-<link href="./Registro Selvatici_files/css2" rel="stylesheet">
-<link rel="stylesheet" href="./Registro Selvatici_files/leaflet.css">
-<script src="./Registro Selvatici_files/leaflet.js.download"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&family=Barlow+Condensed:wght@400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root{--verde:#2d5a27;--verde2:#4a8c3f;--scuro:#1a3a15;--ocra:#c8922a;--ocra2:#e8a830;--crema:#ffeb3b;--rosso:#c0392b;--azzurro:#2980b9;--bg:#1c2b1a;--grigio:rgba(255,255,255,0.06);--bordo:rgba(255,255,255,0.12);}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -183,8 +185,8 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 .search-nav-btn{display:inline-block;margin-top:8px;padding:8px 14px;background:#4285f4;color:#ffeb3b;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;}
 .search-empty{text-align:center;padding:20px;color:rgba(255,235,59,0.92);font-weight:700;font-size:13px;}
 </style>
-<script src="./Registro Selvatici_files/client" async="" defer=""></script>
-<link rel="manifest" href="blob:https://ambientalepoliziaprovincialecr-ai.github.io/eaa2bec3-3a06-4ccd-b09b-6630f491fb6e"><style id="googleidentityservice_button_styles">.qJTHM{-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;color:#202124;direction:ltr;-webkit-touch-callout:none;font-family:Roboto-Regular,arial,sans-serif;-webkit-font-smoothing:antialiased;font-weight:400;margin:0;overflow:hidden;-webkit-text-size-adjust:100%}.ynRLnc{left:-9999px;position:absolute;top:-9999px}.L6cTce{display:none}.bltWBb{overflow-wrap:break-word;word-break:break-word}.hSRGPd{color:#1a73e8;cursor:pointer;font-weight:500;text-decoration:none}.Bz112c-W3lGp{height:16px;width:16px}.Bz112c-E3DyYd{height:20px;width:20px}.Bz112c-r9oPif{height:24px;width:24px}.Bz112c-u2z5K{height:36px;width:36px}.Bz112c-uaxL4e{border-radius:10px}.LgbsSe-Bz112c{display:block}.S9gUrf-YoZ4jf{border:none;margin:0;padding:0}.S9gUrf-YoZ4jf *{border:none;margin:0;padding:0}.fFW7wc-ibnC6b>.aZ2wEe>div{border-color:#4285f4}.P1ekSe-ZMv3u{-webkit-transition:height .2s linear;transition:height .2s linear}.P1ekSe-ZMv3u>div:first-child{background-color:#1a73e8!important;-webkit-transition:width .3s linear;transition:width .3s linear}.P1ekSe-ZMv3u>div:nth-child(2){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(90deg,#1a73e8,#1a73e8)!important}.P1ekSe-ZMv3u>div:nth-child(3){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(90deg,#1a73e8,#1a73e8)!important}.haAclf{display:inline-block}.nsm7Bb-HzV7m-LgbsSe{border-radius:4px;box-sizing:border-box;-webkit-transition:background-color .218s,border-color .218s;transition:background-color .218s,border-color .218s;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;-webkit-appearance:none;background-color:#fff;background-image:none;border:1px solid #dadce0;color:#3c4043;cursor:pointer;font-family:Google Sans,arial,sans-serif;font-size:.875rem;height:40px;letter-spacing:.25px;outline:none;overflow:hidden;padding:0 12px;position:relative;text-align:center;vertical-align:middle;white-space:nowrap;width:auto}@media screen and (-ms-high-contrast:active){.nsm7Bb-HzV7m-LgbsSe{border:2px solid windowText;color:windowText}}@media screen and (preferes-contrast:more){.nsm7Bb-HzV7m-LgbsSe{color:#000}}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe{font-size:.875rem;height:32px;letter-spacing:.25px;padding:0 10px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe{font-size:.6875rem;height:20px;letter-spacing:.3px;padding:0 8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe{padding:0;width:40px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe{width:32px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe{width:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK{border-radius:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.pSzOP-SxQuSe{border-radius:16px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.purZT-SxQuSe{border-radius:10px}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc{border:1px solid #8e918f;background-color:#131314;color:#e3e3e3}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc{border:none;color:#fff}.nsm7Bb-HzV7m-LgbsSe.MFS4be-v3pZbf-Ia7Qfc{background-color:#1a73e8}.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{background-color:#202124;color:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{color:#fff}}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:18px;margin-right:8px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:14px;min-width:14px;width:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:10px;min-width:10px;width:10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin-left:8px;margin-right:-4px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:10px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:4px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:3px;border-bottom-left-radius:3px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;align-items:center;background-color:#fff;height:36px;margin-left:-10px;margin-right:12px;min-width:36px;width:36px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c,.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:28px;margin-left:-8px;margin-right:10px;min-width:28px;width:28px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:16px;margin-left:-6px;margin-right:8px;min-width:16px;width:16px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:3px;margin-left:2px;margin-right:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:8px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-bN97Pc-sM5MNb{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;-webkit-flex-direction:row;-webkit-box-orient:horizontal;-webkit-box-direction:normal;flex-direction:row;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-flex-wrap:nowrap;flex-wrap:nowrap;height:100%;position:relative;width:100%}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX{-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:1;-webkit-box-flex:1;flex-grow:1;font-family:Google Sans,arial,sans-serif;font-weight:500;overflow:hidden;text-overflow:ellipsis;vertical-align:top}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-weight:300}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:0;-webkit-box-flex:0;flex-grow:0}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-MJoBVe{-webkit-transition:background-color .218s;transition:background-color .218s;bottom:0;left:0;position:absolute;right:0;top:0}.nsm7Bb-HzV7m-LgbsSe:focus,.nsm7Bb-HzV7m-LgbsSe:hover{box-shadow:none;border-color:rgb(210,227,252);outline:none}.nsm7Bb-HzV7m-LgbsSe:focus-within{outline:2px solid #00639b;border-color:transparent}.nsm7Bb-HzV7m-LgbsSe:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.08)}.nsm7Bb-HzV7m-LgbsSe:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.1)}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.08)}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.12)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.24)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.32)}.nsm7Bb-HzV7m-LgbsSe .n1UuX-DkfjY{border-radius:50%;display:-webkit-box;display:-webkit-flex;display:flex;height:20px;margin-left:-4px;margin-right:8px;min-width:20px;width:20px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-family:Roboto;font-size:12px;text-align:left}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .fmcmS,.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .ssJRIf{overflow:hidden;text-overflow:ellipsis}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;color:#5f6368;fill:#5f6368;font-size:11px;font-weight:400}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.i5vt6e-to915-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#c4c7c5;fill:#c4c7c5}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#e8eaed;fill:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff,.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#000;fill:#000}}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .Bz112c{height:18px;margin:-3px -3px -3px 2px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:0;border-bottom-left-radius:0;border-top-right-radius:3px;border-bottom-right-radius:3px;margin-left:12px;margin-right:-10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.L5Fo6c-sM5MNb{border:0;display:block;left:0;position:relative;top:0}.L5Fo6c-bF1uUb{border-radius:4px;bottom:0;cursor:pointer;left:0;position:absolute;right:0;top:0}.L5Fo6c-bF1uUb:focus{border:none;outline:none}sentinel{}</style><link rel="manifest" href="blob:https://ambientalepoliziaprovincialecr-ai.github.io/9d5cb9c6-c971-43af-950f-7715ba9f3cd4"></head>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
 <body>
 
 <!-- BANNER MODALITÀ PROVA — visibile su tutte le schermate -->
@@ -397,7 +399,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 
 <!-- HOME -->
 <div class="screen active" id="screenHome">
-  <div id="badgeCodaOffline" onclick="sincronizzaCodaOffline()" style="display:none;align-items:center;justify-content:center;gap:8px;background:rgba(230,126,34,0.18);border:1px solid rgba(230,126,34,0.5);border-radius:10px;padding:11px;margin-bottom:12px;color:#e67e22;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;"></div>
+  <div id="badgeCodaOffline" onclick="sincronizzaCodaOffline()" style="display:none;align-items:center;justify-content:center;gap:8px;background:rgba(230,126,34,0.18);border:1px solid rgba(230,126,34,0.5);border-radius:10px;padding:11px;margin-bottom:12px;color:#e67e22;font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;"></div>
   <div class="install-banner" id="installBanner">
     <span>📲 Installa l'app sulla schermata home</span>
     <button onclick="installApp()">INSTALLA</button>
@@ -426,7 +428,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="section-title">Archivio</div>
   <button class="btn-report" onclick="vai(&#39;screenStorico&#39;)">📋 &nbsp;Storico consegne</button>
-  <button class="btn-sheet" style="margin-top:8px;background:rgba(41,128,185,0.15);border-color:rgba(41,128,185,0.4);color:#5dade2;position:relative;" onclick="vai(&#39;screenBozze&#39;)">📋 &nbsp;Bozze da stampare <span id="bozzeBadge" style="display: none; position: absolute; top: -6px; right: -6px; background: rgb(231, 76, 60); color: rgb(255, 255, 255); border-radius: 50%; width: 20px; height: 20px; font-size: 11px; font-family: sans-serif; line-height: 20px; text-align: center; font-weight: bold;">0</span></button>
+  <button class="btn-sheet" style="margin-top:8px;background:rgba(41,128,185,0.15);border-color:rgba(41,128,185,0.4);color:#5dade2;position:relative;" onclick="vai(&#39;screenBozze&#39;)">📋 &nbsp;Bozze da stampare <span id="bozzeBadge" style="display: inline-block; position: absolute; top: -6px; right: -6px; background: rgb(231, 76, 60); color: rgb(255, 255, 255); border-radius: 50%; width: 20px; height: 20px; font-size: 11px; font-family: sans-serif; line-height: 20px; text-align: center; font-weight: bold;">2</span></button>
   <button class="btn-sheet" style="margin-top:8px;background:rgba(39,174,96,0.1);border-color:rgba(39,174,96,0.35);color:#7dcfaa;" onclick="apriSceltaRistampa()">🖨️ &nbsp;Ristampa schede di oggi</button>
   <button class="btn-sheet" style="margin-top:8px;background:rgba(192,57,43,0.1);border-color:rgba(192,57,43,0.3);color:#e07060;" onclick="cambiUtente()">🔄 &nbsp;Cambia utente</button>
   <button id="btnModalitaProva" class="btn-sheet" style="margin-top:8px;background:rgba(230,126,34,0.1);border-color:rgba(230,126,34,0.35);color:#e67e22;" onclick="toggleModalitaProva()">🧪 &nbsp;Attiva modalità prova</button>
@@ -2731,7 +2733,7 @@ async function registraDeidCras(dati, numPratica, silenziosa) {
   return ok;
 }
 
-async function registraDeidZoo(dati, numPratica) {
+async function registraDeidZoo(dati, numPratica, silenziosa) {
   var payload = {
     tipo:'ZOO',
     numeroPratica: numPratica,
@@ -2753,7 +2755,8 @@ async function registraDeidZoo(dati, numPratica) {
     inseritoDa: dati.inseritoDa
   };
   var ok = await invia(payload);
-  if(ok) { resetZoo(); vai('screenHome'); }
+  if(ok && !silenziosa) { resetZoo(); vai('screenHome'); }
+  return ok;
 }
 
 function estraiIniziali(nomeCompleto) {
@@ -2976,6 +2979,26 @@ async function aggiornaBadgeBozze() {
   } catch(e){}
 }
 
+function verbaleZooFragHtml(r, numPratica) {
+  var agente=(r.agente||'').trim(); var agenteFirma=(r.agente||'').split(',')[0].trim();
+  var dataOra=r.dataOra||''; var dataStr='',oraStr='';
+  if(dataOra.indexOf(' ')>=0){var p=dataOra.split(' ');dataStr=p[0];oraStr=p[1]||'';}else{dataStr=dataOra;}
+  return '<div style="border:1px solid #ccc;padding:8mm;position:relative;page-break-inside:avoid;margin-bottom:8mm;">'+
+    '<div class="num-pratica">N. Pratica: '+numPratica+'</div>'+
+    '<div style="text-align:center;margin-bottom:8px;"><div style="font-size:9px;">Provincia di Cremona</div><div style="font-size:13px;font-weight:bold;">POLIZIA LOCALE</div><div style="font-size:9px;">Corso Vittorio Emanuele II, 17 - 26100 CREMONA</div></div>'+
+    '<div style="font-size:12px;font-weight:bold;text-align:center;text-decoration:underline;margin:8px 0;">VERBALE CONSEGNA FAUNA SELVATICA — IZP</div>'+
+    '<p>Il/I sottoscritto/i <strong>'+agente+'</strong> in data <strong>'+dataStr+'</strong> alle ore <strong>'+oraStr+'</strong></p>'+
+    '<p>ha/hanno ricevuto da: <strong>'+(r.consegnante||'_________________________')+'</strong></p>'+
+    '<p>Localit&agrave;: <strong>'+(r.localita||'_________________________')+'</strong></p>'+
+    '<p>Specie: <strong>'+(r.animale||'_________________________')+'</strong> &nbsp;&nbsp; Causa: <strong>'+(r.causa||'_______')+'</strong></p>'+
+    '<p>Tipo consegna IZP: <strong>'+(r.tipoIzp||'_______')+'</strong> &nbsp;&nbsp; Ore impiegate: <strong>'+(r.ore||'_')+'</strong></p>'+
+    (r.note?'<p>Note: <strong>'+r.note+'</strong></p>':'')+
+    '<div style="display:flex;justify-content:space-between;margin-top:30px;">'+
+    '<div style="text-align:center;"><div style="border-bottom:1px solid #000;width:130px;height:28px;margin-bottom:3px;"></div>Firma consegnante</div>'+
+    '<div style="text-align:center;"><div style="border-bottom:1px solid #000;width:130px;height:28px;margin-bottom:3px;"></div>La Polizia Locale<br><strong>'+agenteFirma+'</strong></div>'+
+    '</div></div>';
+}
+
 async function stampaTutteLeBozze() {
   if(!bozzeCorrenti.length) { toast('Nessuna bozza da stampare', true); return; }
 
@@ -3035,18 +3058,22 @@ async function stampaTutteLeBozze() {
   // Costruisci HTML con tutti i verbali
   var corpo = '';
   bozzeCorrenti.forEach(function(b) {
-    corpo += verbaleHtml(b, b.numeroPratica, false);
-    corpo += verbaleHtml(b, b.numeroPratica, true);
+    if (b.tipo === 'CRAS_BOZZA') {
+      corpo += verbaleHtml(b, b.numeroPratica, false);
+      corpo += verbaleHtml(b, b.numeroPratica, true);
+    } else {
+      corpo += verbaleZooFragHtml(b, b.numeroPratica);
+    }
   });
 
-  var htmlDoc = '<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Verbali CRAS - '+new Date().toLocaleDateString('it-IT')+'</title><style>'+CSS+'</style></head><body><div id="areaStampa">'+
+  var htmlDoc = '<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Verbali e moduli - '+new Date().toLocaleDateString('it-IT')+'</title><style>'+CSS+'</style></head><body><div id="areaStampa">'+
     corpo+'</div>'+
     '<div class="no-print" style="margin:16px;text-align:center;">'+
     '<button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#1a3a15;color:#ffeb3b;border:none;border-radius:8px;">🖨️ Stampa / Salva PDF</button> '+
     '<button onclick="scaricaPDF()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#0d47a1;color:#fff;border:none;border-radius:8px;margin-left:8px;">⬇️ Scarica PDF</button> '+
     '<button onclick="window.close()" style="padding:12px 20px;font-size:14px;cursor:pointer;">✕ Chiudi</button></div></body></html>';
 
-  apriFinestraStampabile(htmlDoc, 'verbali-cras.pdf');
+  apriFinestraStampabile(htmlDoc, 'verbali-bozze.pdf');
 
   // Dopo 1 secondo registra tutte le bozze nel foglio e le elimina
   setTimeout(async function() {
@@ -3054,7 +3081,11 @@ async function stampaTutteLeBozze() {
     try {
       for(var i=0; i<bozzeCorrenti.length; i++) {
         var b = bozzeCorrenti[i];
-        await registraDeidCras(b, b.numeroPratica, true);
+        if (b.tipo === 'CRAS_BOZZA') {
+          await registraDeidCras(b, b.numeroPratica, true);
+        } else {
+          await registraDeidZoo(b, b.numeroPratica, true);
+        }
         await eliminaBozzaSilente(b.rowId, b.tipo);
       }
       bozzeCorrenti = [];
