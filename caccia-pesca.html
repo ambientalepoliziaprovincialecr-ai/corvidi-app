@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Caccia & Pesca — PP Cremona</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root {
+    --bg-dark: #0d1b2a;
+    --bg-card: #13263b;
+    --accent: #ffeb3b;
+    --accent-dim: rgba(255,235,59,0.92);
+    --green: #27ae60;
+    --blue: #2980b9;
+    --red: #c0392b;
+    --orange: #e67e22;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    margin: 0; font-family: 'Barlow', sans-serif;
+    background: linear-gradient(160deg, #0d1b2a 0%, #0a1420 100%);
+    color: #e8eef4; min-height: 100vh;
+  }
+  .header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px; background: rgba(0,0,0,0.25);
+    border-bottom: 1px solid rgba(255,235,59,0.15);
+  }
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px;
+    margin: 0; color: var(--accent-dim);
+  }
+  .header .utente { font-size: 12px; color: #9fb3c8; }
+  .container { max-width: 720px; margin: 0 auto; padding: 16px; }
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* HOME - due grandi pulsanti */
+  .home-buttons { display: flex; flex-direction: column; gap: 18px; margin-top: 40px; }
+  .home-btn {
+    padding: 34px 20px; border-radius: 18px; border: 2px solid rgba(255,235,59,0.25);
+    background: linear-gradient(135deg, #17324a, #0d2030);
+    color: var(--accent); font-family: 'Bebas Neue', sans-serif; font-size: 30px;
+    letter-spacing: 3px; cursor: pointer; text-align: center;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .home-btn .emoji { font-size: 46px; }
+  .home-btn.pesca { border-color: rgba(93,173,226,0.35); color: #5dade2; }
+
+  .back-btn {
+    background: none; border: none; color: #9fb3c8; font-size: 14px;
+    cursor: pointer; padding: 8px 0; margin-bottom: 8px; font-family: 'Barlow Condensed', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  /* RIASSUNTO GIORNO */
+  .card {
+    background: var(--bg-card); border-radius: 14px; padding: 16px;
+    margin-bottom: 16px; border: 1px solid rgba(255,255,255,0.06);
+  }
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1.5px;
+    color: var(--accent-dim); margin: 0 0 10px 0;
+  }
+  .orario-box {
+    display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px;
+  }
+  .orario-box .grande { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--green); }
+  .orario-box .label { font-size: 13px; color: #9fb3c8; }
+  .nota-speciale {
+    background: rgba(230,126,34,0.12); border: 1px solid rgba(230,126,34,0.35);
+    border-radius: 8px; padding: 8px 10px; font-size: 12.5px; color: #f0a860;
+    margin-bottom: 8px;
+  }
+  .specie-riga {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13.5px;
+  }
+  .specie-riga:last-child { border-bottom: none; }
+  .specie-nome { font-weight: 600; }
+  .specie-carniere { color: #9fb3c8; font-size: 12px; }
+
+  /* RICERCA */
+  .search-box {
+    display: flex; gap: 8px; margin-bottom: 14px;
+  }
+  .search-box input {
+    flex: 1; padding: 13px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.15);
+    background: #0d1b2a; color: #e8eef4; font-size: 15px; font-family: 'Barlow', sans-serif;
+  }
+  .search-box button {
+    padding: 0 18px; border-radius: 10px; border: none;
+    background: var(--accent-dim); color: #0d1b2a; font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px; letter-spacing: 1px; cursor: pointer;
+  }
+  .risultato-card {
+    background: var(--bg-card); border-radius: 12px; padding: 14px; margin-bottom: 10px;
+    border-left: 4px solid var(--blue);
+  }
+  .risultato-card.penale { border-left-color: var(--red); }
+  .risultato-card.lecito { border-left-color: var(--green); }
+  .risultato-categoria {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #7fa8c9;
+    font-weight: 600; margin-bottom: 4px;
+  }
+  .risultato-descrizione { font-size: 14.5px; margin-bottom: 8px; line-height: 1.4; }
+  .risultato-dettagli { font-size: 12.5px; color: #b8c8d8; line-height: 1.6; }
+  .risultato-dettagli b { color: #e8eef4; }
+  .risultato-sanzione {
+    display: inline-block; background: rgba(192,57,43,0.15); color: #e57368;
+    padding: 3px 9px; border-radius: 6px; font-size: 12px; font-weight: 600; margin-top: 6px;
+  }
+  .empty-state {
+    text-align: center; padding: 40px 20px; color: #6d8399;
+  }
+  .empty-state .icona { font-size: 40px; margin-bottom: 10px; }
+
+  .collapsible-header {
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; padding: 4px 0;
+  }
+  .collapsible-header .arrow { transition: transform 0.2s; }
+  .collapsible-header.open .arrow { transform: rotate(90deg); }
+  .collapsible-content { display: none; margin-top: 10px; }
+  .collapsible-content.open { display: block; }
+  .zona-riga { padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; }
+  .zona-riga:last-child { border-bottom: none; }
+  .zona-nome { font-weight: 600; color: var(--accent-dim); }
+  .zona-codice { color: #7fa8c9; font-size: 11px; margin-left: 6px; }
+  .zona-restrizioni { color: #b8c8d8; margin-top: 3px; line-height: 1.4; }
+
+  /* LOGIN */
+  #modalLoginGoogle {
+    display: none; position: fixed; inset: 0; z-index: 99999;
+    background: rgba(13,27,42,0.97); align-items: center; justify-content: center;
+    flex-direction: column; padding: 24px; text-align: center;
+  }
+  #modalLoginGoogle h2 {
+    font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px;
+    color: var(--accent-dim); margin-bottom: 20px;
+  }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: #1a3a5c; color: #e8eef4; padding: 12px 20px; border-radius: 10px;
+    font-size: 13.5px; z-index: 9999; opacity: 0; transition: opacity 0.3s;
+    max-width: 90%; text-align: center; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+  .toast.errore { background: #5c1a1a; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🦌 CACCIA &amp; PESCA</h1>
+  <div class="utente" id="headerUtente"></div>
+</div>
+
+<div class="container">
+
+  <!-- HOME -->
+  <div class="screen active" id="screenHome">
+    <div class="home-buttons">
+      <button class="home-btn" onclick="vai('screenCaccia')">
+        <span class="emoji">🦌</span> CACCIA
+      </button>
+      <button class="home-btn pesca" onclick="vai('screenPesca')">
+        <span class="emoji">🎣</span> PESCA
+      </button>
+    </div>
+  </div>
+
+  <!-- CACCIA -->
+  <div class="screen" id="screenCaccia">
+    <button class="back-btn" onclick="vai('screenHome')">‹ Indietro</button>
+
+    <div class="card" id="cardRiassunto">
+      <div class="card-title">📅 Oggi</div>
+      <div id="riassuntoContenuto">
+        <div class="empty-state"><div class="icona">⏳</div>Calcolo in corso...</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="collapsible-header" id="zoneHeader" onclick="toggleZone()">
+        <div class="card-title" style="margin:0;">📍 Zone Natura 2000 con regole speciali</div>
+        <span class="arrow">›</span>
+      </div>
+      <div class="collapsible-content" id="zoneContenuto"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🔎 Cosa hai riscontrato?</div>
+      <div class="search-box">
+        <input type="text" id="ricercaCaccia" placeholder="Es. tesserino non annotato, superamento carniere..." onkeydown="if(event.key==='Enter')cercaCaccia()">
+        <button onclick="cercaCaccia()">CERCA</button>
+      </div>
+      <div id="risultatiCaccia"></div>
+    </div>
+  </div>
+
+  <!-- PESCA -->
+  <div class="screen" id="screenPesca">
+    <button class="back-btn" onclick="vai('screenHome')">‹ Indietro</button>
+
+    <div class="card">
+      <div class="card-title">🔎 Cosa hai riscontrato?</div>
+      <div class="search-box">
+        <input type="text" id="ricercaPesca" placeholder="Es. maglia rete troppo stretta..." onkeydown="if(event.key==='Enter')cercaPesca()">
+        <button onclick="cercaPesca()">CERCA</button>
+      </div>
+      <div id="risultatiPesca"></div>
+      <div class="empty-state" id="pescaVuoto"><div class="icona">🎣</div>Scrivi cosa hai riscontrato per cercare</div>
+    </div>
+  </div>
+
+</div>
+
+<div id="modalLoginGoogle">
+  <h2>🦌 CACCIA &amp; PESCA</h2>
+  <p style="color:#9fb3c8;margin-bottom:20px;">Accedi con il tuo account Google autorizzato</p>
+  <div id="googleSignInButton"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const URL_GS = 'https://script.google.com/macros/s/AKfycbxp8ZeXNJZEz-J0-hiz20vmDPElJvNiggJQoz8RuOgpPzgD14T_Qh3tDSJJQnfeC7n6eg/exec';
+
+var idTokenCorrente = null;
+var operatoreCorrente = '';
+var casisticaCaccia = [];
+var casisticaPesca = [];
+var zoneNatura2000Dati = [];
+
+function fetchConTimeout(url, opzioni, msTimeout){
+  msTimeout = msTimeout || 10000;
+  var controller = new AbortController();
+  var timer = setTimeout(function(){ controller.abort(); }, msTimeout);
+  var opzioniComplete = Object.assign({}, opzioni || {}, { signal: controller.signal });
+  return fetch(url, opzioniComplete).finally(function(){ clearTimeout(timer); });
+}
+
+function toast(msg, errore) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (errore ? ' errore' : '');
+  setTimeout(function(){ t.className = 'toast'; }, 3200);
+}
+
+function vai(id) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+}
+
+function toggleZone() {
+  var header = document.getElementById('zoneHeader');
+  var content = document.getElementById('zoneContenuto');
+  header.classList.toggle('open');
+  content.classList.toggle('open');
+}
+
+// ============================================================
+// LOGIN
+// ============================================================
+function leggiTokenCondiviso() {
+  try {
+    var token = localStorage.getItem('pp_token_condiviso');
+    var scadenza = parseInt(localStorage.getItem('pp_token_scadenza') || '0');
+    if (token && Date.now() < scadenza) return token;
+  } catch(e) {}
+  return null;
+}
+
+function inizializzaBottoneGoogle(){
+  if (window.google && google.accounts && google.accounts.id) {
+    google.accounts.id.initialize({
+      client_id: '226909521211-tk40j8dfcr6dr428uqb4sd4s2lt5qbi6.apps.googleusercontent.com',
+      callback: handleGoogleCredentialResponse,
+      auto_select: true
+    });
+    google.accounts.id.renderButton(
+      document.getElementById('googleSignInButton'),
+      { theme: 'outline', size: 'large', text: 'signin_with', width: 280 }
+    );
+    google.accounts.id.prompt();
+    document.getElementById('modalLoginGoogle').style.display = 'flex';
+  }
+}
+
+function handleGoogleCredentialResponse(response) {
+  idTokenCorrente = response.credential;
+  fetchConTimeout(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000)
+    .then(function(r){ return r.json(); })
+    .then(function(verifica){
+      if (verifica.ok) {
+        operatoreCorrente = verifica.nome;
+        document.getElementById('headerUtente').textContent = verifica.nome;
+        document.getElementById('modalLoginGoogle').style.display = 'none';
+        caricaDatiIniziali();
+      } else {
+        toast('Accesso non autorizzato: ' + (verifica.message||''), true);
+      }
+    })
+    .catch(function(){ toast('Errore di connessione — riprova', true); });
+}
+
+window.onload = function(){
+  var tokenCondiviso = leggiTokenCondiviso();
+  if (tokenCondiviso) {
+    idTokenCorrente = tokenCondiviso;
+    fetchConTimeout(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(tokenCondiviso), null, 10000)
+      .then(function(r){ return r.json(); })
+      .then(function(verifica){
+        if (verifica.ok) {
+          operatoreCorrente = verifica.nome;
+          document.getElementById('headerUtente').textContent = verifica.nome;
+          caricaDatiIniziali();
+        } else {
+          inizializzaBottoneGoogle();
+        }
+      })
+      .catch(function(){ inizializzaBottoneGoogle(); });
+  } else {
+    inizializzaBottoneGoogle();
+  }
+};
+
+// ============================================================
+// CARICAMENTO DATI (una sola richiesta)
+// ============================================================
+async function caricaDatiIniziali() {
+  try {
+    var res = await fetchConTimeout(URL_GS + '?action=datiIniziali&idToken=' + encodeURIComponent(idTokenCorrente), null, 15000);
+    var d = await res.json();
+    if (!d.ok) { toast('Errore caricamento dati', true); return; }
+
+    casisticaCaccia = d.casisticaCaccia || [];
+    casisticaPesca = d.casisticaPesca || [];
+    zoneNatura2000Dati = d.zoneNatura2000 || [];
+
+    renderRiassunto(d.riassuntoOggi);
+    renderZoneNatura2000(zoneNatura2000Dati);
+  } catch(e) {
+    document.getElementById('riassuntoContenuto').innerHTML = '<div class="empty-state"><div class="icona">⚠️</div>Errore di connessione — riprova più tardi</div>';
+    toast('Errore caricamento dati iniziali', true);
+  }
+}
+
+// ============================================================
+// RIASSUNTO GIORNO
+// ============================================================
+function renderRiassunto(r) {
+  if (!r) return;
+  var html = '';
+  html += '<div style="font-size:13px;color:#9fb3c8;margin-bottom:10px;">' + r.giornoSettimana + ' ' + r.data + '</div>';
+
+  if (r.orarioInizio && r.orarioFine) {
+    html += '<div class="orario-box"><span class="grande">' + r.orarioInizio + '</span><span class="label">— inizio (1h prima dell\'alba)</span></div>';
+    html += '<div class="orario-box"><span class="grande">' + r.orarioFine + '</span><span class="label">— fine (tramonto)</span></div>';
+  } else {
+    html += '<div class="empty-state" style="padding:10px;"><div class="icona">⚠️</div>Orario alba/tramonto non disponibile ora</div>';
+  }
+
+  (r.noteSpeciali || []).forEach(function(n) {
+    html += '<div class="nota-speciale">⚠️ ' + n + '</div>';
+  });
+
+  html += '<div style="margin-top:12px;font-size:12px;color:#7fa8c9;text-transform:uppercase;letter-spacing:1px;">Specie cacciabili oggi (' + (r.specieAperte||[]).length + ')</div>';
+  (r.specieAperte || []).forEach(function(s) {
+    var carn = [s.carGiorno ? (s.carGiorno + '/giorno') : '', s.carStagione ? (s.carStagione + '/stagione') : ''].filter(Boolean).join(' — ');
+    html += '<div class="specie-riga"><span class="specie-nome">' + s.specie + '</span><span class="specie-carniere">' + carn + '</span></div>';
+  });
+
+  document.getElementById('riassuntoContenuto').innerHTML = html;
+}
+
+function renderZoneNatura2000(zone) {
+  var html = '';
+  zone.forEach(function(z) {
+    html += '<div class="zona-riga"><span class="zona-nome">' + z.nome + '</span><span class="zona-codice">' + z.codice + '</span>' +
+            '<div class="zona-restrizioni">' + z.restrizioni + '</div></div>';
+  });
+  document.getElementById('zoneContenuto').innerHTML = html || '<div class="empty-state">Nessuna zona caricata</div>';
+}
+
+// ============================================================
+// RICERCA — confronto per parole chiave in comune, mostra i
+// risultati più probabili (non uno solo secco): l'agente sceglie
+// quello giusto tra 2-3 opzioni simili.
+// ============================================================
+function normalizza(testo) {
+  return (testo || '').toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // toglie accenti
+    .replace(/[^a-z0-9\s]/g, ' ');
+}
+
+function punteggioMatch(query, testoRiga) {
+  var paroleQuery = normalizza(query).split(/\s+/).filter(function(p){ return p.length > 2; });
+  var testoNorm = normalizza(testoRiga);
+  var punti = 0;
+  paroleQuery.forEach(function(p) {
+    if (testoNorm.indexOf(p) !== -1) punti++;
+  });
+  return punti;
+}
+
+function cercaCaccia() {
+  var query = document.getElementById('ricercaCaccia').value.trim();
+  cercaGenerico(query, casisticaCaccia, 'risultatiCaccia');
+}
+
+function cercaPesca() {
+  var query = document.getElementById('ricercaPesca').value.trim();
+  document.getElementById('pescaVuoto').style.display = query ? 'none' : 'block';
+  cercaGenerico(query, casisticaPesca, 'risultatiPesca');
+}
+
+function cercaGenerico(query, dataset, idContenitore) {
+  var el = document.getElementById(idContenitore);
+  if (!query) { el.innerHTML = ''; return; }
+
+  var risultati = dataset.map(function(riga) {
+    var testoCompleto = [riga.categoria, riga.descrizione, riga.note].join(' ');
+    return { riga: riga, punti: punteggioMatch(query, testoCompleto) };
+  }).filter(function(r){ return r.punti > 0; })
+    .sort(function(a,b){ return b.punti - a.punti; })
+    .slice(0, 5);
+
+  if (!risultati.length) {
+    el.innerHTML = '<div class="empty-state"><div class="icona">🔍</div>Nessun caso simile trovato in questa casistica</div>';
+    return;
+  }
+
+  var html = '';
+  risultati.forEach(function(r) {
+    var riga = r.riga;
+    var isPenale = /penale|arresto|notizia di reato/i.test((riga.sequestro||'') + (riga.massimo||'') + (riga.note||''));
+    var isLecito = /^lecito/i.test(riga.note || '') || /lecito/i.test(riga.massimo||'');
+    var classe = isLecito ? 'lecito' : (isPenale ? 'penale' : '');
+
+    html += '<div class="risultato-card ' + classe + '">';
+    if (riga.categoria) html += '<div class="risultato-categoria">' + riga.categoria + '</div>';
+    html += '<div class="risultato-descrizione">' + riga.descrizione + '</div>';
+    html += '<div class="risultato-dettagli">';
+    if (riga.articoloViolato) html += '<b>Art. violato:</b> ' + riga.articoloViolato + '<br>';
+    if (riga.articoloSanzionatorio) html += '<b>Art. sanzionatorio:</b> ' + riga.articoloSanzionatorio + '<br>';
+    if (riga.reiterazione) html += '<b>Reiterazione:</b> ' + riga.reiterazione + '<br>';
+    if (riga.sequestro) html += '<b>Sequestro:</b> ' + riga.sequestro + '<br>';
+    if (riga.note) html += '<b>Note:</b> ' + riga.note + '<br>';
+    if (riga.note2) html += riga.note2 + '<br>';
+    html += '</div>';
+
+    var sanzioneTesto = '';
+    if (riga.misuraRidotta) sanzioneTesto += 'Misura ridotta: € ' + riga.misuraRidotta + '  ';
+    if (riga.minimo || riga.massimo) sanzioneTesto += '(€ ' + (riga.minimo||'?') + ' — € ' + (riga.massimo||'?') + ')';
+    if (sanzioneTesto) html += '<div class="risultato-sanzione">' + sanzioneTesto + '</div>';
+
+    html += '</div>';
+  });
+  el.innerHTML = html;
+}
+</script>
+</body>
+</html>
