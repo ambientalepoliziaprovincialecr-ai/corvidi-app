@@ -1039,10 +1039,10 @@ async function submitKm() {
     return;
   }
 
-  // Controllo preventivo: avvisa se il km inserito implica un
-  // percorso anomalo (oltre 300 km rispetto all'ultima registrazione
-  // nota per la stessa targa) — aiuta a intercettare subito un
-  // errore di battitura, invece di scoprirlo un mese dopo.
+  // Prima di salvare, mostra sempre l'ultimo km registrato per
+  // questa targa (con chi l'ha inserito e quando), così l'agente
+  // può controllare al volo prima di confermare — non solo quando
+  // il valore sembra anomalo.
   var kmNum = parseInt(km);
   var SOGLIA_AVVISO_KM = 300;
   try {
@@ -1055,31 +1055,27 @@ async function submitKm() {
       var ultimaReg = registrazioniTarga[registrazioniTarga.length - 1];
       var ultimoKm = parseInt(ultimaReg.kmFinali) || 0;
       var deltaOggi = kmNum - ultimoKm;
+
+      var messaggioBase = '📋 CONTROLLO PRIMA DEL SALVATAGGIO\n\n' +
+        'Targa: ' + targa + '\n' +
+        'Ultimo km registrato: ' + ultimoKm + ' km\n' +
+        'Inserito da: ' + (ultimaReg.conducente || '—') + '\n' +
+        'Il: ' + (ultimaReg.dataOra || '—') + '\n\n' +
+        'Km che stai per registrare ora: ' + kmNum + ' km (percorsi: ' + (deltaOggi >= 0 ? '+' : '') + deltaOggi + ' km)\n\n';
+
+      var avviso = '';
       if (deltaOggi < 0) {
-        var confermatoNegativo = confirm(
-          '⚠️ ATTENZIONE — KM INFERIORI ALL\'ULTIMO INSERIMENTO\n\n' +
-          'L\'ultimo inserimento per questo veicolo risulta a ' + ultimoKm + ' km.\n' +
-          'Il km che stai inserendo (' + kmNum + ' km) è INFERIORE di ' + Math.abs(deltaOggi) + ' km.\n\n' +
-          'Un veicolo non può percorrere km negativi: molto probabilmente hai selezionato la TARGA SBAGLIATA.\n\n' +
-          'Se sei sicuro che targa e km siano corretti, premi OK per registrare comunque.\n' +
-          'Altrimenti premi Annulla e ricontrolla la targa selezionata.'
-        );
-        if (!confermatoNegativo) { btnSalva.disabled = false; btnSalva.textContent = testoOriginale; return; }
+        avviso = '⚠️ Il km inserito è INFERIORE all\'ultimo registrato — un veicolo non può percorrere km negativi: controlla di aver scelto la targa giusta.\n\n';
       } else if (deltaOggi > SOGLIA_AVVISO_KM) {
-        var confermato = confirm(
-          '⚠️ ATTENZIONE\n\n' +
-          'Risulta che oggi hai percorso ' + deltaOggi + ' km con questo veicolo (oltre ' + SOGLIA_AVVISO_KM + ' km).\n\n' +
-          'L\'ultimo inserimento registrato risulta a ' + ultimoKm + ' km.\n' +
-          'Km che stai per registrare: ' + kmNum + ' km.\n\n' +
-          'Se hai fatto davvero un percorso lungo, premi OK per confermare.\n' +
-          'Se pensi di aver digitato un numero sbagliato, premi Annulla e ricontrolla il contachilometri.'
-        );
-        if (!confermato) { btnSalva.disabled = false; btnSalva.textContent = testoOriginale; return; }
+        avviso = '⚠️ Percorso insolitamente lungo (oltre ' + SOGLIA_AVVISO_KM + ' km) — controlla di aver digitato il numero giusto.\n\n';
       }
+
+      var confermato = confirm(messaggioBase + avviso + 'Premi OK per confermare e salvare, Annulla per tornare indietro e correggere.');
+      if (!confermato) { btnSalva.disabled = false; btnSalva.textContent = testoOriginale; return; }
     }
   } catch(e) {
     // Se il controllo preventivo fallisce (es. rete assente), non
-    // blocchiamo la registrazione: meglio salvare senza avviso che
+    // blocchiamo la registrazione: meglio salvare senza conferma che
     // perdere il dato.
   }
 
