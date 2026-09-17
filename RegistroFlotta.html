@@ -57,6 +57,19 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
 .form-select{color:#000000;color-scheme:light;forced-color-adjust:none;}
 .form-select option{background:#ffffff;color:#000000;forced-color-adjust:none;}
 .form-input:focus,.form-select:focus{border-color:#ffeb3b;}
+/* Tendina personalizzata: sostituisce il <select> nativo, che alcuni
+   browser ricolorano forzatamente (dark mode di sistema) ignorando
+   il CSS. Qui non ci sono controlli nativi da ricolorare: sono div
+   normali, quindi i colori restano sempre quelli impostati qui. */
+.custom-select-wrap{position:relative;}
+.custom-select-trigger{width:100%;background:#ffffff;border:3px solid #000000;border-radius:12px;color:#000000;font-family:'Barlow',sans-serif;font-size:20px;font-weight:700;padding:16px;outline:none;box-shadow:0 2px 0 rgba(0,0,0,0.5);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.custom-select-trigger.placeholder{color:#000000;opacity:0.55;}
+.custom-select-trigger .cst-arrow{font-size:13px;opacity:0.6;flex-shrink:0;}
+.custom-select-list{position:absolute;left:0;right:0;top:calc(100% + 4px);background:#ffffff;border:3px solid #000000;border-radius:12px;max-height:280px;overflow-y:auto;z-index:1000;box-shadow:0 8px 20px rgba(0,0,0,0.5);display:none;}
+.custom-select-list.open{display:block;}
+.custom-select-option{padding:14px 16px;color:#000000;font-family:'Barlow',sans-serif;font-size:18px;font-weight:600;cursor:pointer;border-bottom:1px solid #eeeeee;}
+.custom-select-option:last-child{border-bottom:none;}
+.custom-select-option:hover,.custom-select-option.active{background:#ffeb3b;color:#000000;}
 .form-textarea{resize:none;height:70px;}
 .data-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;}
 .btn-adesso{padding:10px 14px;background:rgba(245,166,35,0.15);border:1px solid rgba(245,166,35,0.4);border-radius:8px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;white-space:nowrap;}
@@ -1836,6 +1849,89 @@ loadStats();
 ['kmTarga','rifTarga','kmStampaTarga','rifStampaTarga'].forEach(function(id){ renderSelectTarghe(id, false); });
 renderSelectTarghe('filtraTarga', true);
 caricaTargheDalFoglio();
+
+// ============================================================
+// TENDINE PERSONALIZZATE — sostituisce visivamente ogni <select>
+// nativo con un menu a div, perché alcuni browser (soprattutto in
+// dark mode, sia su desktop che su Android) ricolorano i menu
+// nativi ignorando il CSS, rendendo il testo illeggibile. Con dei
+// div normali questo non può più succedere: non sono controlli di
+// sistema, quindi il browser non li tocca.
+// Il <select> originale resta nel DOM, solo nascosto: tutto il
+// resto del codice continua a leggerne/scriverne .value esattamente
+// come prima (es. document.getElementById('kmTarga').value), quindi
+// non serve modificare nient'altro. La lista delle opzioni viene
+// letta dal <select> ogni volta che si apre, così funziona anche con
+// select i cui contenuti cambiano dopo (es. renderSelectTarghe,
+// caricaTargheDalFoglio).
+// ============================================================
+function creaTendinaPersonalizzata(select){
+  if (!select || select.dataset.cstDone) return;
+  select.dataset.cstDone = '1';
+
+  var wrap = document.createElement('div');
+  wrap.className = 'custom-select-wrap';
+  select.parentNode.insertBefore(wrap, select);
+  wrap.appendChild(select);
+  select.style.position = 'absolute';
+  select.style.opacity = '0';
+  select.style.pointerEvents = 'none';
+  select.style.height = '0';
+  select.style.width = '0';
+  select.style.padding = '0';
+  select.style.border = 'none';
+  select.tabIndex = -1;
+
+  var trigger = document.createElement('div');
+  trigger.className = 'custom-select-trigger';
+  trigger.innerHTML = '<span class="cst-label"></span><span class="cst-arrow">▾</span>';
+  wrap.appendChild(trigger);
+
+  var list = document.createElement('div');
+  list.className = 'custom-select-list';
+  wrap.appendChild(list);
+
+  function aggiornaLabel(){
+    var opt = select.options[select.selectedIndex];
+    var label = trigger.querySelector('.cst-label');
+    label.textContent = opt ? opt.textContent : '';
+    trigger.classList.toggle('placeholder', !select.value);
+  }
+  function chiudi(){ list.classList.remove('open'); }
+  function apri(){
+    list.innerHTML = '';
+    Array.prototype.forEach.call(select.options, function(opt){
+      var riga = document.createElement('div');
+      riga.className = 'custom-select-option' + (opt.value === select.value ? ' active' : '');
+      riga.textContent = opt.textContent;
+      riga.addEventListener('click', function(){
+        select.value = opt.value;
+        aggiornaLabel();
+        chiudi();
+        select.dispatchEvent(new Event('change', {bubbles:true}));
+      });
+      list.appendChild(riga);
+    });
+    list.classList.add('open');
+  }
+  trigger.addEventListener('click', function(e){
+    e.stopPropagation();
+    if (list.classList.contains('open')) chiudi(); else apri();
+  });
+  document.addEventListener('click', function(e){
+    if (!wrap.contains(e.target)) chiudi();
+  });
+
+  aggiornaLabel();
+  // Il resto del codice a volte cambia select.value direttamente
+  // (es. document.getElementById('kmTarga').value = '' dopo un
+  // salvataggio): questo controllo periodico tiene la scritta
+  // visibile sincronizzata con quel valore, senza dover modificare
+  // ogni punto del codice che lo fa.
+  setInterval(aggiornaLabel, 300);
+}
+
+document.querySelectorAll('select.form-select').forEach(creaTendinaPersonalizzata);
 </script>
 
 
