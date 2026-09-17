@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Flotta">
 <title>Registro Flotta</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="./Registro Flotta_files/css2" rel="stylesheet">
 <style>
 :root{--blu:#0D1B2E;--oro:#f5a623;--oro2:#ffc84a;--crema:#ffeb3b;--verde:#27ae60;--rosso:#e74c3c;--grigio:rgba(255,255,255,0.07);--bordo:rgba(255,255,255,0.12);}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -54,10 +54,22 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
 .form-input,.form-select,.form-textarea{width:100%;background:#ffffff;border:3px solid #000000;border-radius:12px;color:#000000;font-family:'Barlow',sans-serif;font-size:20px;font-weight:700;padding:16px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;box-shadow:0 2px 0 rgba(0,0,0,0.5);}
 .form-input::placeholder,.form-textarea::placeholder{color:#000000;opacity:0.55;font-weight:700;}
 .form-input::-webkit-input-placeholder,.form-textarea::-webkit-input-placeholder{color:#000000;opacity:0.55;}
-.form-select{color:#000000;color-scheme:light;}
-.form-select option{background:#ffffff;color:#000000;}
+.form-select{color:#000000;color-scheme:light;forced-color-adjust:none;}
+.form-select option{background:#ffffff;color:#000000;forced-color-adjust:none;}
 .form-input:focus,.form-select:focus{border-color:#ffeb3b;}
-.form-select option{background:#0D1B2E;}
+/* Tendina personalizzata: sostituisce il <select> nativo, che alcuni
+   browser ricolorano forzatamente (dark mode di sistema) ignorando
+   il CSS. Qui non ci sono controlli nativi da ricolorare: sono div
+   normali, quindi i colori restano sempre quelli impostati qui. */
+.custom-select-wrap{position:relative;}
+.custom-select-trigger{width:100%;background:#ffffff;border:3px solid #000000;border-radius:12px;color:#000000;font-family:'Barlow',sans-serif;font-size:20px;font-weight:700;padding:16px;outline:none;box-shadow:0 2px 0 rgba(0,0,0,0.5);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.custom-select-trigger.placeholder{color:#000000;opacity:0.55;}
+.custom-select-trigger .cst-arrow{font-size:13px;opacity:0.6;flex-shrink:0;}
+.custom-select-list{position:absolute;left:0;right:0;top:calc(100% + 4px);background:#ffffff;border:3px solid #000000;border-radius:12px;max-height:280px;overflow-y:auto;z-index:1000;box-shadow:0 8px 20px rgba(0,0,0,0.5);display:none;}
+.custom-select-list.open{display:block;}
+.custom-select-option{padding:14px 16px;color:#000000;font-family:'Barlow',sans-serif;font-size:18px;font-weight:600;cursor:pointer;border-bottom:1px solid #eeeeee;}
+.custom-select-option:last-child{border-bottom:none;}
+.custom-select-option:hover,.custom-select-option.active{background:#ffeb3b;color:#000000;}
 .form-textarea{resize:none;height:70px;}
 .data-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;}
 .btn-adesso{padding:10px 14px;background:rgba(245,166,35,0.15);border:1px solid rgba(245,166,35,0.4);border-radius:8px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;white-space:nowrap;}
@@ -140,8 +152,8 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 .istr-firma{font-size:13px;color:rgba(255,235,59,0.4);margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);line-height:1.7;}
 .btn-istr-close{width:100%;padding:12px;border:none;border-radius:10px;background:#f5a623;color:#1a1a2e;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:12px;}
 </style>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<style id="googleidentityservice_button_styles">.qJTHM{-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;color:#202124;direction:ltr;-webkit-touch-callout:none;font-family:Roboto-Regular,arial,sans-serif;-webkit-font-smoothing:antialiased;font-weight:400;margin:0;overflow:hidden;-webkit-text-size-adjust:100%}.ynRLnc{left:-9999px;position:absolute;top:-9999px}.L6cTce{display:none}.bltWBb{overflow-wrap:break-word;word-break:break-word}.hSRGPd{color:#1a73e8;cursor:pointer;font-weight:500;text-decoration:none}.Bz112c-W3lGp{height:16px;width:16px}.Bz112c-E3DyYd{height:20px;width:20px}.Bz112c-r9oPif{height:24px;width:24px}.Bz112c-u2z5K{height:36px;width:36px}.Bz112c-uaxL4e{border-radius:10px}.LgbsSe-Bz112c{display:block}.S9gUrf-YoZ4jf{border:none;margin:0;padding:0}.S9gUrf-YoZ4jf *{border:none;margin:0;padding:0}.fFW7wc-ibnC6b>.aZ2wEe>div{border-color:#4285f4}.P1ekSe-ZMv3u{-webkit-transition:height .2s linear;transition:height .2s linear}.P1ekSe-ZMv3u>div:first-child{background-color:#1a73e8!important;-webkit-transition:width .3s linear;transition:width .3s linear}.P1ekSe-ZMv3u>div:nth-child(2){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(90deg,#1a73e8,#1a73e8)!important}.P1ekSe-ZMv3u>div:nth-child(3){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(90deg,#1a73e8,#1a73e8)!important}.haAclf{display:inline-block}.nsm7Bb-HzV7m-LgbsSe{border-radius:4px;box-sizing:border-box;-webkit-transition:background-color .218s,border-color .218s;transition:background-color .218s,border-color .218s;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;-webkit-appearance:none;background-color:#fff;background-image:none;border:1px solid #dadce0;color:#3c4043;cursor:pointer;font-family:Google Sans,arial,sans-serif;font-size:.875rem;height:40px;letter-spacing:.25px;outline:none;overflow:hidden;padding:0 12px;position:relative;text-align:center;vertical-align:middle;white-space:nowrap;width:auto}@media screen and (-ms-high-contrast:active){.nsm7Bb-HzV7m-LgbsSe{border:2px solid windowText;color:windowText}}@media screen and (preferes-contrast:more){.nsm7Bb-HzV7m-LgbsSe{color:#000}}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe{font-size:.875rem;height:32px;letter-spacing:.25px;padding:0 10px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe{font-size:.6875rem;height:20px;letter-spacing:.3px;padding:0 8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe{padding:0;width:40px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe{width:32px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe{width:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK{border-radius:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.pSzOP-SxQuSe{border-radius:16px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.purZT-SxQuSe{border-radius:10px}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc{border:1px solid #8e918f;background-color:#131314;color:#e3e3e3}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc{border:none;color:#fff}.nsm7Bb-HzV7m-LgbsSe.MFS4be-v3pZbf-Ia7Qfc{background-color:#1a73e8}.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{background-color:#202124;color:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{color:#fff}}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:18px;margin-right:8px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:14px;min-width:14px;width:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:10px;min-width:10px;width:10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin-left:8px;margin-right:-4px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:10px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:4px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:3px;border-bottom-left-radius:3px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;align-items:center;background-color:#fff;height:36px;margin-left:-10px;margin-right:12px;min-width:36px;width:36px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c,.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:28px;margin-left:-8px;margin-right:10px;min-width:28px;width:28px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:16px;margin-left:-6px;margin-right:8px;min-width:16px;width:16px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:3px;margin-left:2px;margin-right:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:8px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-bN97Pc-sM5MNb{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;-webkit-flex-direction:row;-webkit-box-orient:horizontal;-webkit-box-direction:normal;flex-direction:row;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-flex-wrap:nowrap;flex-wrap:nowrap;height:100%;position:relative;width:100%}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX{-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:1;-webkit-box-flex:1;flex-grow:1;font-family:Google Sans,arial,sans-serif;font-weight:500;overflow:hidden;text-overflow:ellipsis;vertical-align:top}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-weight:300}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:0;-webkit-box-flex:0;flex-grow:0}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-MJoBVe{-webkit-transition:background-color .218s;transition:background-color .218s;bottom:0;left:0;position:absolute;right:0;top:0}.nsm7Bb-HzV7m-LgbsSe:focus,.nsm7Bb-HzV7m-LgbsSe:hover{box-shadow:none;border-color:rgb(210,227,252);outline:none}.nsm7Bb-HzV7m-LgbsSe:focus-within{outline:2px solid #00639b;border-color:transparent}.nsm7Bb-HzV7m-LgbsSe:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.08)}.nsm7Bb-HzV7m-LgbsSe:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.1)}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.08)}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.12)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.24)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.32)}.nsm7Bb-HzV7m-LgbsSe .n1UuX-DkfjY{border-radius:50%;display:-webkit-box;display:-webkit-flex;display:flex;height:20px;margin-left:-4px;margin-right:8px;min-width:20px;width:20px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-family:Roboto;font-size:12px;text-align:left}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .fmcmS,.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .ssJRIf{overflow:hidden;text-overflow:ellipsis}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;color:#5f6368;fill:#5f6368;font-size:11px;font-weight:400}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.i5vt6e-to915-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#c4c7c5;fill:#c4c7c5}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#e8eaed;fill:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff,.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#000;fill:#000}}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .Bz112c{height:18px;margin:-3px -3px -3px 2px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:0;border-bottom-left-radius:0;border-top-right-radius:3px;border-bottom-right-radius:3px;margin-left:12px;margin-right:-10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.L5Fo6c-sM5MNb{border:0;display:block;left:0;position:relative;top:0}.L5Fo6c-bF1uUb{border-radius:4px;bottom:0;cursor:pointer;left:0;position:absolute;right:0;top:0}.L5Fo6c-bF1uUb:focus{border:none;outline:none}sentinel{}</style><link rel="manifest" href="manifest.json"></head>
+<script src="./Registro Flotta_files/client" async="" defer=""></script>
+<style id="googleidentityservice_button_styles">.qJTHM{-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;color:#202124;direction:ltr;-webkit-touch-callout:none;font-family:Roboto-Regular,arial,sans-serif;-webkit-font-smoothing:antialiased;font-weight:400;margin:0;overflow:hidden;-webkit-text-size-adjust:100%}.ynRLnc{left:-9999px;position:absolute;top:-9999px}.L6cTce{display:none}.bltWBb{overflow-wrap:break-word;word-break:break-word}.hSRGPd{color:#1a73e8;cursor:pointer;font-weight:500;text-decoration:none}.Bz112c-W3lGp{height:16px;width:16px}.Bz112c-E3DyYd{height:20px;width:20px}.Bz112c-r9oPif{height:24px;width:24px}.Bz112c-u2z5K{height:36px;width:36px}.Bz112c-uaxL4e{border-radius:10px}.LgbsSe-Bz112c{display:block}.S9gUrf-YoZ4jf{border:none;margin:0;padding:0}.S9gUrf-YoZ4jf *{border:none;margin:0;padding:0}.fFW7wc-ibnC6b>.aZ2wEe>div{border-color:#4285f4}.P1ekSe-ZMv3u{-webkit-transition:height .2s linear;transition:height .2s linear}.P1ekSe-ZMv3u>div:first-child{background-color:#1a73e8!important;-webkit-transition:width .3s linear;transition:width .3s linear}.P1ekSe-ZMv3u>div:nth-child(2){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(90deg,#1a73e8,#1a73e8)!important}.P1ekSe-ZMv3u>div:nth-child(3){background-image:-webkit-gradient(linear,left top,right top,from(rgba(255,255,255,.7)),to(rgba(255,255,255,.7))),-webkit-gradient(linear,left top,right top,from(#1a73e8),to(#1a73e8))!important;background-image:-webkit-linear-gradient(left,rgba(255,255,255,.7),rgba(255,255,255,.7)),-webkit-linear-gradient(left,#1a73e8,#1a73e8)!important;background-image:linear-gradient(90deg,rgba(255,255,255,.7),rgba(255,255,255,.7)),linear-gradient(90deg,#1a73e8,#1a73e8)!important}.haAclf{display:inline-block}.nsm7Bb-HzV7m-LgbsSe{border-radius:4px;box-sizing:border-box;-webkit-transition:background-color .218s,border-color .218s;transition:background-color .218s,border-color .218s;-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;-webkit-appearance:none;background-color:#fff;background-image:none;border:1px solid #dadce0;color:#3c4043;cursor:pointer;font-family:Google Sans,arial,sans-serif;font-size:.875rem;height:40px;letter-spacing:.25px;outline:none;overflow:hidden;padding:0 12px;position:relative;text-align:center;vertical-align:middle;white-space:nowrap;width:auto}@media screen and (-ms-high-contrast:active){.nsm7Bb-HzV7m-LgbsSe{border:2px solid windowText;color:windowText}}@media screen and (preferes-contrast:more){.nsm7Bb-HzV7m-LgbsSe{color:#000}}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe{font-size:.875rem;height:32px;letter-spacing:.25px;padding:0 10px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe{font-size:.6875rem;height:20px;letter-spacing:.3px;padding:0 8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe{padding:0;width:40px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe{width:32px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe{width:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK{border-radius:20px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.pSzOP-SxQuSe{border-radius:16px}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK.purZT-SxQuSe{border-radius:10px}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc{border:1px solid #8e918f;background-color:#131314;color:#e3e3e3}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc{border:none;color:#fff}.nsm7Bb-HzV7m-LgbsSe.MFS4be-v3pZbf-Ia7Qfc{background-color:#1a73e8}.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{background-color:#202124;color:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.MFS4be-JaPV2b-Ia7Qfc{color:#fff}}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:18px;margin-right:8px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:14px;min-width:14px;width:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{height:10px;min-width:10px;width:10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin-left:8px;margin-right:-4px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:10px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:8px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c{padding:4px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:3px;border-bottom-left-radius:3px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center;-webkit-box-align:center;-webkit-align-items:center;align-items:center;background-color:#fff;height:36px;margin-left:-10px;margin-right:12px;min-width:36px;width:36px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c,.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf .nsm7Bb-HzV7m-LgbsSe-Bz112c{margin:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:28px;margin-left:-8px;margin-right:10px;min-width:28px;width:28px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{height:16px;margin-left:-6px;margin-right:8px;min-width:16px;width:16px}.nsm7Bb-HzV7m-LgbsSe.Bz112c-LgbsSe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:3px;margin-left:2px;margin-right:0;padding:0}.nsm7Bb-HzV7m-LgbsSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.nsm7Bb-HzV7m-LgbsSe.pSzOP-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:14px}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:8px}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-bN97Pc-sM5MNb{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;-webkit-flex-direction:row;-webkit-box-orient:horizontal;-webkit-box-direction:normal;flex-direction:row;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;-webkit-flex-wrap:nowrap;flex-wrap:nowrap;height:100%;position:relative;width:100%}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX{-webkit-box-pack:center;-webkit-justify-content:center;justify-content:center}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:1;-webkit-box-flex:1;flex-grow:1;font-family:Google Sans,arial,sans-serif;font-weight:500;overflow:hidden;text-overflow:ellipsis;vertical-align:top}.nsm7Bb-HzV7m-LgbsSe.purZT-SxQuSe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-weight:300}.nsm7Bb-HzV7m-LgbsSe .oXtfBe-l4eHX .nsm7Bb-HzV7m-LgbsSe-BPrWId{-webkit-flex-grow:0;-webkit-box-flex:0;flex-grow:0}.nsm7Bb-HzV7m-LgbsSe .nsm7Bb-HzV7m-LgbsSe-MJoBVe{-webkit-transition:background-color .218s;transition:background-color .218s;bottom:0;left:0;position:absolute;right:0;top:0}.nsm7Bb-HzV7m-LgbsSe:focus,.nsm7Bb-HzV7m-LgbsSe:hover{box-shadow:none;border-color:rgb(210,227,252);outline:none}.nsm7Bb-HzV7m-LgbsSe:focus-within{outline:2px solid #00639b;border-color:transparent}.nsm7Bb-HzV7m-LgbsSe:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.08)}.nsm7Bb-HzV7m-LgbsSe:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(66,133,244,.1)}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.08)}.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.i5vt6e-to915-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.12)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:hover .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.24)}.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:active .nsm7Bb-HzV7m-LgbsSe-MJoBVe,.nsm7Bb-HzV7m-LgbsSe.MFS4be-Ia7Qfc:focus .nsm7Bb-HzV7m-LgbsSe-MJoBVe{background:rgba(255,255,255,.32)}.nsm7Bb-HzV7m-LgbsSe .n1UuX-DkfjY{border-radius:50%;display:-webkit-box;display:-webkit-flex;display:flex;height:20px;margin-left:-4px;margin-right:8px;min-width:20px;width:20px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId{font-family:Roboto;font-size:12px;text-align:left}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .fmcmS,.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .ssJRIf{overflow:hidden;text-overflow:ellipsis}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-align-items:center;-webkit-box-align:center;align-items:center;color:#5f6368;fill:#5f6368;font-size:11px;font-weight:400}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.i5vt6e-to915-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#c4c7c5;fill:#c4c7c5}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#e8eaed;fill:#e8eaed}@media screen and (prefers-contrast:more){.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff,.nsm7Bb-HzV7m-LgbsSe.jVeSEe.MFS4be-Ia7Qfc .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff{color:#000;fill:#000}}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-BPrWId .K4efff .Bz112c{height:18px;margin:-3px -3px -3px 2px;min-width:18px;width:18px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-top-left-radius:0;border-bottom-left-radius:0;border-top-right-radius:3px;border-bottom-right-radius:3px;margin-left:12px;margin-right:-10px}.nsm7Bb-HzV7m-LgbsSe.jVeSEe.JGcpL-RbRzK .nsm7Bb-HzV7m-LgbsSe-Bz112c-haAclf{border-radius:18px}.L5Fo6c-sM5MNb{border:0;display:block;left:0;position:relative;top:0}.L5Fo6c-bF1uUb{border-radius:4px;bottom:0;cursor:pointer;left:0;position:absolute;right:0;top:0}.L5Fo6c-bF1uUb:focus{border:none;outline:none}sentinel{}</style><link rel="manifest" href="https://ambientalepoliziaprovincialecr-ai.github.io/corvidi-app/manifest.json"><link rel="manifest" href="blob:https://ambientalepoliziaprovincialecr-ai.github.io/c9ef303a-cfb6-43a5-b62a-ed0bed5dbc06"></head>
 <body>
 
 <!-- MODAL LOGIN GOOGLE — mostrato finché l'account non è verificato -->
@@ -266,17 +278,17 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 
 <!-- HOME -->
 <div class="screen active" id="screenHome">
-  <div id="badgeCodaOffline" onclick="sincronizzaCodaOffline()" style="display:none;align-items:center;justify-content:center;gap:8px;background:rgba(230,126,34,0.15);border:1px solid rgba(230,126,34,0.5);border-radius:10px;padding:11px;margin-bottom:12px;color:#e67e22;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;"></div>
+  <div id="badgeCodaOffline" onclick="sincronizzaCodaOffline()" style="display:none;align-items:center;justify-content:center;gap:8px;background:rgba(230,126,34,0.15);border:1px solid rgba(230,126,34,0.5);border-radius:10px;padding:11px;margin-bottom:12px;color:#e67e22;font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;"></div>
   <div class="install-banner" id="installBanner">
     <span>📲 Installa l'app sulla schermata home</span>
     <button onclick="installApp()">INSTALLA</button>
   </div>
   <button onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.add(&#39;show&#39;)" style="width:100%;padding:11px;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.3);border-radius:10px;color:#ffeb3b;font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
   <div class="stats-row">
-    <div class="stat-card"><div class="num" id="statKmOggi">0</div><div class="label">KM oggi</div></div>
-    <div class="stat-card"><div class="num" id="statKmMese">0</div><div class="label">KM mese</div></div>
-    <div class="stat-card"><div class="num" id="statRifMese">0</div><div class="label">Rif. mese</div></div>
-    <div class="stat-card highlight"><div class="num" id="statKmAnno">0</div><div class="label">KM anno</div></div>
+    <div class="stat-card"><div class="num" id="statKmOggi">80</div><div class="label">KM oggi</div></div>
+    <div class="stat-card"><div class="num" id="statKmMese">9166</div><div class="label">KM mese</div></div>
+    <div class="stat-card"><div class="num" id="statRifMese">22</div><div class="label">Rif. mese</div></div>
+    <div class="stat-card highlight"><div class="num" id="statKmAnno">35448</div><div class="label">KM anno</div></div>
   </div>
   <div class="section-title">Nuova registrazione</div>
   <div class="main-buttons">
@@ -319,7 +331,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="form-group">
     <label class="form-label">Targa <span class="req">*</span></label>
-    <select class="form-select" id="kmTarga"><option value="">— Seleziona —</option><option value="YA632AS">YA632AS (AUTO 1)</option><option value="YA358AV">YA358AV (AUTO 2)</option><option value="YA772AL">YA772AL (AUTO 3)</option><option value="YA773AL">YA773AL (AUTO 4)</option><option value="YA743AB">YA743AB (AUTO 5)</option><option value="YA256AX">YA256AX (AUTO 6)</option><option value="YA295AP">YA295AP (AUTO 7)</option><option value="YA365AM">YA365AM (AUTO 8)</option><option value="YA754AP">YA754AP (AUTO 9)</option><option value="YA438AR">YA438AR (AUTO 10)</option></select>
+    <select class="form-select" id="kmTarga"><option value="">— Seleziona —</option><option value="YA632AS">YA632AS (AUTO 1)</option><option value="YA358AV">YA358AV (AUTO 2)</option><option value="YA772AL">YA772AL (AUTO 3)</option><option value="YA773AL">YA773AL (AUTO 4)</option><option value="YA743AB">YA743AB (AUTO 5)</option><option value="YA256AX">YA256AX (AUTO 6)</option><option value="YA295AP">YA295AP (AUTO 7)</option><option value="YA365AM">YA365AM (AUTO 8)</option><option value="YA754AP">YA754AP (AUTO 9)</option><option value="YA438AR">YA438AR (AUTO 10)</option><option value="YA250AT">YA250AT (AUTO 11)</option><option value="GB443ZX">GB443ZX (AUTO 12)</option><option value="YA564AX">YA564AX (AUTO 13)</option></select>
   </div>
   <div class="form-group">
     <label class="form-label">Conducente <span class="req">*</span></label>
@@ -352,7 +364,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="form-group">
     <label class="form-label">Targa <span class="req">*</span></label>
-    <select class="form-select" id="rifTarga"><option value="">— Seleziona —</option><option value="YA632AS">YA632AS (AUTO 1)</option><option value="YA358AV">YA358AV (AUTO 2)</option><option value="YA772AL">YA772AL (AUTO 3)</option><option value="YA773AL">YA773AL (AUTO 4)</option><option value="YA743AB">YA743AB (AUTO 5)</option><option value="YA256AX">YA256AX (AUTO 6)</option><option value="YA295AP">YA295AP (AUTO 7)</option><option value="YA365AM">YA365AM (AUTO 8)</option><option value="YA754AP">YA754AP (AUTO 9)</option><option value="YA438AR">YA438AR (AUTO 10)</option></select>
+    <select class="form-select" id="rifTarga"><option value="">— Seleziona —</option><option value="YA632AS">YA632AS (AUTO 1)</option><option value="YA358AV">YA358AV (AUTO 2)</option><option value="YA772AL">YA772AL (AUTO 3)</option><option value="YA773AL">YA773AL (AUTO 4)</option><option value="YA743AB">YA743AB (AUTO 5)</option><option value="YA256AX">YA256AX (AUTO 6)</option><option value="YA295AP">YA295AP (AUTO 7)</option><option value="YA365AM">YA365AM (AUTO 8)</option><option value="YA754AP">YA754AP (AUTO 9)</option><option value="YA438AR">YA438AR (AUTO 10)</option><option value="YA250AT">YA250AT (AUTO 11)</option><option value="GB443ZX">GB443ZX (AUTO 12)</option><option value="YA564AX">YA564AX (AUTO 13)</option></select>
   </div>
   <div class="form-group">
     <label class="form-label">Conducente <span class="req">*</span></label>
@@ -402,7 +414,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <button class="tab-btn" id="tabRif" onclick="switchTab(&#39;rif&#39;)">⛽ Rifornimenti</button>
   </div>
   <div class="filter-row">
-    <select class="form-select" id="filtraTarga" onchange="renderStorico()"><option value="">Tutte le targhe</option><option value="YA632AS">YA632AS (AUTO 1)</option><option value="YA358AV">YA358AV (AUTO 2)</option><option value="YA772AL">YA772AL (AUTO 3)</option><option value="YA773AL">YA773AL (AUTO 4)</option><option value="YA743AB">YA743AB (AUTO 5)</option><option value="YA256AX">YA256AX (AUTO 6)</option><option value="YA295AP">YA295AP (AUTO 7)</option><option value="YA365AM">YA365AM (AUTO 8)</option><option value="YA754AP">YA754AP (AUTO 9)</option><option value="YA438AR">YA438AR (AUTO 10)</option></select>
+    <select class="form-select" id="filtraTarga" onchange="renderStorico()"><option value="">Tutte le targhe</option><option value="YA632AS">YA632AS (AUTO 1)</option><option value="YA358AV">YA358AV (AUTO 2)</option><option value="YA772AL">YA772AL (AUTO 3)</option><option value="YA773AL">YA773AL (AUTO 4)</option><option value="YA743AB">YA743AB (AUTO 5)</option><option value="YA256AX">YA256AX (AUTO 6)</option><option value="YA295AP">YA295AP (AUTO 7)</option><option value="YA365AM">YA365AM (AUTO 8)</option><option value="YA754AP">YA754AP (AUTO 9)</option><option value="YA438AR">YA438AR (AUTO 10)</option><option value="YA250AT">YA250AT (AUTO 11)</option><option value="GB443ZX">GB443ZX (AUTO 12)</option><option value="YA564AX">YA564AX (AUTO 13)</option></select>
     <select class="form-select" id="filtraConducente" onchange="renderStorico()">
       <option value="">Tutti</option>
       <option>ARISI</option><option>BANDERA</option><option>BORRINI</option>
@@ -411,8 +423,8 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     </select>
   </div>
   <div id="avvisoStoricoFiltrato" style="display:none;align-items:center;justify-content:space-between;gap:10px;background:rgba(41,128,185,0.12);border:1px solid rgba(41,128,185,0.35);border-radius:8px;padding:9px 12px;margin-bottom:10px;">
-    <span style="font-size:12px;color:#5dade2;font-family:'Barlow Condensed',sans-serif;"></span>
-    <button onclick="caricaStoricoCompleto()" style="background:rgba(41,128,185,0.2);border:1px solid rgba(41,128,185,0.5);border-radius:6px;color:#5dade2;font-size:11px;padding:5px 10px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;white-space:nowrap;">Carica tutto lo storico</button>
+    <span style="font-size:12px;color:#5dade2;font-family:&#39;Barlow Condensed&#39;,sans-serif;"></span>
+    <button onclick="caricaStoricoCompleto()" style="background:rgba(41,128,185,0.2);border:1px solid rgba(41,128,185,0.5);border-radius:6px;color:#5dade2;font-size:11px;padding:5px 10px;cursor:pointer;font-family:&#39;Barlow Condensed&#39;,sans-serif;white-space:nowrap;">Carica tutto lo storico</button>
   </div>
   <div id="storicoList"><div class="empty-state"><div>📋</div>Caricamento...</div></div>
 </div>
@@ -439,7 +451,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="form-group">
     <label class="form-label">Targa veicolo <span style="color:#ffeb3b;">*</span></label>
-    <select class="form-select" id="kmStampaTarga"><option value="">— Seleziona —</option><option value="YA632AS">YA632AS (AUTO 1)</option><option value="YA358AV">YA358AV (AUTO 2)</option><option value="YA772AL">YA772AL (AUTO 3)</option><option value="YA773AL">YA773AL (AUTO 4)</option><option value="YA743AB">YA743AB (AUTO 5)</option><option value="YA256AX">YA256AX (AUTO 6)</option><option value="YA295AP">YA295AP (AUTO 7)</option><option value="YA365AM">YA365AM (AUTO 8)</option><option value="YA754AP">YA754AP (AUTO 9)</option><option value="YA438AR">YA438AR (AUTO 10)</option></select>
+    <select class="form-select" id="kmStampaTarga"><option value="">— Seleziona —</option><option value="YA632AS">YA632AS (AUTO 1)</option><option value="YA358AV">YA358AV (AUTO 2)</option><option value="YA772AL">YA772AL (AUTO 3)</option><option value="YA773AL">YA773AL (AUTO 4)</option><option value="YA743AB">YA743AB (AUTO 5)</option><option value="YA256AX">YA256AX (AUTO 6)</option><option value="YA295AP">YA295AP (AUTO 7)</option><option value="YA365AM">YA365AM (AUTO 8)</option><option value="YA754AP">YA754AP (AUTO 9)</option><option value="YA438AR">YA438AR (AUTO 10)</option><option value="YA250AT">YA250AT (AUTO 11)</option><option value="GB443ZX">GB443ZX (AUTO 12)</option><option value="YA564AX">YA564AX (AUTO 13)</option></select>
   </div>
   <button class="btn-submit" onclick="generaStampaKm()">🖨️ Genera Scheda Viaggio</button>
   <div id="anteprimaKm" style="margin-top:16px;"></div>
@@ -457,7 +469,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="form-group">
     <label class="form-label">Targa veicolo <span style="color:#ffeb3b;">*</span></label>
-    <select class="form-select" id="rifStampaTarga"><option value="">— Seleziona —</option><option value="YA632AS">YA632AS (AUTO 1)</option><option value="YA358AV">YA358AV (AUTO 2)</option><option value="YA772AL">YA772AL (AUTO 3)</option><option value="YA773AL">YA773AL (AUTO 4)</option><option value="YA743AB">YA743AB (AUTO 5)</option><option value="YA256AX">YA256AX (AUTO 6)</option><option value="YA295AP">YA295AP (AUTO 7)</option><option value="YA365AM">YA365AM (AUTO 8)</option><option value="YA754AP">YA754AP (AUTO 9)</option><option value="YA438AR">YA438AR (AUTO 10)</option></select>
+    <select class="form-select" id="rifStampaTarga"><option value="">— Seleziona —</option><option value="YA632AS">YA632AS (AUTO 1)</option><option value="YA358AV">YA358AV (AUTO 2)</option><option value="YA772AL">YA772AL (AUTO 3)</option><option value="YA773AL">YA773AL (AUTO 4)</option><option value="YA743AB">YA743AB (AUTO 5)</option><option value="YA256AX">YA256AX (AUTO 6)</option><option value="YA295AP">YA295AP (AUTO 7)</option><option value="YA365AM">YA365AM (AUTO 8)</option><option value="YA754AP">YA754AP (AUTO 9)</option><option value="YA438AR">YA438AR (AUTO 10)</option><option value="YA250AT">YA250AT (AUTO 11)</option><option value="GB443ZX">GB443ZX (AUTO 12)</option><option value="YA564AX">YA564AX (AUTO 13)</option></select>
   </div>
   <button class="btn-submit" onclick="generaStampaRif()" style="background:linear-gradient(135deg,#16213e,#27ae60);">🖨️ Genera Foglio Carburante</button>
   <div id="anteprimaRif" style="margin-top:16px;"></div>
@@ -1195,17 +1207,43 @@ async function sincronizzaCodaOffline() {
   try {
     while (coda.length > 0) {
       var elemento = coda[0];
-      var ok = false;
+      var esito = 'networkfail';
       try {
         elemento.payload.idToken = idTokenCorrente;
         var res = await fetchConTimeout(URL_GS, { method: 'POST', body: JSON.stringify(elemento.payload) }, 8000);
         var d = await res.json();
-        ok = (d.status === 'ok');
-      } catch(e) { ok = false; }
-      if (!ok) break; // ancora senza linea (o errore server): riprova più tardi, non perdere l'ordine
-      coda.shift();
-      scriviCodaOffline(coda);
-      aggiornaBadgeCodaOffline();
+        esito = d.status; // 'ok' | 'warning' | 'error'
+      } catch(e) { esito = 'networkfail'; }
+
+      if (esito === 'ok') {
+        coda.shift();
+        scriviCodaOffline(coda);
+        aggiornaBadgeCodaOffline();
+        continue;
+      }
+      if (esito === 'error') {
+        // Rifiutato dal server (es. km minore/uguale al precedente): non
+        // si può correggere in automatico in background. Lo togliamo dalla
+        // coda per non bloccare per sempre gli invii successivi, e
+        // avvisiamo l'operatore di ricontrollare e reinserire a mano.
+        coda.shift();
+        scriviCodaOffline(coda);
+        aggiornaBadgeCodaOffline();
+        toast('⚠️ Un dato salvato offline (' + (elemento.payload.targa || '') + ') è stato rifiutato dal server — controlla il dato e reinseriscilo a mano.', true);
+        continue;
+      }
+      if (esito === 'warning') {
+        // Salto km sospetto: in background non possiamo chiedere conferma
+        // all'operatore. Lo togliamo dalla coda e avvisiamo di reinserirlo
+        // a mano, dove potrà confermarlo tramite il popup dedicato.
+        coda.shift();
+        scriviCodaOffline(coda);
+        aggiornaBadgeCodaOffline();
+        toast('⚠️ Un dato salvato offline (' + (elemento.payload.targa || '') + ') ha un salto km sospetto — reinseriscilo a mano per confermarlo.', true);
+        continue;
+      }
+      // networkfail: manca ancora la linea, riprova più tardi, mantieni l'ordine
+      break;
     }
     if (leggiCodaOffline().length === 0) {
       toast('✅ Tutti gli inserimenti in sospeso sono stati inviati!');
@@ -1228,8 +1266,27 @@ async function invia(payload) {
     payload.idToken = idTokenCorrente;
     var res = await fetchConTimeout(URL_GS, {method:'POST', body:JSON.stringify(payload)}, 8000);
     var d = await res.json();
-    if (d.status === 'ok') toast('✅ Salvato!');
-    else toast('Errore: ' + (d.message || '?'), true);
+    if (d.status === 'ok') {
+      toast('✅ Salvato!');
+    } else if (d.status === 'warning') {
+      // Il server ha rilevato un salto km sospetto (oltre soglia) ma
+      // non l'ha ancora scritto: chiediamo conferma esplicita e, se
+      // accettata, rimandiamo la STESSA richiesta con confermaSalto,
+      // che fa passare la validazione lato server.
+      loading(false);
+      var confermaSalto = confirm('⚠️ ' + (d.message || 'Controllare il dato.') + '\n\nPremi OK per salvare comunque, Annulla per non salvare e correggere.');
+      if (confermaSalto) {
+        payload.confermaSalto = true;
+        await invia(payload);
+        return;
+      } else {
+        toast('Salvataggio annullato — correggi il dato', true);
+      }
+    } else {
+      // status 'error': rifiuto secco (es. km minore/uguale al
+      // precedente) — il dato non è stato scritto, va corretto.
+      toast('Errore: ' + (d.message || '?'), true);
+    }
   } catch(e) {
     // Fetch fallito O in timeout: quasi certamente manca la
     // connessione, non un errore dei dati. Salviamo sul dispositivo
@@ -1792,6 +1849,89 @@ loadStats();
 ['kmTarga','rifTarga','kmStampaTarga','rifStampaTarga'].forEach(function(id){ renderSelectTarghe(id, false); });
 renderSelectTarghe('filtraTarga', true);
 caricaTargheDalFoglio();
+
+// ============================================================
+// TENDINE PERSONALIZZATE — sostituisce visivamente ogni <select>
+// nativo con un menu a div, perché alcuni browser (soprattutto in
+// dark mode, sia su desktop che su Android) ricolorano i menu
+// nativi ignorando il CSS, rendendo il testo illeggibile. Con dei
+// div normali questo non può più succedere: non sono controlli di
+// sistema, quindi il browser non li tocca.
+// Il <select> originale resta nel DOM, solo nascosto: tutto il
+// resto del codice continua a leggerne/scriverne .value esattamente
+// come prima (es. document.getElementById('kmTarga').value), quindi
+// non serve modificare nient'altro. La lista delle opzioni viene
+// letta dal <select> ogni volta che si apre, così funziona anche con
+// select i cui contenuti cambiano dopo (es. renderSelectTarghe,
+// caricaTargheDalFoglio).
+// ============================================================
+function creaTendinaPersonalizzata(select){
+  if (!select || select.dataset.cstDone) return;
+  select.dataset.cstDone = '1';
+
+  var wrap = document.createElement('div');
+  wrap.className = 'custom-select-wrap';
+  select.parentNode.insertBefore(wrap, select);
+  wrap.appendChild(select);
+  select.style.position = 'absolute';
+  select.style.opacity = '0';
+  select.style.pointerEvents = 'none';
+  select.style.height = '0';
+  select.style.width = '0';
+  select.style.padding = '0';
+  select.style.border = 'none';
+  select.tabIndex = -1;
+
+  var trigger = document.createElement('div');
+  trigger.className = 'custom-select-trigger';
+  trigger.innerHTML = '<span class="cst-label"></span><span class="cst-arrow">▾</span>';
+  wrap.appendChild(trigger);
+
+  var list = document.createElement('div');
+  list.className = 'custom-select-list';
+  wrap.appendChild(list);
+
+  function aggiornaLabel(){
+    var opt = select.options[select.selectedIndex];
+    var label = trigger.querySelector('.cst-label');
+    label.textContent = opt ? opt.textContent : '';
+    trigger.classList.toggle('placeholder', !select.value);
+  }
+  function chiudi(){ list.classList.remove('open'); }
+  function apri(){
+    list.innerHTML = '';
+    Array.prototype.forEach.call(select.options, function(opt){
+      var riga = document.createElement('div');
+      riga.className = 'custom-select-option' + (opt.value === select.value ? ' active' : '');
+      riga.textContent = opt.textContent;
+      riga.addEventListener('click', function(){
+        select.value = opt.value;
+        aggiornaLabel();
+        chiudi();
+        select.dispatchEvent(new Event('change', {bubbles:true}));
+      });
+      list.appendChild(riga);
+    });
+    list.classList.add('open');
+  }
+  trigger.addEventListener('click', function(e){
+    e.stopPropagation();
+    if (list.classList.contains('open')) chiudi(); else apri();
+  });
+  document.addEventListener('click', function(e){
+    if (!wrap.contains(e.target)) chiudi();
+  });
+
+  aggiornaLabel();
+  // Il resto del codice a volte cambia select.value direttamente
+  // (es. document.getElementById('kmTarga').value = '' dopo un
+  // salvataggio): questo controllo periodico tiene la scritta
+  // visibile sincronizzata con quel valore, senza dover modificare
+  // ogni punto del codice che lo fa.
+  setInterval(aggiornaLabel, 300);
+}
+
+document.querySelectorAll('select.form-select').forEach(creaTendinaPersonalizzata);
 </script>
 
 
