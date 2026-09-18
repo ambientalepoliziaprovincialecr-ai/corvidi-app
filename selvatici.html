@@ -376,6 +376,31 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
 </div>
 
+<div class="modal-overlay" id="modalAnnullaPratica" style="display:none;">
+  <div class="modal-box">
+    <div class="modal-title" id="annullaTitolo">🗑️ Annulla pratica</div>
+
+    <div id="annullaStep1">
+      <div class="modal-text">Scegli quale delle ultime 5 pratiche vuoi annullare. Il numero pratica resta nel foglio, ma verrà segnato come annullato con il motivo che scriverai.</div>
+      <div id="annullaListaScelta" style="max-height:340px;overflow-y:auto;margin-bottom:10px;"></div>
+      <div class="modal-btns">
+        <button class="modal-btn cancel" onclick="document.getElementById('modalAnnullaPratica').style.display='none';">Chiudi</button>
+      </div>
+    </div>
+
+    <div id="annullaStep2" style="display:none;">
+      <div class="modal-text" id="annullaRiepilogo" style="font-size:12.5px;line-height:1.5;"></div>
+      <div style="font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;margin:10px 0 6px;">Motivo dell'annullamento <span class="req">*</span></div>
+      <textarea class="form-textarea" id="annullaMotivo" placeholder="Spiega perché stai annullando questa pratica..." style="min-height:80px;"></textarea>
+      <div id="annulla-err" style="font-size:11px;color:#e74c3c;min-height:16px;margin-top:4px;"></div>
+      <div class="modal-btns">
+        <button class="modal-btn cancel" onclick="tornaAnnullaStep1()">‹ Indietro</button>
+        <button class="modal-btn confirm" style="background:#e74c3c;" onclick="confermaAnnullaPratica()">Conferma annullamento</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modalLogin" style="z-index:10000;">
   <div class="modal-box">
     <div class="modal-title">👤 Identificazione</div>
@@ -453,7 +478,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <input type="text" class="form-input" id="zooAnimale" placeholder="Es. Capriolo, Cinghiale, Volpe...">
   </div>
   <div class="form-group">
-    <label class="form-label">Numero identificativo <span style="color:rgba(255,235,59,0.92);font-weight:700;font-size:11px;">(obbligatorio per cinghiale — sorveglianza peste suina)</span></label>
+    <label class="form-label">Numero identificativo <span style="color:rgba(255,235,59,0.92);font-weight:700;font-size:11px;">(obbligatorio SOLO per cinghiale — sorveglianza peste suina)</span></label>
     <input type="text" class="form-input" id="zooNumIdentificativo" placeholder="Es. numero targhetta / crotto">
   </div>
   <div class="form-group">
@@ -483,7 +508,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <input type="text" class="form-input" id="zooComune" placeholder="Es. Cremona">
   </div>
   <div class="form-group">
-    <label class="form-label">Chi ha consegnato il capo</label>
+    <label class="form-label">Chi ha consegnato il capo <span class="req">*</span></label>
     <input type="text" class="form-input" id="zooConsegnante" placeholder="Nome, cognome o ente">
   </div>
   <div class="form-group">
@@ -566,11 +591,11 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <label for="crasConsegnatoComando" style="margin:0;font-size:12px;cursor:pointer;">Consegnato direttamente al Comando dall'utente</label>
   </div>
   <div class="form-group">
-    <label class="form-label">Chi ha consegnato il selvatico</label>
+    <label class="form-label">Chi ha consegnato il selvatico <span class="req">*</span></label>
     <input type="text" class="form-input" id="crasConsegnante" placeholder="Nome, cognome o ente">
   </div>
   <div class="form-group">
-    <label class="form-label">Cellulare del consegnante</label>
+    <label class="form-label">Cellulare del consegnante <span class="req">*</span></label>
     <input type="tel" class="form-input" id="crasCellulare" placeholder="Es. 333 1234567">
   </div>
   <div class="form-group">
@@ -1344,9 +1369,10 @@ async function submitZoo(){
   var comune=document.getElementById('zooComune').value.trim();
   var ore=document.getElementById('zooOre').value;
   var gps=document.getElementById('zooGps').value.trim();
-  if(!dataOra||!agente.length||!animale||!causa||!localita||!comune||!ore){toast('Seleziona almeno un agente e compila tutti i campi',true);return;}
-  if(!tipoIzp){toast('Seleziona tipo consegna: Carcassa o Campioni',true);return;}
   var consegnanteOriginaleZoo=document.getElementById('zooConsegnante').value.trim();
+  if(!dataOra||!agente.length||!animale||!causa||!localita||!comune||!ore||!consegnanteOriginaleZoo){toast('Seleziona almeno un agente e compila tutti i campi obbligatori',true);return;}
+  if(!tipoIzp){toast('Seleziona tipo consegna: Carcassa o Campioni',true);return;}
+  if(animale.toUpperCase().indexOf('CINGHIALE')>=0 && !numIdentificativo){toast('Numero identificativo obbligatorio per il cinghiale (sorveglianza peste suina)',true);return;}
   var nCapiZoo = tipoIzp ? (parseInt(document.getElementById('zooNCampioni').value)||1) : 1;
   var ok=await invia({tipo:'ZOO',dataOra:fmtDTOra(dataOra),agente,animale,causa,localita:localita+', '+comune,
     via:localita,comune:comune,numIdentificativo:numIdentificativo,
@@ -1391,6 +1417,7 @@ async function submitCras(){
   var noteFinaliSubmit=document.getElementById('crasNote').value.trim();
   var consegnanteOriginale = document.getElementById('crasConsegnante').value.trim();
   var cellulareOriginale = document.getElementById('crasCellulare').value.trim();
+  if(!consegnanteOriginale||!cellulareOriginale){toast('Compila anche chi ha consegnato e il suo cellulare',true);return;}
   var ok=await invia({tipo:'CRAS',dataOra:fmtDTOra(dataOra),agente,animale,localita:localita+', '+comuneRitrovamento,
     consegnante:consegnanteOriginale,
     via:localita,
@@ -1600,65 +1627,109 @@ async function loadStorico(){
 
 // ============================================================
 // ELIMINA ULTIMO INSERIMENTO — bottone 🗑️ nell'intestazione dei
-// form CRAS e IZP. Recupera sempre dati freschi dal foglio (non
-// la cache locale) per essere sicuri che sia davvero l'ultima
-// pratica inserita, poi chiede conferma con i dettagli prima di
-// cancellarla per sempre.
 // ============================================================
+// ANNULLA UNA DELLE ULTIME 5 PRATICHE (CRAS o IZP) — a differenza
+// della vecchia eliminazione secca, qui: 1) l'agente sceglie quale
+// delle ultime 5 pratiche annullare (non solo l'ultima in
+// assoluto), 2) deve scrivere obbligatoriamente il motivo,
+// 3) la pratica NON viene cancellata dal foglio: il numero resta,
+// ma la riga viene marcata come annullata con motivo/data/chi.
+// ============================================================
+var annullaContesto = { tipo: '', numeroPratica: '', riepilogo: '' };
+
+function numeroDiPratica(np){
+  var m = (np || '').toString().match(/(\d+)\s*$/);
+  return m ? parseInt(m[1]) : -1;
+}
+
 async function eliminaUltimoInserimento(tipo){
   var etichetta = tipo === 'CRAS' ? 'CRAS' : 'IZP';
+  document.getElementById('annullaTitolo').textContent = '🗑️ Annulla pratica ' + etichetta;
+  document.getElementById('annullaListaScelta').innerHTML = '<div class="empty-state" style="padding:20px;"><div>⏳</div>Caricamento...</div>';
+  document.getElementById('annullaStep1').style.display = 'block';
+  document.getElementById('annullaStep2').style.display = 'none';
+  document.getElementById('modalAnnullaPratica').style.display = 'flex';
+
   try {
     var res = await fetch(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente));
     var d = await res.json();
-    var lista = tipo === 'CRAS' ? (d.cras || []) : (d.zoo || []);
-    if (!lista.length) { toast('Nessuna pratica ' + etichetta + ' da eliminare', true); return; }
+    var lista = (tipo === 'CRAS' ? (d.cras || []) : (d.zoo || []))
+      // Non proporre pratiche già annullate in precedenza
+      .filter(function(r){ return (r.note||'').toString().indexOf('❌ ANNULLATA') !== 0; });
 
-    // L'ordine delle righe nel foglio non sempre coincide con
-    // l'ordine dei numeri pratica (bozze inviate in ritardo,
-    // problemi di rete...) — cerchiamo quindi il numero PIÙ ALTO,
-    // non semplicemente l'ultima riga scritta.
-    function numeroDiPratica(np){
-      var m = (np || '').toString().match(/(\d+)\s*$/);
-      return m ? parseInt(m[1]) : -1;
+    if (!lista.length) {
+      document.getElementById('annullaListaScelta').innerHTML = '<div class="empty-state" style="padding:20px;"><div>📂</div>Nessuna pratica ' + etichetta + ' da annullare</div>';
+      return;
     }
-    var ultima = lista[0];
-    lista.forEach(function(r){
-      if (numeroDiPratica(r.numeroPratica) > numeroDiPratica(ultima.numeroPratica)) ultima = r;
+
+    var ultimeCinque = lista.slice().sort(function(a,b){ return numeroDiPratica(b.numeroPratica) - numeroDiPratica(a.numeroPratica); }).slice(0, 5);
+
+    var html = '';
+    ultimeCinque.forEach(function(r){
+      html += '<div class="scelta-annulla-card" onclick="apriStep2Annulla(&#39;' + tipo + '&#39;,&#39;' + (r.numeroPratica||'').replace(/'/g,"\\'") + '&#39;)" ' +
+        'style="border:1px solid rgba(231,76,60,0.3);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer;background:rgba(231,76,60,0.05);">' +
+        '<div style="font-weight:700;color:#ffeb3b;">' + (r.numeroPratica||'—') + '</div>' +
+        '<div style="font-size:12px;color:rgba(255,235,59,0.6);margin-top:2px;">' + (r.dataOra||'—') + ' · ' + (r.animale||'—') + '</div>' +
+        '<div style="font-size:11px;color:rgba(255,235,59,0.4);margin-top:2px;">Agente: ' + (r.agente||'—') + '</div>' +
+        '</div>';
     });
+    document.getElementById('annullaListaScelta').innerHTML = html;
 
-    var conferma = confirm(
-      '⚠️ ELIMINA ULTIMO INSERIMENTO (' + etichetta + ')\n\n' +
-      'Pratica: ' + (ultima.numeroPratica || '—') + '\n' +
-      'Data: ' + (ultima.dataOra || '—') + '\n' +
-      'Animale: ' + (ultima.animale || '—') + '\n' +
-      'Agente: ' + (ultima.agente || '—') + '\n\n' +
-      'Questa operazione NON si può annullare. Confermi di voler eliminare questa pratica?'
-    );
-    if (!conferma) return;
-
-    var ok = false;
-    try {
-      loading(true);
-      var resDel = await fetch(URL_GS, {
-        method: 'POST',
-        body: JSON.stringify({ idToken: idTokenCorrente, tipo: 'ELIMINA_ULTIMO', tipoPratica: tipo, numeroPratica: ultima.numeroPratica })
-      });
-      var dDel = await resDel.json();
-      ok = dDel.status === 'ok';
-      if (!ok) toast('Errore: ' + (dDel.message || '?'), true);
-    } catch(err) {
-      toast('Errore di connessione', true);
-    } finally {
-      loading(false);
-    }
-    if (ok) {
-      toast('🗑️ Pratica ' + (ultima.numeroPratica || '') + ' eliminata');
-      var listaSenzaUltima = lista.filter(function(r){ return r.numeroPratica !== ultima.numeroPratica; });
-      if (tipo === 'CRAS') allRecords.cras = listaSenzaUltima;
-      else allRecords.zoo = listaSenzaUltima;
-    }
+    // Salva i dati completi per costruire il riepilogo nello step 2
+    window._annullaListaCorrente = ultimeCinque;
   } catch(e) {
-    toast('Errore durante l\'eliminazione', true);
+    document.getElementById('annullaListaScelta').innerHTML = '<div class="empty-state" style="padding:20px;"><div>⚠️</div>Errore di connessione</div>';
+  }
+}
+
+function apriStep2Annulla(tipo, numeroPratica){
+  var r = (window._annullaListaCorrente || []).find(function(x){ return x.numeroPratica === numeroPratica; });
+  if (!r) return;
+  annullaContesto = { tipo: tipo, numeroPratica: numeroPratica };
+  document.getElementById('annullaRiepilogo').innerHTML =
+    '<strong>Pratica:</strong> ' + (r.numeroPratica||'—') + '<br>' +
+    '<strong>Data:</strong> ' + (r.dataOra||'—') + '<br>' +
+    '<strong>Animale:</strong> ' + (r.animale||'—') + '<br>' +
+    '<strong>Agente:</strong> ' + (r.agente||'—');
+  document.getElementById('annullaMotivo').value = '';
+  document.getElementById('annulla-err').textContent = '';
+  document.getElementById('annullaStep1').style.display = 'none';
+  document.getElementById('annullaStep2').style.display = 'block';
+}
+
+function tornaAnnullaStep1(){
+  document.getElementById('annullaStep1').style.display = 'block';
+  document.getElementById('annullaStep2').style.display = 'none';
+}
+
+async function confermaAnnullaPratica(){
+  var motivo = document.getElementById('annullaMotivo').value.trim();
+  if (!motivo) { document.getElementById('annulla-err').textContent = 'Il motivo è obbligatorio.'; return; }
+
+  var ok = false;
+  try {
+    loading(true);
+    var res = await fetch(URL_GS, {
+      method: 'POST',
+      body: JSON.stringify({
+        idToken: idTokenCorrente, tipo: 'ANNULLA_PRATICA',
+        tipoPratica: annullaContesto.tipo, numeroPratica: annullaContesto.numeroPratica,
+        motivo: motivo, inseritoDa: utenteLoggato
+      })
+    });
+    var d = await res.json();
+    ok = d.status === 'ok';
+    if (!ok) document.getElementById('annulla-err').textContent = 'Errore: ' + (d.message || '?');
+  } catch(e) {
+    document.getElementById('annulla-err').textContent = 'Errore di connessione';
+  } finally {
+    loading(false);
+  }
+
+  if (ok) {
+    toast('✅ Pratica ' + annullaContesto.numeroPratica + ' annullata');
+    document.getElementById('modalAnnullaPratica').style.display = 'none';
+    if (typeof loadStats === 'function') loadStats();
   }
 }
 
