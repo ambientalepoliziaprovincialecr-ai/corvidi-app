@@ -197,22 +197,22 @@ select.modal-input{-webkit-appearance:none;appearance:none}
   <p id="loginGoogleErrore" style="color:#ff6b6b;font-size:12px;margin-top:16px;max-width:300px;"></p>
 </div>
 
-<div id="connBanner" class="online">🟢 CONNESSO</div>
+<div id="connBanner" class="offline">🔴 TURNI NON CARICATI — RICARICA LA PAGINA</div>
 <header>
   <div class="logo">
     <div class="badge">🛡️</div>
     <div><div class="logo-text">TURNI</div><div class="logo-sub">PP CREMONA</div></div>
   </div>
-  <button onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.add(&#39;show&#39;)" style="background:transparent;border:1px solid rgba(26,115,232,0.4);border-radius:8px;color:#1a73e8;font-size:11px;padding:4px 8px;cursor:pointer;margin-right:8px;">ℹ️</button>
+  <button onclick="document.getElementById('modalIstruzioni').classList.add('show')" style="background:transparent;border:1px solid rgba(26,115,232,0.4);border-radius:8px;color:#1a73e8;font-size:11px;padding:4px 8px;cursor:pointer;margin-right:8px;">ℹ️</button>
 <div class="hright" style="display:flex;align-items:center;gap:8px;">
   <div style="cursor:pointer" onclick="showPinScreen()" title="Cambia operatore">
     <span id="operatoreBadge" style="font-size:11px">👤 AMMINISTRATORE</span>
-    <div class="sync-dot ok" id="syncDot"></div><span id="syncTxt">SINCRONIZZATO</span>
+    <div class="sync-dot err" id="syncDot"></div><span id="syncTxt">ERRORE CARICAMENTO</span>
   </div>
 </div>
 </header>
 <div style="padding:12px 16px 6px;display:flex;gap:8px;">
-  <button onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.add(&#39;show&#39;)" style="flex:1;padding:10px;background:rgba(26,115,232,0.08);border:1px solid rgba(26,115,232,0.3);border-radius:10px;color:#1a73e8;font-family:sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">ℹ️ Istruzioni</button>
+  <button onclick="document.getElementById('modalIstruzioni').classList.add('show')" style="flex:1;padding:10px;background:rgba(26,115,232,0.08);border:1px solid rgba(26,115,232,0.3);border-radius:10px;color:#1a73e8;font-family:sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">ℹ️ Istruzioni</button>
   <button onclick="showArchivio()" style="flex:1;padding:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;color:#d97706;font-family:sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">📅 Archivio</button>
 </div>
 <!-- BANNER MODIFICA TURNI -->
@@ -223,19 +223,19 @@ select.modal-input{-webkit-appearance:none;appearance:none}
 </div>
 
 <div class="nav-tabs" id="navTabs">
-  <button class="nav-tab active" id="tab-cal" onclick="switchTab(&#39;cal&#39;)">📅 CALENDARIO</button>
-  <button class="nav-tab" id="tab-archivio" onclick="switchTab(&#39;archivio&#39;)">🗂 ARCHIVIO</button>
-  <button class="nav-tab" id="tab-art24" onclick="switchTab(&#39;art24&#39;)">⚖️ ART.24</button>
+  <button class="nav-tab active" id="tab-cal" onclick="switchTab('cal')">📅 CALENDARIO</button>
+  <button class="nav-tab" id="tab-archivio" onclick="switchTab('archivio')">🗂 ARCHIVIO</button>
+  <button class="nav-tab" id="tab-art24" onclick="switchTab('art24')">⚖️ ART.24</button>
 </div>
 <div id="view-cal" style="display: none;">
   <div class="nav-mese">
     <button class="nav-mese-btn" onclick="cambioMese(-1)">‹ Prec</button>
-    <span class="nav-mese-label" id="navMeseLabel">LUGLIO 2026</span>
+    <span class="nav-mese-label" id="navMeseLabel">SETTEMBRE 2026</span>
     <button class="nav-mese-btn" onclick="cambioMese(1)">Succ ›</button>
   </div>
   <div class="cal-wrap">
     <div class="cal-header">
-      <div class="cal-title" id="cal-title">LUGLIO 2026</div>
+      <div class="cal-title" id="cal-title">SETTEMBRE 2026</div>
       <div class="cal-sub">Tocca un giorno per vedere i turni</div>
     </div>
     <div class="legend">
@@ -332,7 +332,7 @@ select.modal-input{-webkit-appearance:none;appearance:none}
     <input class="modal-input" id="cp-conferma" type="tel" inputmode="numeric" placeholder="Ripeti nuovo PIN" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:4px;color:var(--text);margin-bottom:6px;">
     <div class="modal-err" id="cp-err" style="display:none;"></div>
     <div class="modal-actions">
-      <button class="btn" onclick="document.getElementById(&#39;cambiaPinOverlay&#39;).style.display=&#39;none&#39;">Annulla</button>
+      <button class="btn" onclick="document.getElementById('cambiaPinOverlay').style.display='none'">Annulla</button>
       <button class="btn btn-primary" onclick="salvaNuovoPin()">Salva PIN</button>
     </div>
   </div>
@@ -401,8 +401,12 @@ window.addEventListener('offline', function(){ appareCollegato = false; setConnB
 // periodico serve solo a rilevare una connessione persa DOPO che i
 // turni erano già stati caricati con successo — non fa mai apparire
 // "connesso" prima che il primo caricamento dati sia riuscito.
+var salvataggioInCorso = false; // true mentre un salvataggio è in volo, per non far scattare
+                                 // un falso "disconnesso" dal ping periodico concorrente
+
 function verificaConnessioneReale(){
   if(!datiCaricatiConSuccesso) return; // il primo loadData decide da solo lo stato
+  if(salvataggioInCorso) return; // non sovrapporre il ping a un salvataggio in corso
   if(!navigator.onLine){ appareCollegato = false; setConnBanner('err'); return; }
   fetch(API_URL + '?action=ping', { method: 'GET', cache: 'no-store' })
     .then(function(){ appareCollegato = true; setConnBanner('ok'); })
@@ -742,6 +746,7 @@ function saveTurno(){
   saveBtn.textContent='Salvataggio...';
   saveBtn.disabled=true;
   setSync('busy','SALVATAGGIO...');
+  salvataggioInCorso = true;
 
   fetch(API_URL,{
     method:'POST',
@@ -758,6 +763,7 @@ function saveTurno(){
   })
   .then(function(r){return r.json();})
   .then(function(res){
+    salvataggioInCorso = false;
     saveBtn.textContent='Salva';
     saveBtn.disabled=false;
     if(res.success){
@@ -767,6 +773,11 @@ function saveTurno(){
       closeModal();
       buildCal();
       showDay(editingAgent.data);
+      // Salvataggio confermato dal server: il collegamento è sicuramente buono,
+      // confermiamo subito il banner verde invece di aspettare il prossimo ping.
+      datiCaricatiConSuccesso = true;
+      appareCollegato = true;
+      setConnBanner('ok');
       setSync('ok','SALVATO ✓');
       setTimeout(function(){setSync('ok','SINCRONIZZATO');},2000);
     } else {
@@ -778,11 +789,26 @@ function saveTurno(){
   .catch(function(err){
     saveBtn.textContent='Salva';
     saveBtn.disabled=false;
-    document.getElementById('m-err').textContent='Errore di connessione';
-    document.getElementById('m-err').style.display='block';
     setSync('err','ERRORE');
-    appareCollegato = false;
-    setConnBanner('err');
+    // La richiesta di salvataggio ha fallito lato client (timeout/rete), ma questo
+    // NON prova che il server non abbia comunque scritto il dato: riverifichiamo la
+    // connessione reale prima di dichiarare "disconnesso" e allarmare inutilmente.
+    salvataggioInCorso = false;
+    fetch(API_URL + '?action=ping', { method:'GET', cache:'no-store' })
+      .then(function(){
+        // Il server risponde: la rete c'è, il salvataggio potrebbe essere comunque
+        // andato a buon fine lato server pur senza risposta ricevuta dal client.
+        appareCollegato = true;
+        setConnBanner('ok');
+        document.getElementById('m-err').textContent = 'Risposta non ricevuta: la modifica potrebbe essere stata comunque salvata. Chiudi e riapri il giorno per controllare prima di riprovare.';
+        document.getElementById('m-err').style.display='block';
+      })
+      .catch(function(){
+        appareCollegato = false;
+        setConnBanner('err');
+        document.getElementById('m-err').textContent='Errore di connessione: la modifica NON è stata salvata.';
+        document.getElementById('m-err').style.display='block';
+      });
   });
 }
 
@@ -1266,7 +1292,7 @@ window.addEventListener('load',function(){
       📧 riccardo.borrini@provincia.cremona.it
     </div>
 
-    <button class="btn-istr-close" onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.remove(&#39;show&#39;)">Chiudi</button>
+    <button class="btn-istr-close" onclick="document.getElementById('modalIstruzioni').classList.remove('show')">Chiudi</button>
   </div>
 </div>
 </body></html>
