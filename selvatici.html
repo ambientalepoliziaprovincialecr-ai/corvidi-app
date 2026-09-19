@@ -3105,9 +3105,23 @@ async function stampaTutteLeBozze() {
     return html;
   }
 
+  // Le bozze già registrate in un tentativo precedente (rimaste solo perché la
+  // cancellazione era fallita) NON vanno ristampate né ri-registrate: si tenta
+  // solo di rimuoverle. Si stampa/registra solo il resto.
+  var giaRegistrateIds = leggiBozzeGiaRegistrate();
+  var bozzeDaStampare = bozzeCorrenti.filter(function(b){ return giaRegistrateIds.indexOf(b.rowId) < 0; });
+  var bozzeSoloDaRimuovere = bozzeCorrenti.filter(function(b){ return giaRegistrateIds.indexOf(b.rowId) >= 0; });
+
+  if(!bozzeDaStampare.length){
+    toast('Le bozze rimaste sono già registrate: sto solo ritentando di rimuoverle dalla lista', true);
+    for(var iR=0; iR<bozzeSoloDaRimuovere.length; iR++){ await eliminaBozzaSilente(bozzeSoloDaRimuovere[iR].rowId, bozzeSoloDaRimuovere[iR].tipo); }
+    caricaBozze(); aggiornaBadgeBozze();
+    return;
+  }
+
   // Costruisci HTML con tutti i verbali, ognuno nel suo formato vero
   var corpo = '';
-  bozzeCorrenti.forEach(function(b) {
+  bozzeDaStampare.forEach(function(b) {
     if (b.tipo === 'CRAS_BOZZA') {
       corpo += verbaleHtml(b, b.numeroPratica, false);
       corpo += verbaleHtml(b, b.numeroPratica, true);
@@ -3126,52 +3140,119 @@ async function stampaTutteLeBozze() {
   apriFinestraStampabile(htmlDoc, 'verbali-bozze.pdf');
 
   // Dopo 1 secondo registra tutte le bozze nel foglio e le elimina,
-  // ognuna con la registrazione corretta per il suo tipo.
+  // ognuna con la registrazione corretta per il suo tipo. Ritenta anche
+  // la rimozione di eventuali bozze già registrate in precedenza.
   setTimeout(async function() {
     loading(true);
+    var nonRimosse = 0;
     try {
-      for(var i=0; i<bozzeCorrenti.length; i++) {
-        var b = bozzeCorrenti[i];
+      for(var i=0; i<bozzeDaStampare.length; i++) {
+        var b = bozzeDaStampare[i];
         if (b.tipo === 'CRAS_BOZZA') {
           await registraDeidCras(b, b.numeroPratica, true);
         } else {
           await registraDeidZoo(b, b.numeroPratica, true);
         }
-        await eliminaBozzaSilente(b.rowId, b.tipo);
+        // Segnata SUBITO dopo la registrazione riuscita, prima del tentativo
+        // di cancellazione: se la cancellazione fallisce, questa bozza non
+        // verrà mai più ri-registrata, solo ritentata in eliminazione.
+        segnaBozzaGiaRegistrata(b.rowId);
+        var rimossa = await eliminaBozzaSilente(b.rowId, b.tipo);
+        if(!rimossa) nonRimosse++;
       }
-      bozzeCorrenti = [];
+      for(var iS=0; iS<bozzeSoloDaRimuovere.length; iS++){
+        var rimossaS = await eliminaBozzaSilente(bozzeSoloDaRimuovere[iS].rowId, bozzeSoloDaRimuovere[iS].tipo);
+        if(!rimossaS) nonRimosse++;
+      }
       aggiornaBadgeBozze();
-      toast('✅ Tutte le bozze registrate!');
+      if(nonRimosse>0){
+        toast('⚠️ Registrate, ma '+nonRimosse+' bozze non ancora rimosse dalla lista (verrà ritentato automaticamente) — NON ristamparle a mano', true);
+      } else {
+        toast('✅ Tutte le bozze registrate!');
+      }
       caricaBozze();
     } catch(e) { toast('Errore registrazione', true); }
     finally { loading(false); }
   }, 1000);
 }
 
-async function eliminaBozzaSilente(rowId, tipo) {
-  try {
-    await fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'ELIMINA_BOZZA', rowId:rowId, categoria:tipo, idToken:idTokenCorrente})});
-  } catch(e) {}
+// ============================================================
+// BOZZE GIÀ REGISTRATE MA NON ANCORA RIMOSSE — se la registrazione
+// finale riesce ma la successiva cancellazione della bozza fallisce
+// (problema di rete), la bozza NON deve più essere ri-registrata:
+// resta solo da rimuovere. Questo elenco vive sul dispositivo e
+// serve esattamente a questo, per evitare doppie registrazioni come
+// quella di stamattina.
+// ============================================================
+var CHIAVE_BOZZE_GIA_REGISTRATE = 'selvatici_bozze_gia_registrate_v1';
+
+function leggiBozzeGiaRegistrate() {
+  try { return JSON.parse(localStorage.getItem(CHIAVE_BOZZE_GIA_REGISTRATE) || '[]'); }
+  catch(e) { return []; }
 }
+function segnaBozzaGiaRegistrata(rowId) {
+  var lista = leggiBozzeGiaRegistrate();
+  if(lista.indexOf(rowId) < 0) { lista.push(rowId); try { localStorage.setItem(CHIAVE_BOZZE_GIA_REGISTRATE, JSON.stringify(lista)); } catch(e){} }
+}
+function rimuoviBozzaGiaRegistrata(rowId) {
+  var lista = leggiBozzeGiaRegistrate().filter(function(id){ return id !== rowId; });
+  try { localStorage.setItem(CHIAVE_BOZZE_GIA_REGISTRATE, JSON.stringify(lista)); } catch(e){}
+}
+
+// Ritenta la cancellazione fino a 3 volte prima di arrendersi.
+// Ritorna true/false invece di ignorare l'esito come prima.
+async function eliminaBozzaSilente(rowId, tipo) {
+  for(var tentativo=0; tentativo<3; tentativo++){
+    try {
+      var r = await fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'ELIMINA_BOZZA', rowId:rowId, categoria:tipo, idToken:idTokenCorrente})});
+      var d = await r.json();
+      if(d && d.status==='ok'){ rimuoviBozzaGiaRegistrata(rowId); return true; }
+    } catch(e) {}
+    await new Promise(function(res){ setTimeout(res, 1500); });
+  }
+  return false;
+}
+
+// Ritenta in background, ogni 60s, la rimozione delle bozze che
+// risultano già registrate sul foglio ma non ancora tolte dalla
+// lista bozze — così il problema si autorisolve senza intervento.
+async function ritentaRimozioneBozzeGiaRegistrate() {
+  var lista = leggiBozzeGiaRegistrate();
+  if(!lista.length || !bozzeCorrenti.length) return;
+  for(var i=0; i<bozzeCorrenti.length; i++){
+    var b = bozzeCorrenti[i];
+    if(lista.indexOf(b.rowId) >= 0) await eliminaBozzaSilente(b.rowId, b.tipo);
+  }
+  if(leggiBozzeGiaRegistrate().length !== lista.length){ caricaBozze(); aggiornaBadgeBozze(); }
+}
+setInterval(ritentaRimozioneBozzeGiaRegistrate, 60000);
 
 async function stampaBozzaERegistra(b) {
   var numPratica = b.numeroPratica;
   if(b.tipo==='CRAS_BOZZA') {
-    stampaVerbaleCompleto(b, numPratica, function(){
-      registraDeidCras(b, numPratica);
-      eliminaBozza(b.rowId, b.tipo);
+    stampaVerbaleCompleto(b, numPratica, async function(){
+      await registraDeidCras(b, numPratica);
+      segnaBozzaGiaRegistrata(b.rowId);
+      var rimossa = await eliminaBozzaSilente(b.rowId, b.tipo);
+      if(!rimossa) toast('Registrato, ma non ancora rimosso dalla lista bozze — verrà ritentato automaticamente', true);
+      caricaBozze(); aggiornaBadgeBozze();
     });
   } else {
-    stampaModuloRegioneRecord(b, function(){
-      registraDeidZoo(b, numPratica);
-      eliminaBozza(b.rowId, b.tipo);
+    stampaModuloRegioneRecord(b, async function(){
+      await registraDeidZoo(b, numPratica);
+      segnaBozzaGiaRegistrata(b.rowId);
+      var rimossa = await eliminaBozzaSilente(b.rowId, b.tipo);
+      if(!rimossa) toast('Registrato, ma non ancora rimosso dalla lista bozze — verrà ritentato automaticamente', true);
+      caricaBozze(); aggiornaBadgeBozze();
     });
   }
 }
 
 async function eliminaBozza(rowId, tipo) {
   try {
-    await fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'ELIMINA_BOZZA', rowId:rowId, categoria:tipo, idToken:idTokenCorrente})});
+    var r = await fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'ELIMINA_BOZZA', rowId:rowId, categoria:tipo, idToken:idTokenCorrente})});
+    var d = await r.json();
+    if(d && d.status==='ok') rimuoviBozzaGiaRegistrata(rowId);
     caricaBozze();
     aggiornaBadgeBozze();
   } catch(e){ toast('Errore eliminazione',true); }
