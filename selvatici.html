@@ -428,8 +428,9 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <button onclick="installApp()">INSTALLA</button>
   </div>
   <button onclick="var mi=document.getElementById('modalIstruzioni');mi.style.display='flex';mi.style.alignItems='flex-start';" style="width:100%;padding:11px;background:rgba(39,174,96,0.08);border:1px solid rgba(39,174,96,0.3);border-radius:10px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
-  <div class="stats-row" style="grid-template-columns:1fr 1fr;">
+  <div class="stats-row" style="grid-template-columns:1fr 1fr 1fr;">
     <div class="stat-card"><div class="num" id="statZoo">—</div><div class="label">Zooprofilassi</div></div>
+    <div class="stat-card" style="border-color:rgba(230,126,34,0.35);"><div class="num" id="statCarcasse" style="color:#e67e22;">—</div><div class="label">Carcasse IZP</div></div>
     <div class="stat-card total"><div class="num" id="statTot">—</div><div class="label">Totale</div></div>
   </div>
   <div class="stats-row" style="margin-top:8px;">
@@ -1579,12 +1580,13 @@ async function invia(payload){
 
 async function loadStats(){
   try{var res=await fetch(URL_GS+'?action=stats&idToken=' + encodeURIComponent(idTokenCorrente));var d=await res.json();
-    var consegnati=d.crasCons??0, liberati=d.crasLib??0, zoo=d.zoo??0;
+    var consegnati=d.crasCons??0, liberati=d.crasLib??0, zoo=d.zoo??0, carcasse=d.totaleCarcasse??0;
     document.getElementById('statZoo').textContent=zoo;
+    document.getElementById('statCarcasse').textContent=carcasse;
     document.getElementById('statTot').textContent=(zoo+consegnati+liberati);
     document.getElementById('statConsegnati').textContent=consegnati;
     document.getElementById('statLiberati').textContent=liberati;}
-  catch(e){['statZoo','statTot','statConsegnati','statLiberati'].forEach(function(id){document.getElementById(id).textContent='—';});}
+  catch(e){['statZoo','statCarcasse','statTot','statConsegnati','statLiberati'].forEach(function(id){document.getElementById(id).textContent='—';});}
 }
 
 async function loadStorico(){
@@ -3005,10 +3007,20 @@ function renderBozze(bozze) {
   var badge = document.getElementById('bozzeBadge');
   if(badge) { badge.style.display='inline-block'; badge.textContent=bozze.length; }
 
+  var nCras = bozze.filter(function(b){ return b.tipo==='CRAS_BOZZA'; }).length;
+  var nIzp = bozze.filter(function(b){ return b.tipo==='ZOO_BOZZA'; }).length;
+
   var html = '<div style="font-size:12px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:12px;">'+bozze.length+' bozze in attesa</div>';
 
-  // Bottone stampa TUTTE in cima
-  html += '<button onclick="stampaTutteLeBozze()" style="width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#1a3a5c,#0d2030);color:#ffeb3b;font-family:\'Bebas Neue\',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-bottom:14px;">🖨️ Stampa e registra tutte le bozze ('+bozze.length+')</button>';
+  // Due bottoni separati: stampa/registra le bozze CRAS e quelle IZP
+  // indipendentemente, così un problema di stampa in una categoria
+  // non blocca né mescola l'altra.
+  if(nCras>0){
+    html += '<button onclick="stampaBozzeCategoria(\'CRAS_BOZZA\')" style="width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#1a3a5c,#0d2030);color:#ffeb3b;font-family:\'Bebas Neue\',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-bottom:10px;">🦅 Stampa e registra bozze CRAS ('+nCras+')</button>';
+  }
+  if(nIzp>0){
+    html += '<button onclick="stampaBozzeCategoria(\'ZOO_BOZZA\')" style="width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,#1a4c2e,#0d2018);color:#ffeb3b;font-family:\'Bebas Neue\',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-bottom:14px;">🔬 Stampa e registra bozze IZP ('+nIzp+')</button>';
+  }
 
   bozze.forEach(function(b, i) {
     var isCras = b.tipo==='CRAS_BOZZA';
@@ -3045,8 +3057,10 @@ async function aggiornaBadgeBozze() {
   } catch(e){}
 }
 
-async function stampaTutteLeBozze() {
-  if(!bozzeCorrenti.length) { toast('Nessuna bozza da stampare', true); return; }
+async function stampaBozzeCategoria(categoria) {
+  var bozzeCategoria = bozzeCorrenti.filter(function(b){ return b.tipo === categoria; });
+  if(!bozzeCategoria.length) { toast('Nessuna bozza da stampare in questa categoria', true); return; }
+  var etichettaCategoria = categoria === 'CRAS_BOZZA' ? 'CRAS' : 'IZP';
 
   // Genera unico HTML con tutti i verbali: le bozze CRAS usano la
   // ricevuta a mezza pagina (2 copie), le bozze IZP usano il modulo
@@ -3109,15 +3123,34 @@ async function stampaTutteLeBozze() {
   // cancellazione era fallita) NON vanno ristampate né ri-registrate: si tenta
   // solo di rimuoverle. Si stampa/registra solo il resto.
   var giaRegistrateIds = leggiBozzeGiaRegistrate();
-  var bozzeDaStampare = bozzeCorrenti.filter(function(b){ return giaRegistrateIds.indexOf(b.rowId) < 0; });
-  var bozzeSoloDaRimuovere = bozzeCorrenti.filter(function(b){ return giaRegistrateIds.indexOf(b.rowId) >= 0; });
+  var bozzeDaStampare = bozzeCategoria.filter(function(b){ return giaRegistrateIds.indexOf(b.rowId) < 0; });
+  var bozzeSoloDaRimuovere = bozzeCategoria.filter(function(b){ return giaRegistrateIds.indexOf(b.rowId) >= 0; });
 
   if(!bozzeDaStampare.length){
-    toast('Le bozze rimaste sono già registrate: sto solo ritentando di rimuoverle dalla lista', true);
+    toast('Le bozze '+etichettaCategoria+' rimaste sono già registrate: sto solo ritentando di rimuoverle dalla lista', true);
     for(var iR=0; iR<bozzeSoloDaRimuovere.length; iR++){ await eliminaBozzaSilente(bozzeSoloDaRimuovere[iR].rowId, bozzeSoloDaRimuovere[iR].tipo); }
     caricaBozze(); aggiornaBadgeBozze();
     return;
   }
+
+  // Prima di stampare: chiudi eventuali buchi di numerazione lasciati da
+  // pratiche cancellate dalle bozze (es. rimangono 200,203,205 → diventano
+  // 200,201,202), separatamente per CRAS e per IZP. Richiede il supporto
+  // lato Apps Script (azione RINUMERA_BOZZE) — se il server non risponde con
+  // successo, si stampa comunque con i numeri esistenti senza bloccare il
+  // lavoro, e lo si segnala.
+  try {
+    var resRinum = await fetch(URL_GS, {method:'POST', body:JSON.stringify({
+      tipo:'RINUMERA_BOZZE',
+      categoria: categoria === 'CRAS_BOZZA' ? 'CRAS' : 'ZOO',
+      rowIds: bozzeDaStampare.map(function(b){ return b.rowId; }),
+      idToken: idTokenCorrente
+    })});
+    var dRinum = await resRinum.json();
+    if(dRinum && dRinum.status==='ok' && dRinum.numerazione){
+      bozzeDaStampare.forEach(function(b){ if(dRinum.numerazione[b.rowId]) b.numeroPratica = dRinum.numerazione[b.rowId]; });
+    }
+  } catch(e){ /* rinumerazione non disponibile: si stampa comunque coi numeri correnti */ }
 
   // Costruisci HTML con tutti i verbali, ognuno nel suo formato vero
   var corpo = '';
@@ -3166,9 +3199,9 @@ async function stampaTutteLeBozze() {
       }
       aggiornaBadgeBozze();
       if(nonRimosse>0){
-        toast('⚠️ Registrate, ma '+nonRimosse+' bozze non ancora rimosse dalla lista (verrà ritentato automaticamente) — NON ristamparle a mano', true);
+        toast('⚠️ Bozze '+etichettaCategoria+' registrate, ma '+nonRimosse+' non ancora rimosse dalla lista (verrà ritentato automaticamente) — NON ristamparle a mano', true);
       } else {
-        toast('✅ Tutte le bozze registrate!');
+        toast('✅ Bozze '+etichettaCategoria+' registrate!');
       }
       caricaBozze();
     } catch(e) { toast('Errore registrazione', true); }
