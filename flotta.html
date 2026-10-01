@@ -1590,7 +1590,12 @@ async function generaStampaRif(){
     if(!righe.length){document.getElementById('anteprimaRif').innerHTML='<div style="text-align:center;color:#e74c3c;padding:16px;">⚠️ Nessun rifornimento per '+targa+' in '+meseLabel+'</div>';return;}
     var carburante=righe[0].carburante||'BENZINA';
     var isBenzina=carburante.toUpperCase().includes('BENZ');
-    var kmInizioMese=righe.length>0?(parseFloat(righe[0].km)||0)-(parseFloat(righe[0].kmPercorsi)||0):0;
+    var primoGiornoMeseTs=new Date(anno,meseNum-1,1,0,0,0).getTime();
+    var kmPrimaDelMese=(d.km||[]).filter(function(r){
+      return r.targa&&r.targa.toUpperCase()===targa.toUpperCase()&&r.dataOra&&parseTsIt(r.dataOra)<primoGiornoMeseTs;
+    }).sort(function(x,y){return parseTsIt(x.dataOra)-parseTsIt(y.dataOra);});
+    // Km inizio mese = ultima chiusura km registrata PRIMA del mese selezionato (non il km del primo pieno del mese)
+    var kmInizioMese = kmPrimaDelMese.length ? (parseFloat(kmPrimaDelMese[kmPrimaDelMese.length-1].kmFinali)||0) : (righe.length>0?(parseFloat(righe[0].km)||0)-(parseFloat(righe[0].kmPercorsi)||0):0);
     var kmRegistrazioni2=(d.km||[]).filter(function(r){
       if(!r.dataOra)return false;
       var p=r.dataOra.split('/');if(p.length<3)return false;
@@ -1809,11 +1814,16 @@ async function generaStampaTutto(){
       var kmFineMese=0,kmInizioMese=0;
       if(rifTarga.length>0){
         isBenzina=(rifTarga[0].carburante||'BENZINA').toUpperCase().includes('BENZ');
-        kmInizioMese=parseFloat(rifTarga[0].km)||0;
         rifTarga.forEach(function(r){
           rowsRif+='<tr><td>'+dataStr(r.dataOra)+'</td><td>'+(r.importo||'')+'</td><td>'+(r.km||'')+'</td><td>'+(r.costoLitro||'')+'</td></tr>';
         });
       }
+      // Km inizio mese = ultima chiusura km registrata PRIMA del mese selezionato (non il km del primo pieno del mese)
+      var primoGiornoMeseTs=new Date(anno,meseNum-1,1,0,0,0).getTime();
+      var kmPrimaDelMeseTarga=tuttiKm.filter(function(r){
+        return r.targa&&r.targa.toUpperCase()===targa&&r.dataOra&&parseTsIt(r.dataOra)<primoGiornoMeseTs;
+      }).sort(function(x,y){return parseTsIt(x.dataOra)-parseTsIt(y.dataOra);});
+      kmInizioMese = kmPrimaDelMeseTarga.length ? (parseFloat(kmPrimaDelMeseTarga[kmPrimaDelMeseTarga.length-1].kmFinali)||0) : (rifTarga.length?(parseFloat(rifTarga[0].km)||0):0);
       kmFineMese = kmTargaOrdinati.length ? (parseFloat(kmTargaOrdinati[kmTargaOrdinati.length-1].kmFinali)||0) : (rifTarga.length ? (parseFloat(rifTarga[rifTarga.length-1].km)||0) : 0);
       for(var j=rifTarga.length;j<10;j++) rowsRif+='<tr><td>&nbsp;</td><td></td><td></td><td></td></tr>';
       var kmTotali=kmFineMese-kmInizioMese;
