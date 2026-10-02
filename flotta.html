@@ -278,7 +278,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 
 <!-- HOME -->
 <div class="screen active" id="screenHome">
-  <div id="badgeCodaOffline" onclick="sincronizzaCodaOffline()" style="display:none;align-items:center;justify-content:center;gap:8px;background:rgba(230,126,34,0.15);border:1px solid rgba(230,126,34,0.5);border-radius:10px;padding:11px;margin-bottom:12px;color:#e67e22;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;"></div>
+  <div id="badgeCodaOffline" onclick="gestisciBadgeCodaOffline()" style="display:none;align-items:center;justify-content:center;gap:8px;background:rgba(230,126,34,0.15);border:1px solid rgba(230,126,34,0.5);border-radius:10px;padding:11px;margin-bottom:12px;color:#e67e22;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;"></div>
   <div class="install-banner" id="installBanner">
     <span>📲 Installa l'app sulla schermata home</span>
     <button onclick="installApp()">INSTALLA</button>
@@ -1180,9 +1180,15 @@ function scriviCodaOffline(coda) {
 
 function accodaOffline(payload) {
   var coda = leggiCodaOffline();
-  coda.push({ payload: payload, timestamp: new Date().toISOString() });
+  coda.push({ payload: payload, timestamp: new Date().toISOString(), tentativi: 0 });
   scriviCodaOffline(coda);
   aggiornaBadgeCodaOffline();
+}
+
+function riassuntoElementoCoda(elemento) {
+  var p = (elemento && elemento.payload) || {};
+  var val = p.tipo === 'RIF' ? ('km ' + (p.km || '?')) : ('km finali ' + (p.kmFinali || '?'));
+  return (p.tipo || '?') + ' ' + (p.targa || '?') + ' del ' + (p.dataOra || '?') + ' (' + val + ')';
 }
 
 function aggiornaBadgeCodaOffline() {
@@ -1211,12 +1217,16 @@ async function sincronizzaCodaOffline() {
     while (coda.length > 0) {
       var elemento = coda[0];
       var esito = 'networkfail';
+      var erroreDettaglio = '';
       try {
         elemento.payload.idToken = idTokenCorrente;
         var res = await fetchConTimeout(URL_GS, { method: 'POST', body: JSON.stringify(elemento.payload) }, 8000);
         var d = await res.json();
         esito = d.status; // 'ok' | 'warning' | 'error'
-      } catch(e) { esito = 'networkfail'; }
+      } catch(e) {
+        esito = 'networkfail';
+        erroreDettaglio = (e && e.name === 'AbortError') ? 'timeout — risposta troppo lenta' : ((e && e.message) || 'connessione assente');
+      }
 
       if (esito === 'ok') {
         coda.shift();
@@ -1232,7 +1242,7 @@ async function sincronizzaCodaOffline() {
         coda.shift();
         scriviCodaOffline(coda);
         aggiornaBadgeCodaOffline();
-        toast('⚠️ Un dato salvato offline (' + (elemento.payload.targa || '') + ') è stato rifiutato dal server — controlla il dato e reinseriscilo a mano.', true);
+        toast('⚠️ Un dato salvato offline (' + riassuntoElementoCoda(elemento) + ') è stato rifiutato dal server — controlla il dato e reinseriscilo a mano.', true);
         continue;
       }
       if (esito === 'warning') {
@@ -1242,10 +1252,21 @@ async function sincronizzaCodaOffline() {
         coda.shift();
         scriviCodaOffline(coda);
         aggiornaBadgeCodaOffline();
-        toast('⚠️ Un dato salvato offline (' + (elemento.payload.targa || '') + ') ha un salto km sospetto — reinseriscilo a mano per confermarlo.', true);
+        toast('⚠️ Un dato salvato offline (' + riassuntoElementoCoda(elemento) + ') ha un salto km sospetto — reinseriscilo a mano per confermarlo.', true);
         continue;
       }
-      // networkfail: manca ancora la linea, riprova più tardi, mantieni l'ordine
+      // networkfail: manca ancora la linea, oppure il dato resta bloccato
+      // da tempo (es. formato cambiato nel frattempo). Non lo scartiamo MAI
+      // in automatico — ma dal secondo tentativo in poi avvisiamo con un
+      // messaggio chiaro invece di restare silenziosi, e segnamo i tentativi
+      // così il tocco sul banner può offrire l'ispezione/rimozione manuale.
+      elemento.tentativi = (elemento.tentativi || 0) + 1;
+      elemento.ultimoErrore = erroreDettaglio;
+      coda[0] = elemento;
+      scriviCodaOffline(coda);
+      if (elemento.tentativi >= 2) {
+        toast('⚠️ Invio bloccato da ' + elemento.tentativi + ' tentativi — ' + riassuntoElementoCoda(elemento) + '. Tocca di nuovo il banner per i dettagli.', true);
+      }
       break;
     }
     if (leggiCodaOffline().length === 0) {
@@ -1254,6 +1275,41 @@ async function sincronizzaCodaOffline() {
     }
   } finally {
     sincronizzazioneInCorso = false;
+  }
+}
+
+// Tocco sul banner "N in attesa di invio": primo tocco ritenta l'invio
+// come sempre; se dopo il tentativo restano elementi bloccati da almeno
+// 2 tentativi, mostra il dettaglio completo di ognuno (dati, data di
+// salvataggio, ultimo errore) e chiede uno per uno se eliminarlo dalla
+// coda — MAI in automatico — così un inserimento vecchio e irrecuperabile
+// non blocca per sempre quelli più recenti dietro di lui.
+async function gestisciBadgeCodaOffline() {
+  await sincronizzaCodaOffline();
+  var coda = leggiCodaOffline();
+  var bloccati = coda.filter(function(el){ return (el.tentativi || 0) >= 2; });
+  if (bloccati.length === 0) return;
+  for (var i = 0; i < bloccati.length; i++) {
+    var elemento = bloccati[i];
+    var dettaglio = JSON.stringify(elemento.payload, null, 2);
+    var rimuovi = confirm(
+      '⚠️ Inserimento bloccato (' + elemento.tentativi + ' tentativi)\n' +
+      riassuntoElementoCoda(elemento) + '\nSalvato il: ' + elemento.timestamp + '\n' +
+      'Ultimo errore: ' + (elemento.ultimoErrore || 'sconosciuto') + '\n\n' +
+      'Dati completi:\n' + dettaglio + '\n\n' +
+      'Premi OK per ELIMINARE questo inserimento dalla coda (se l\'hai già registrato a mano, o non serve più).\n' +
+      'Premi Annulla per lasciarlo in coda e riprovare più tardi.'
+    );
+    if (rimuovi) {
+      var codaAttuale = leggiCodaOffline();
+      var idx = codaAttuale.findIndex(function(el){ return el.timestamp === elemento.timestamp; });
+      if (idx >= 0) {
+        codaAttuale.splice(idx, 1);
+        scriviCodaOffline(codaAttuale);
+        aggiornaBadgeCodaOffline();
+        toast('🗑️ Inserimento rimosso dalla coda');
+      }
+    }
   }
 }
 
