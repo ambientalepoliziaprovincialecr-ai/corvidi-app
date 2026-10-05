@@ -1220,7 +1220,7 @@ async function sincronizzaCodaOffline() {
       var erroreDettaglio = '';
       try {
         elemento.payload.idToken = idTokenCorrente;
-        var res = await fetchConTimeout(URL_GS, { method: 'POST', body: JSON.stringify(elemento.payload) }, 8000);
+        var res = await fetchConTimeout(URL_GS, { method: 'POST', body: JSON.stringify(elemento.payload) }, 20000);
         var d = await res.json();
         esito = d.status; // 'ok' | 'warning' | 'error'
       } catch(e) {
@@ -1323,7 +1323,7 @@ async function invia(payload) {
   loading(true);
   try {
     payload.idToken = idTokenCorrente;
-    var res = await fetchConTimeout(URL_GS, {method:'POST', body:JSON.stringify(payload)}, 8000);
+    var res = await fetchConTimeout(URL_GS, {method:'POST', body:JSON.stringify(payload)}, 20000);
     var d = await res.json();
     if (d.status === 'ok') {
       toast('✅ Salvato!');
