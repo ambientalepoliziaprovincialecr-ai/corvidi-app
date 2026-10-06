@@ -2,98 +2,98 @@
 <html lang="it"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#0d1b2a">
+<meta name="theme-color" content="#1c2b1a">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Corvidi">
 <title>Controllo Corvidi</title>
 <style>
-:root{--blu:#0d1b2a;--blu2:#1b263b;--oro:#e8c547;--oro2:#f0d060;--crema:#e0e1dd;--verde:#52b788;--rosso:#e63946;--grigio:rgba(255,255,255,0.08);--bordo:rgba(255,255,255,0.12);}
+:root{--blu:#1c2b1a;--blu2:#1a3a15;--oro:#c8922a;--oro2:#ffeb3b;--crema:#ffeb3b;--verde:#4a8c3f;--rosso:#c0392b;--grigio:rgba(255,255,255,0.06);--bordo:rgba(255,255,255,0.12);}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);max-width:520px;margin:0 auto;min-height:100vh;}
-.header{background:linear-gradient(135deg,var(--blu2),#050d15);padding:13px 16px 10px;border-bottom:2px solid var(--oro);text-align:center;position:sticky;top:0;z-index:10;}
+.header{background:linear-gradient(135deg,var(--blu2),#0f1f0d);padding:13px 16px 10px;border-bottom:2px solid var(--oro);text-align:center;position:sticky;top:0;z-index:10;}
 .header-icon{font-size:22px;line-height:1;}
 .header h1{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;color:var(--crema);line-height:1;}
 .header h1 span{color:var(--oro2);}
-.header p{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(224,225,221,0.4);text-transform:uppercase;}
+.header p{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,235,59,0.92);text-transform:uppercase;}
 .screen{display:none;padding:16px;}
 .screen.active{display:block;}
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:18px;margin-top:12px;}
 .stat-card{background:var(--grigio);border:1px solid var(--bordo);border-radius:10px;padding:10px 4px;text-align:center;}
 .stat-card .num{font-family:'Bebas Neue',sans-serif;font-size:26px;line-height:1;color:var(--oro2);}
-.stat-card .label{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(224,225,221,0.45);margin-top:2px;font-family:'Barlow Condensed',sans-serif;}
-.stat-card.total{border-color:var(--oro2);background:rgba(240,208,96,0.1);}
-.section-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(224,225,221,0.35);margin-bottom:10px;}
-.btn-main{display:flex;align-items:center;gap:14px;padding:18px 16px;border:none;border-radius:14px;cursor:pointer;text-align:left;width:100%;background:linear-gradient(135deg,#1b263b,#0d1b2a);border:1px solid rgba(240,208,96,0.4);margin-bottom:14px;transition:opacity 0.15s;}
+.stat-card .label{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,235,59,0.92);margin-top:2px;font-family:'Barlow Condensed',sans-serif;}
+.stat-card.total{border-color:var(--oro2);background:rgba(200,146,42,0.1);}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,235,59,0.92);margin-bottom:10px;}
+.btn-main{display:flex;align-items:center;gap:14px;padding:18px 16px;border:none;border-radius:14px;cursor:pointer;text-align:left;width:100%;background:linear-gradient(135deg,#1a3a15,#1c2b1a);border:1px solid rgba(200,146,42,0.4);margin-bottom:14px;transition:opacity 0.15s;}
 .btn-main:hover{opacity:0.85;}
 .btn-main-icon{font-size:34px;flex-shrink:0;}
 .btn-main-text strong{display:block;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;line-height:1;color:var(--crema);}
-.btn-main-text span{font-size:11px;color:rgba(224,225,221,0.45);font-family:'Barlow Condensed',sans-serif;}
+.btn-main-text span{font-size:11px;color:rgba(255,235,59,0.92);font-family:'Barlow Condensed',sans-serif;}
 .btn-main-arrow{margin-left:auto;font-size:20px;opacity:0.35;}
-.btn-report{width:100%;padding:13px;background:rgba(240,208,96,0.1);border:1px solid rgba(240,208,96,0.3);border-radius:10px;color:var(--oro2);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:10px;display:block;}
-.btn-report:hover{background:rgba(240,208,96,0.2);}
-.btn-sheet{width:100%;padding:13px;background:rgba(82,183,136,0.08);border:1px solid rgba(82,183,136,0.3);border-radius:10px;color:#7dcfaa;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:block;}
-.btn-sheet:hover{background:rgba(82,183,136,0.18);}
-.install-banner{display:none;margin-bottom:14px;padding:12px 14px;background:rgba(240,208,96,0.1);border:1px solid var(--oro2);border-radius:10px;align-items:center;gap:10px;margin-top:12px;}
+.btn-report{width:100%;padding:13px;background:rgba(200,146,42,0.1);border:1px solid rgba(200,146,42,0.3);border-radius:10px;color:var(--oro2);font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:10px;display:block;}
+.btn-report:hover{background:rgba(200,146,42,0.2);}
+.btn-sheet{width:100%;padding:13px;background:rgba(74,140,63,0.08);border:1px solid rgba(74,140,63,0.3);border-radius:10px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:block;}
+.btn-sheet:hover{background:rgba(74,140,63,0.18);}
+.install-banner{display:none;margin-bottom:14px;padding:12px 14px;background:rgba(200,146,42,0.1);border:1px solid var(--oro2);border-radius:10px;align-items:center;gap:10px;margin-top:12px;}
 .install-banner.show{display:flex;}
 .install-banner span{font-family:'Barlow Condensed',sans-serif;font-size:13px;flex:1;}
-.install-banner button{padding:8px 14px;background:var(--oro2);border:none;border-radius:6px;color:#0d1b2a;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.install-banner button{padding:8px 14px;background:var(--oro2);border:none;border-radius:6px;color:#1c2b1a;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
 .form-header{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-top:12px;}
 .btn-back{background:var(--grigio);border:1px solid var(--bordo);border-radius:8px;color:var(--crema);width:38px;height:38px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .form-header-title{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:2px;line-height:1.1;}
-.form-header-title span{display:block;font-family:'Barlow',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(224,225,221,0.35);font-weight:300;}
+.form-header-title span{display:block;font-family:'Barlow',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.92);font-weight:300;}
 .form-group{margin-bottom:12px;position:relative;}
-.form-label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(224,225,221,0.45);margin-bottom:4px;}
+.form-label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.92);margin-bottom:4px;}
 .form-label .req{color:var(--oro);}
 .form-input,.form-select,.form-textarea{width:100%;background:var(--grigio);border:1px solid var(--bordo);border-radius:8px;color:var(--crema);font-family:'Barlow',sans-serif;font-size:15px;padding:10px 12px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
 .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--oro2);}
-.form-select option{background:#0d1b2a;}
+.form-select option{background:#1c2b1a;}
 .form-textarea{resize:none;height:70px;}
 input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 /* AGENTI */
 .agenti-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:6px;}
-.agente-btn{padding:9px 6px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(224,225,221,0.45);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;text-align:center;}
-.agente-btn.sel{background:rgba(240,208,96,0.2);border-color:var(--oro2);color:var(--oro2);}
-.btn-gestisci{width:100%;padding:9px;background:rgba(240,208,96,0.06);border:1px dashed rgba(240,208,96,0.25);border-radius:8px;color:rgba(224,225,221,0.4);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:4px;}
-.btn-gestisci:hover{background:rgba(240,208,96,0.12);color:var(--oro2);}
+.agente-btn{padding:9px 6px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.92);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;text-align:center;}
+.agente-btn.sel{background:rgba(200,146,42,0.2);border-color:var(--oro2);color:var(--oro2);}
+.btn-gestisci{width:100%;padding:9px;background:rgba(200,146,42,0.06);border:1px dashed rgba(200,146,42,0.25);border-radius:8px;color:rgba(255,235,59,0.92);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:4px;}
+.btn-gestisci:hover{background:rgba(200,146,42,0.12);color:var(--oro2);}
 /* SPECIE / QUALIFICA */
 .specie-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
 .qualifica-grid{display:flex;flex-direction:column;gap:6px;}
-.specie-btn,.qual-btn{padding:10px 6px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(224,225,221,0.45);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-align:center;}
-.specie-btn.active{background:rgba(240,208,96,0.2);border-color:var(--oro2);color:var(--oro2);}
+.specie-btn,.qual-btn{padding:10px 6px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.92);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;text-align:center;}
+.specie-btn.active{background:rgba(200,146,42,0.2);border-color:var(--oro2);color:var(--oro2);}
 .qual-btn{text-align:left;padding:9px 10px;}
-.qual-btn.active{background:rgba(82,183,136,0.2);border-color:var(--verde);color:#7dcfaa;}
+.qual-btn.active{background:rgba(74,140,63,0.2);border-color:var(--verde);color:#ffeb3b;}
 .gps-row{display:flex;gap:8px;align-items:center;}
 .gps-row .form-input{flex:1;font-size:13px;}
-.btn-gps{padding:10px 14px;background:rgba(82,183,136,0.15);border:1px solid rgba(82,183,136,0.4);border-radius:8px;color:#7dcfaa;font-family:'Barlow Condensed',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
-.gps-status{font-size:11px;color:rgba(224,225,221,0.4);margin-top:4px;font-family:'Barlow Condensed',sans-serif;}
+.btn-gps{padding:10px 14px;background:rgba(74,140,63,0.15);border:1px solid rgba(74,140,63,0.4);border-radius:8px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.gps-status{font-size:11px;color:rgba(255,235,59,0.92);margin-top:4px;font-family:'Barlow Condensed',sans-serif;}
 .capi-row{display:flex;align-items:center;gap:10px;}
 .capi-row .form-input{flex:1;font-size:22px;text-align:center;font-family:'Bebas Neue',sans-serif;color:var(--oro2);}
 .capi-btn{width:44px;height:44px;border:1px solid var(--bordo);background:var(--grigio);border-radius:8px;color:var(--crema);font-size:24px;cursor:pointer;flex-shrink:0;}
-.form-divider{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(224,225,221,0.3);margin:14px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--bordo);}
-.btn-submit{width:100%;padding:15px;border:none;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;margin-top:16px;margin-bottom:30px;background:linear-gradient(135deg,#415a77,var(--oro));color:#0d1b2a;font-weight:bold;}
+.form-divider{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,235,59,0.92);margin:14px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--bordo);}
+.btn-submit{width:100%;padding:15px;border:none;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;margin-top:16px;margin-bottom:30px;background:linear-gradient(135deg,#2d5a27,var(--oro));color:#1c2b1a;font-weight:bold;}
 .btn-submit:hover{opacity:0.85;}
 /* REPORT */
 .report-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
-.tab-btn{padding:10px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(224,225,221,0.4);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;}
-.tab-btn.active{background:rgba(240,208,96,0.12);border-color:var(--oro2);color:var(--oro2);}
+.tab-btn{padding:10px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.92);font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;}
+.tab-btn.active{background:rgba(200,146,42,0.12);border-color:var(--oro2);color:var(--oro2);}
 .report-section{margin-bottom:20px;}
 .report-month-title{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:2px;color:var(--oro2);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--bordo);}
 .report-card{background:var(--grigio);border:1px solid var(--bordo);border-radius:10px;padding:12px;margin-bottom:8px;}
 .report-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
 .report-nome{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:600;}
-.report-data{font-size:10px;color:rgba(224,225,221,0.4);text-align:right;}
-.report-detail{font-size:12px;color:rgba(224,225,221,0.55);line-height:1.7;}
+.report-data{font-size:10px;color:rgba(255,235,59,0.92);text-align:right;}
+.report-detail{font-size:12px;color:rgba(255,235,59,0.92);line-height:1.7;}
 .specie-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;margin-top:5px;margin-right:4px;}
 .badge-cornacchia{background:rgba(100,100,100,0.3);color:#bbb;}
-.badge-gazza{background:rgba(65,90,119,0.4);color:#90b4d4;}
-.badge-piccione{background:rgba(139,90,43,0.3);color:#d4a870;}
-.badge-ibis{background:rgba(82,183,136,0.25);color:#7dcfaa;}
-.capi-badge{background:rgba(240,208,96,0.2);color:var(--oro2);}
-.totale-box{background:rgba(240,208,96,0.08);border:1px solid rgba(240,208,96,0.3);border-radius:10px;padding:14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
-.totale-box .t-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(224,225,221,0.5);}
+.badge-gazza{background:rgba(65,90,119,0.4);color:#ffeb3b;}
+.badge-piccione{background:rgba(139,90,43,0.3);color:#ffeb3b;}
+.badge-ibis{background:rgba(74,140,63,0.25);color:#ffeb3b;}
+.capi-badge{background:rgba(200,146,42,0.2);color:var(--oro2);}
+.totale-box{background:rgba(200,146,42,0.08);border:1px solid rgba(200,146,42,0.3);border-radius:10px;padding:14px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;}
+.totale-box .t-label{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.92);}
 .totale-box .t-num{font-family:'Bebas Neue',sans-serif;font-size:30px;color:var(--oro2);line-height:1;}
-.empty-state{text-align:center;padding:40px 20px;color:rgba(224,225,221,0.25);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;}
+.empty-state{text-align:center;padding:40px 20px;color:rgba(255,235,59,0.92);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;}
 .empty-state div{font-size:38px;margin-bottom:10px;}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--verde);color:white;padding:11px 22px;border-radius:30px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;z-index:1000;transition:transform 0.3s;white-space:nowrap;pointer-events:none;}
 .toast.show{transform:translateX(-50%) translateY(0);}
@@ -105,43 +105,79 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 .loading-text{font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:12px;color:rgba(255,255,255,0.6);text-transform:uppercase;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.show{display:flex;}
-.modal-box{background:#0d1b2a;border:1px solid var(--oro2);border-radius:16px;padding:24px;max-width:300px;width:100%;}
+.modal-box{background:#1c2b1a;border:1px solid var(--oro2);border-radius:16px;padding:24px;max-width:300px;width:100%;}
 .modal-box.large{max-width:340px;}
 .modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--oro2);margin-bottom:12px;}
-.modal-text{font-size:13px;color:rgba(224,225,221,0.6);margin-bottom:14px;}
+.modal-text{font-size:13px;color:rgba(255,235,59,0.92);margin-bottom:14px;}
 .modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
 .modal-btn{padding:11px;border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
 .modal-btn.cancel{background:var(--grigio);border:1px solid var(--bordo);color:var(--crema);}
-.modal-btn.confirm{background:var(--oro2);color:#0d1b2a;font-weight:700;}
+.modal-btn.confirm{background:var(--oro2);color:#1c2b1a;font-weight:700;}
 .agenti-manager-list{max-height:200px;overflow-y:auto;margin:10px 0;}
 .agenti-manager-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:13px;}
 .agenti-manager-item:last-child{border-bottom:none;}
-.btn-del{background:rgba(230,57,70,0.2);border:1px solid rgba(230,57,70,0.4);border-radius:6px;color:#f07080;cursor:pointer;font-size:12px;padding:3px 8px;font-family:'Barlow Condensed',sans-serif;}
+.btn-del{background:rgba(192,57,43,0.2);border:1px solid rgba(192,57,43,0.4);border-radius:6px;color:#e07060;cursor:pointer;font-size:12px;padding:3px 8px;font-family:'Barlow Condensed',sans-serif;}
 .agenti-add-row{display:flex;gap:8px;margin-top:10px;}
-.btn-add{padding:9px 12px;background:rgba(82,183,136,0.2);border:1px solid rgba(82,183,136,0.5);border-radius:8px;color:#7dcfaa;font-family:'Barlow Condensed',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;}
+.btn-add{padding:9px 12px;background:rgba(74,140,63,0.2);border:1px solid rgba(74,140,63,0.5);border-radius:8px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;}
 
 .autocomplete-wrap{position:relative;}
-.autocomplete-list{position:absolute;top:100%;left:0;right:0;z-index:100;background:#0d1b2a;border:1px solid var(--oro2);border-top:none;border-radius:0 0 8px 8px;max-height:200px;overflow-y:auto;display:none;}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;z-index:100;background:#1c2b1a;border:1px solid var(--oro2);border-top:none;border-radius:0 0 8px 8px;max-height:200px;overflow-y:auto;display:none;}
 .autocomplete-list.show{display:block;}
 .autocomplete-item{padding:10px 12px;font-size:14px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05);}
-.autocomplete-item:hover{background:rgba(240,208,96,0.1);}
+.autocomplete-item:hover{background:rgba(200,146,42,0.1);}
 .autocomplete-item strong{color:var(--oro2);}
-.autocomplete-item small{display:block;font-size:11px;color:rgba(224,225,221,0.4);}
-.nuovo-cac-box{display:none;padding:12px;background:rgba(82,183,136,0.06);border:1px solid rgba(82,183,136,0.25);border-radius:8px;margin-top:8px;}
+.autocomplete-item small{display:block;font-size:11px;color:rgba(255,235,59,0.92);}
+.nuovo-cac-box{display:none;padding:12px;background:rgba(74,140,63,0.06);border:1px solid rgba(74,140,63,0.25);border-radius:8px;margin-top:8px;}
 .nuovo-cac-box.show{display:block;}
-.nuovo-cac-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#7dcfaa;margin-bottom:8px;}
+.nuovo-cac-label{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#ffeb3b;margin-bottom:8px;}
 
 .modal-istruzioni{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:8888;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto;}
 .modal-istruzioni.show{display:flex;}
-.modal-istr-box{background:#0d1b2a;border:1px solid rgba(240,208,96,0.4);border-radius:16px;padding:24px 20px;max-width:480px;width:100%;margin:auto;}
-.modal-istr-box h2{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:#f0d060;margin-bottom:2px;}
-.modal-istr-box h3{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(240,208,96,0.6);margin-bottom:16px;text-transform:uppercase;}
+.modal-istr-box{background:#1c2b1a;border:1px solid rgba(200,146,42,0.4);border-radius:16px;padding:24px 20px;max-width:480px;width:100%;margin:auto;}
+.modal-istr-box h2{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:#ffeb3b;margin-bottom:2px;}
+.modal-istr-box h3{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(200,146,42,0.6);margin-bottom:16px;text-transform:uppercase;}
 .istr-section{margin-bottom:16px;}
-.istr-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#52b788;margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid rgba(82,183,136,0.2);}
-.istr-text{font-size:16px;color:rgba(224,225,221,0.7);line-height:1.7;}
-.istr-text strong{color:#f0d060;}
-.istr-firma{font-size:13px;color:rgba(224,225,221,0.4);margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);line-height:1.7;}
-.btn-istr-close{width:100%;padding:12px;border:none;border-radius:10px;background:#f0d060;color:#0d1b2a;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:12px;}
+.istr-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#4a8c3f;margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid rgba(74,140,63,0.2);}
+.istr-text{font-size:16px;color:rgba(255,235,59,0.92);line-height:1.7;}
+.istr-text strong{color:#ffeb3b;}
+.istr-firma{font-size:13px;color:rgba(255,235,59,0.92);margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);line-height:1.7;}
+.btn-istr-close{width:100%;padding:12px;border:none;border-radius:10px;background:#ffeb3b;color:#1c2b1a;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:12px;}
+
+/* === FORMATO LETTERE E COLORI COME SELVATICI === */
+.header{border-bottom:3px solid var(--oro);}
+.header h1{font-size:26px;letter-spacing:3px;}
+.header p{font-weight:700;}
+.stats-row{gap:8px;}
+.stat-card{border-color:rgba(200,146,42,0.3);}
+.stat-card .num{font-size:30px;color:#ffeb3b;}
+.stat-card .label{font-size:9px;font-weight:700;margin-top:3px;}
+.stat-card.total{border-color:#ffeb3b;background:rgba(200,146,42,0.1);}
+.section-title,.form-label,.form-divider,.gps-status,.nuovo-cac-label,.empty-state,.loading-text,.modal-text,.report-data,.report-detail,.btn-main-text span,.form-header-title span,.totale-box .t-label,.istr-text,.autocomplete-item small{font-weight:700;}
+.form-header-title{font-size:20px;}
+.form-input,.form-select,.form-textarea{font-weight:700;text-transform:uppercase;padding:11px 13px;}
+.form-input::placeholder,.form-textarea::placeholder{color:rgba(255,235,59,0.92);font-weight:700;text-transform:uppercase;opacity:1;}
+.form-select option{background:#1c2b1a;font-weight:700;text-transform:uppercase;color:rgba(255,235,59,0.92);}
+.agente-btn,.specie-btn,.qual-btn,.tab-btn,.btn-gestisci,.btn-report,.btn-sheet,.btn-gps,.btn-add{font-weight:700;}
+.agente-btn.sel,.specie-btn.active,.tab-btn.active{background:rgba(200,146,42,0.25);border-color:#ffeb3b;color:#ffeb3b;}
+.qual-btn.active{background:rgba(74,140,63,0.35);border-color:#ffeb3b;color:#ffeb3b;}
+.btn-main{background:linear-gradient(135deg,#2d5a27,#1a3a15);border:1px solid rgba(74,140,63,0.5);}
+.btn-main-text strong{color:#ffeb3b;}
+.btn-report{background:rgba(200,146,42,0.1);border:1px solid rgba(200,146,42,0.3);color:#ffeb3b;}
+.btn-report:hover{background:rgba(200,146,42,0.2);}
+.btn-sheet{background:rgba(41,128,185,0.1);border:1px solid rgba(41,128,185,0.3);color:#ffeb3b;}
+.btn-sheet:hover{background:rgba(41,128,185,0.2);}
+.btn-submit{background:linear-gradient(135deg,var(--verde),#1a3a15);color:#ffeb3b;font-weight:400;}
+.install-banner{background:rgba(200,146,42,0.12);border:1px solid var(--oro);}
+.install-banner button{background:#e8a830;color:#1a1a1a;}
+.report-nome,.record-animale{font-weight:700;}
+.modal-box,.modal-istr-box{background:#1a3a15;border:1px solid var(--oro);}
+.autocomplete-list{background:#1a3a15;border:1px solid #ffeb3b;border-top:none;}
+.modal-btn.confirm,.btn-istr-close{background:#e8a830;color:#1a1a1a;font-weight:700;}
+.toast{background:#27ae60;color:#ffeb3b;}
+.toast.error{background:var(--rosso);}
+.capi-badge,.badge-cornacchia,.badge-gazza,.badge-piccione,.badge-ibis{color:#ffeb3b;font-weight:700;}
+.istr-title{color:#ffeb3b;border-bottom-color:rgba(200,146,42,0.4);}
+.modal-istr-box h2,.modal-istr-box h3,.istr-text strong{color:#ffeb3b;}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -149,10 +185,10 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <body>
 
 <!-- MODAL LOGIN GOOGLE — mostrato finché l'account non è verificato -->
-<div id="barraLogin" onclick="apriLoginCompleto()" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:9000;background:#e8c547;color:#0d1b2a;padding:14px 12px;text-align:center;font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">🔒 Sessione scaduta — tocca qui per accedere con Google</div>
-<div id="modalLoginGoogle" style="display: none; position: fixed; inset: 0px; z-index: 99999; background: rgba(13, 27, 42, 0.97); align-items: center; justify-content: center; flex-direction: column; padding: 24px; text-align: center;">
+<div id="barraLogin" onclick="apriLoginCompleto()" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:9000;background:#ffeb3b;color:#1c2b1a;padding:14px 12px;text-align:center;font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">🔒 Sessione scaduta — tocca qui per accedere con Google</div>
+<div id="modalLoginGoogle" style="display: none; position: fixed; inset: 0px; z-index: 99999; background: rgba(28,43,26, 0.97); align-items: center; justify-content: center; flex-direction: column; padding: 24px; text-align: center;">
   <div style="font-size:40px;margin-bottom:12px;">🔒</div>
-  <h2 style="color:#f0d060;font-family:Arial,sans-serif;font-size:20px;margin-bottom:8px;">Accesso riservato</h2>
+  <h2 style="color:#ffeb3b;font-family:Arial,sans-serif;font-size:20px;margin-bottom:8px;">Accesso riservato</h2>
   <p style="color:#ccc;font-size:13px;max-width:320px;margin-bottom:20px;">Accedi con un account Google autorizzato per usare Controllo Corvidi.</p>
   <div id="googleSignInButton"></div>
   <p id="loginGoogleErrore" style="color:#ff6b6b;font-size:12px;margin-top:16px;max-width:300px;"></p>
@@ -265,8 +301,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <span>📲 Installa l'app sulla schermata home</span>
     <button onclick="installApp()">INSTALLA</button>
   </div>
-  <button onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.add(&#39;show&#39;)" style="width:100%;padding:11px;background:rgba(240,208,96,0.08);border:1px solid rgba(240,208,96,0.3);border-radius:10px;color:#f0d060;font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
-<div id="avvisoDati" style="display:none;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.5);border-radius:10px;padding:10px;margin-bottom:10px;color:#ff8a8f;font-size:13px;text-align:center;"></div>
+  <button onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.add(&#39;show&#39;)" style="width:100%;padding:11px;background:rgba(200,146,42,0.08);border:1px solid rgba(200,146,42,0.3);border-radius:10px;color:#ffeb3b;font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
+<div id="avvisoDati" style="display:none;background:rgba(192,57,43,0.12);border:1px solid rgba(192,57,43,0.5);border-radius:10px;padding:10px;margin-bottom:10px;color:#ff8a8f;font-size:13px;text-align:center;"></div>
 <div class="stats-row">
     <div class="stat-card"><div class="num" id="statMese">0</div><div class="label">Mese</div></div>
     <div class="stat-card"><div class="num" id="statAnno">0</div><div class="label">Anno</div></div>
@@ -279,7 +315,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <div class="btn-main-text"><strong>Cornacchia / Gazza / Piccione</strong><span>Controllo corvidi e piccioni</span></div>
     <span class="btn-main-arrow">›</span>
   </button>
-  <button class="btn-main" onclick="vai(&#39;screenIbis&#39;)" style="border-color:rgba(82,183,136,0.4);">
+  <button class="btn-main" onclick="vai(&#39;screenIbis&#39;)" style="border-color:rgba(74,140,63,0.4);">
     <span class="btn-main-icon">🦢</span>
     <div class="btn-main-text"><strong>Ibis Sacro</strong><span>Scheda controllo Ibis</span></div>
     <span class="btn-main-arrow">›</span>
@@ -306,8 +342,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </button>
   <div class="section-title">Statistiche</div>
   <button class="btn-report" onclick="vai(&#39;screenReport&#39;)">📊 &nbsp;Report mensile / annuale</button>
-  <button class="btn-report" onclick="mostraStatSpecie()" style="margin-top:8px;background:rgba(125,207,170,0.08);border-color:rgba(125,207,170,0.3);color:#7dcfaa;">🦅 &nbsp;Statistiche per specie</button>
-  <button class="btn-report" onclick="vai(&#39;screenEsenzione&#39;)" style="color:#7dcfaa;border-color:rgba(39,174,96,0.3);background:rgba(39,174,96,0.08);margin-top:8px;">📄 &nbsp;Stampa Esenzione Tassa</button>
+  <button class="btn-report" onclick="mostraStatSpecie()" style="margin-top:8px;background:rgba(125,207,170,0.08);border-color:rgba(125,207,170,0.3);color:#ffeb3b;">🦅 &nbsp;Statistiche per specie</button>
+  <button class="btn-report" onclick="vai(&#39;screenEsenzione&#39;)" style="color:#ffeb3b;border-color:rgba(39,174,96,0.3);background:rgba(39,174,96,0.08);margin-top:8px;">📄 &nbsp;Stampa Esenzione Tassa</button>
 </div>
 
 <!-- FORM -->
@@ -1173,7 +1209,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <label class="form-label">Anno <span class="req">*</span></label>
     <select class="form-select" id="esenzioneAnnoCorvidi" style="font-size:16px;"></select>
   </div>
-  <div style="background:rgba(82,183,136,0.08);border:1px solid rgba(82,183,136,0.25);border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:rgba(224,225,221,0.7);line-height:1.6;">
+  <div style="background:rgba(74,140,63,0.08);border:1px solid rgba(74,140,63,0.25);border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:rgba(255,235,59,0.92);line-height:1.6;">
     📄 Genera elenco operatori che hanno partecipato ad abbattimenti nell'anno selezionato.<br>
     🗂️ Crea anche il foglio <strong>Esenzione Tassa ANNO</strong> nel Google Sheet.
   </div>
@@ -1525,7 +1561,7 @@ function mostraLoginGoogle() {
 var ultimoCredentialGoogle = null;
 function erroreLoginVisibile(testo){
   var el=document.getElementById('loginGoogleErrore');
-  if(el) el.innerHTML='❌ '+htmlEsc(testo)+'<br><button onclick="riprovaVerificaLogin()" style="margin-top:10px;padding:10px 18px;border-radius:8px;border:none;background:#e8c547;color:#0d1b2a;font-weight:700;font-size:14px;">🔄 Riprova</button>';
+  if(el) el.innerHTML='❌ '+htmlEsc(testo)+'<br><button onclick="riprovaVerificaLogin()" style="margin-top:10px;padding:10px 18px;border-radius:8px;border:none;background:#ffeb3b;color:#1c2b1a;font-weight:700;font-size:14px;">🔄 Riprova</button>';
   apriLoginCompleto();
 }
 function riprovaVerificaLogin(){
@@ -1612,7 +1648,7 @@ function inizializzaBottoneGoogle(){
     if (errEl2) errEl2.textContent = '⏳ Caricamento accesso Google…';
     setTimeout(inizializzaBottoneGoogle, 500);
   } else if (errEl2) {
-    errEl2.innerHTML = '❌ Impossibile caricare l\'accesso Google. Controlla la connessione e <a href="#" style="color:#f0d060" onclick="tentativiGoogle=0;inizializzaBottoneGoogle();return false;">riprova</a>.';
+    errEl2.innerHTML = '❌ Impossibile caricare l\'accesso Google. Controlla la connessione e <a href="#" style="color:#ffeb3b" onclick="tentativiGoogle=0;inizializzaBottoneGoogle();return false;">riprova</a>.';
   }
 }
 
@@ -1759,7 +1795,7 @@ var reportTab = 'mensile';
 var reportData = [];
 
 // PWA
-var manifest={name:'Controllo Corvidi',short_name:'Corvidi',start_url:'.',display:'standalone',background_color:'#0d1b2a',theme_color:'#0d1b2a',orientation:'portrait',icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230d1b2a'/><text y='.9em' font-size='70' x='10'>🐦‍⬛</text></svg>",sizes:'192x192',type:'image/svg+xml'}]};
+var manifest={name:'Controllo Corvidi',short_name:'Corvidi',start_url:'.',display:'standalone',background_color:'#1c2b1a',theme_color:'#1c2b1a',orientation:'portrait',icons:[{src:"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230d1b2a'/><text y='.9em' font-size='70' x='10'>🐦‍⬛</text></svg>",sizes:'192x192',type:'image/svg+xml'}]};
 document.head.appendChild(Object.assign(document.createElement('link'),{rel:'manifest',href:URL.createObjectURL(new Blob([JSON.stringify(manifest)],{type:'application/json'}))}));
 var swCode='self.addEventListener(\'install\',e=>self.skipWaiting());self.addEventListener(\'activate\',e=>clients.claim());self.addEventListener(\'fetch\',e=>{if(e.request.method===\'GET\')e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});';
 if('serviceWorker' in navigator) navigator.serviceWorker.register(URL.createObjectURL(new Blob([swCode],{type:'application/javascript'}))).catch(function(){});
@@ -2544,7 +2580,7 @@ async function loadStats(){
     if(e&&e.senzaToken) return;   // non ancora autenticato: nessun avviso, si riprova dopo il login
     ['statMese','statAnno','statInterventi','statTot'].forEach(function(id){document.getElementById(id).textContent='—';});
     var motivo=(e&&e.name==='AbortError')?'il server non ha risposto in tempo':(e&&e.message&&e.message!=='Accesso non autorizzato'?e.message:(e&&e.message==='Accesso non autorizzato'?'accesso Google scaduto: accedi di nuovo':'connessione assente o risposta non valida'));
-    if(avviso){avviso.style.display='block';avviso.innerHTML='⚠️ Dati non caricati: '+htmlEsc(motivo)+' <button onclick="loadStats()" style="margin-left:8px;padding:6px 12px;border-radius:8px;border:1px solid #e8c547;background:transparent;color:#e8c547;font-weight:700;">🔄 Riprova</button>';}
+    if(avviso){avviso.style.display='block';avviso.innerHTML='⚠️ Dati non caricati: '+htmlEsc(motivo)+' <button onclick="loadStats()" style="margin-left:8px;padding:6px 12px;border-radius:8px;border:1px solid #ffeb3b;background:transparent;color:#ffeb3b;font-weight:700;">🔄 Riprova</button>';}
     if(_tentativiStats<2 && !(e&&e.message==='Accesso non autorizzato')){_tentativiStats++;setTimeout(loadStats,4000);}
   }
 }
@@ -2620,7 +2656,7 @@ function stampaReport(){
   var html='<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>'+titolo+'</title><style>@page{margin:15mm;size:A4 portrait;}body{font-family:Arial,sans-serif;font-size:10px;color:#000;margin:0;padding:0;}.header{text-align:center;margin-bottom:14px;}.titolo{font-size:14px;font-weight:bold;}.prov{font-size:10px;color:#444;margin-top:3px;}h2{font-size:12px;margin:14px 0 6px;border-bottom:1px solid #000;padding-bottom:3px;}table{width:100%;border-collapse:collapse;}th,td{border:1px solid #444;padding:4px 6px;text-align:left;}th{background:#e8e8e8;}tr{page-break-inside:avoid;}tr.tot td{font-weight:bold;background:#f2f2f2;}.footer{margin-top:14px;font-size:9px;color:#444;text-align:right;}.no-print{text-align:center;margin:20px 0;}@media print{.no-print{display:none;}}</style></head><body>'+
     '<div class="header"><div class="titolo">'+titolo+'</div><div class="prov">Polizia Provinciale di Cremona — Controllo Corvidi</div></div>'+corpo+
     '<div class="footer">Stampato il '+new Date().toLocaleDateString('it-IT')+'</div>'+
-    '<div class="no-print"><button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#0d1b2a;color:#e8c547;border:none;border-radius:8px;">🖨️ Stampa / Salva PDF</button> <button onclick="window.close()" style="padding:12px 30px;font-size:16px;cursor:pointer;border:1px solid #888;border-radius:8px;background:#fff;">Chiudi</button></div></body></html>';
+    '<div class="no-print"><button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#1c2b1a;color:#ffeb3b;border:none;border-radius:8px;">🖨️ Stampa / Salva PDF</button> <button onclick="window.close()" style="padding:12px 30px;font-size:16px;cursor:pointer;border:1px solid #888;border-radius:8px;background:#fff;">Chiudi</button></div></body></html>';
   var url=URL.createObjectURL(new Blob([html],{type:'text/html'}));
   var w=window.open(url,'_blank');
   if(!w){toast('Il browser ha bloccato la finestra di stampa: consenti i popup per questo sito',true);}
@@ -2707,7 +2743,7 @@ function cercaCacciatore(val){
   });
   var btnNuovo=document.createElement('div');
   btnNuovo.className='autocomplete-item';
-  btnNuovo.style.color='#7dcfaa';
+  btnNuovo.style.color='#ffeb3b';
   btnNuovo.style.fontStyle='italic';
   btnNuovo.textContent='➕ Aggiungi nuovo operatore';
   btnNuovo.addEventListener('mousedown', function(e){
@@ -2764,30 +2800,30 @@ function initEsenzioneCorvidi(){
 
 async function generaStampaEsenzioneCorvidi(){
   var anno = document.getElementById('esenzioneAnnoCorvidi').value;
-  document.getElementById('anteprimaEsenzioneCorvidi').innerHTML = '<div style="text-align:center;color:#7dcfaa;padding:12px;">⏳ Caricamento...</div>';
+  document.getElementById('anteprimaEsenzioneCorvidi').innerHTML = '<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento...</div>';
   try{
     var d = await gsGet('esenzione', {anno: anno});
     var records = d.records || [];
     if(!records.length){
-      document.getElementById('anteprimaEsenzioneCorvidi').innerHTML = '<div style="text-align:center;color:#e63946;padding:16px;">⚠️ Nessun operatore trovato per l\'anno '+anno+'</div>';
+      document.getElementById('anteprimaEsenzioneCorvidi').innerHTML = '<div style="text-align:center;color:#c0392b;padding:16px;">⚠️ Nessun operatore trovato per l\'anno '+anno+'</div>';
       return;
     }
     var rows = '';
     records.forEach(function(r, i){
       rows += '<tr><td style="text-align:center;">'+(i+1)+'</td><td>'+r.cognome+'</td><td>'+r.nome+'</td><td>'+r.cf+'</td><td>'+r.email+'</td></tr>';
     });
-    var html = '<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Esenzione Tassa '+anno+'</title><style>@page{margin:15mm;size:A4 portrait;}body{font-family:Arial,sans-serif;font-size:10px;color:#000;margin:0;padding:0;}.header{text-align:center;margin-bottom:16px;border-bottom:2px solid #000;padding-bottom:10px;}.titolo{font-size:16px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;}.prov{font-size:10px;margin-top:4px;color:#333;}table{width:100%;border-collapse:collapse;margin-top:10px;}th{background:#0d1b2a;color:#e8c547;font-size:10px;font-weight:bold;padding:6px 4px;border:1px solid #000;text-align:center;}td{font-size:9px;padding:4px 3px;border:1px solid #ccc;}tr:nth-child(even){background:#f9f9f9;}.footer{margin-top:20px;font-size:9px;color:#888;text-align:center;border-top:1px solid #ccc;padding-top:8px;}.no-print{margin-top:20px;text-align:center;}@media print{.no-print{display:none;}}</style></head><body>';
+    var html = '<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Esenzione Tassa '+anno+'</title><style>@page{margin:15mm;size:A4 portrait;}body{font-family:Arial,sans-serif;font-size:10px;color:#000;margin:0;padding:0;}.header{text-align:center;margin-bottom:16px;border-bottom:2px solid #000;padding-bottom:10px;}.titolo{font-size:16px;font-weight:bold;letter-spacing:1px;text-transform:uppercase;}.prov{font-size:10px;margin-top:4px;color:#333;}table{width:100%;border-collapse:collapse;margin-top:10px;}th{background:#1c2b1a;color:#ffeb3b;font-size:10px;font-weight:bold;padding:6px 4px;border:1px solid #000;text-align:center;}td{font-size:9px;padding:4px 3px;border:1px solid #ccc;}tr:nth-child(even){background:#f9f9f9;}.footer{margin-top:20px;font-size:9px;color:#888;text-align:center;border-top:1px solid #ccc;padding-top:8px;}.no-print{margin-top:20px;text-align:center;}@media print{.no-print{display:none;}}</style></head><body>';
     html += '<div class="header"><div class="titolo">NOMINATIVI ANNO '+anno+' PER ESENZIONE TASSA REGIONALE CACCIA</div><div class="prov">Polizia Provinciale di Cremona — Controllo Corvidi</div></div>';
     html += '<table><thead><tr><th>#</th><th>Cognome</th><th>Nome</th><th>Codice Fiscale</th><th>Email</th></tr></thead><tbody>'+rows+'</tbody></table>';
     html += '<div class="footer">Stampato il '+new Date().toLocaleDateString("it-IT")+' — Totale: '+records.length+' nominativi</div>';
-    html += '<div class="no-print"><button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#0d1b2a;color:#e8c547;border:none;border-radius:8px;">🖨️ Stampa / Salva PDF</button><button onclick="window.close()" style="margin-left:12px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Chiudi</button></div>';
+    html += '<div class="no-print"><button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#1c2b1a;color:#ffeb3b;border:none;border-radius:8px;">🖨️ Stampa / Salva PDF</button><button onclick="window.close()" style="margin-left:12px;padding:12px 20px;font-size:14px;cursor:pointer;">✕ Chiudi</button></div>';
     html += '</body></html>';
     var blob = new Blob([html], {type:'text/html'});
     var url = URL.createObjectURL(blob);
     window.open(url, '_blank');
-    document.getElementById('anteprimaEsenzioneCorvidi').innerHTML = '<div style="text-align:center;color:#7dcfaa;padding:12px;">✅ '+records.length+' nominativi per anno '+anno+'<br><small style="color:rgba(224,225,221,0.4);">📊 Foglio Esenzione Tassa '+anno+' aggiornato nel Google Sheet</small></div>';
+    document.getElementById('anteprimaEsenzioneCorvidi').innerHTML = '<div style="text-align:center;color:#ffeb3b;padding:12px;">✅ '+records.length+' nominativi per anno '+anno+'<br><small style="color:rgba(255,235,59,0.92);">📊 Foglio Esenzione Tassa '+anno+' aggiornato nel Google Sheet</small></div>';
   }catch(e){
-    document.getElementById('anteprimaEsenzioneCorvidi').innerHTML = '<div style="text-align:center;color:#e63946;padding:16px;">⚠️ Errore: '+e.message+'</div>';
+    document.getElementById('anteprimaEsenzioneCorvidi').innerHTML = '<div style="text-align:center;color:#c0392b;padding:16px;">⚠️ Errore: '+e.message+'</div>';
   }
 }
 
