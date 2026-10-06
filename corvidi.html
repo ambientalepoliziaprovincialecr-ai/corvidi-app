@@ -1489,6 +1489,12 @@ function handleGoogleCredentialResponse(response) {
 }
 
 var tentativiGoogle = 0;
+document.addEventListener('visibilitychange', function(){
+  if (document.hidden) return;
+  if (!leggiTokenCondiviso() && window.google && google.accounts && google.accounts.id) {
+    try { google.accounts.id.prompt(); } catch(e) {}
+  }
+});
 function inizializzaBottoneGoogle(){
   if (window.google && google.accounts && google.accounts.id) {
     google.accounts.id.initialize({
@@ -2465,7 +2471,7 @@ function popolaSelettoreStampaReport(){
   if(reportTab==='annuale'){ sel.style.display='none'; return; }
   sel.style.display='';
   var chiavi={};
-  reportData.forEach(function(r){var p=r.data?r.data.split('/'):[];if(p.length<3)return;var y=parseInt(p[2]);if(y<100)y+=2000;chiavi[y+'-'+(''+parseInt(p[1])).padStart(2,'0')]=1;});
+  reportData.forEach(function(r){var p=r.data?r.data.split('/'):[];if(p.length<3)return;var y=parseInt(p[2]);if(y<100)y+=2000;if(isNaN(y)||isNaN(parseInt(p[1])))return;chiavi[y+'-'+(''+parseInt(p[1])).padStart(2,'0')]=1;});
   var ord=Object.keys(chiavi).sort().reverse();
   sel.innerHTML='<option value="tutti">Tutti i mesi</option>'+ord.map(function(k){var ym=k.split('-');return '<option value="'+k+'">'+mesiNome(parseInt(ym[1])-1)+' '+ym[0]+'</option>';}).join('');
   if(precedente && ord.indexOf(precedente)>=0) sel.value=precedente;
@@ -2477,7 +2483,7 @@ function htmlEsc(t){return String(t==null?'':t).replace(/&/g,'&amp;').replace(/<
 // Stampa del report visualizzato: mensile (un mese o tutti) oppure annuale.
 function stampaReport(){
   if(!reportData.length){toast('Nessun dato da stampare',true);return;}
-  var parseData=function(r){var p=r.data?r.data.split('/'):[];if(p.length<3)return null;var y=parseInt(p[2]);if(y<100)y+=2000;return {d:parseInt(p[0]),m:parseInt(p[1]),y:y};};
+  var parseData=function(r){var p=r.data?r.data.split('/'):[];if(p.length<3)return null;var y=parseInt(p[2]);if(y<100)y+=2000;if(isNaN(y)||isNaN(parseInt(p[1])))return null;return {d:parseInt(p[0]),m:parseInt(p[1]),y:y};};
   var corpo='',titolo='';
   var th='<tr><th>Data</th><th>Operatore</th><th>Qualifica</th><th>Comune / Località</th><th>Specie</th><th>Capi</th></tr>';
   var riga=function(r){return '<tr><td>'+htmlEsc(r.data)+'</td><td>'+htmlEsc(r.cognome)+'</td><td>'+htmlEsc(r.qualifica)+'</td><td>'+htmlEsc(r.comune)+(r.ubicazione?' — '+htmlEsc(r.ubicazione):'')+'</td><td>'+htmlEsc(r.specie)+'</td><td style="text-align:center;">'+htmlEsc(r.capi)+'</td></tr>';};
@@ -2526,7 +2532,7 @@ function renderReport(){
     var mesi={};
     reportData.forEach(function(r){
       var p=r.data?r.data.split('/'):[];if(p.length<3)return;
-      var m=parseInt(p[1]);var y=parseInt(p[2]);if(y<100)y+=2000;
+      var m=parseInt(p[1]);var y=parseInt(p[2]);if(y<100)y+=2000;if(isNaN(m)||isNaN(y))return;
       var k=y+'-'+((''+m).padStart(2,'0'));
       if(!mesi[k])mesi[k]=[];mesi[k].push(r);
     });
