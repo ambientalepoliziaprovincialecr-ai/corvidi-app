@@ -1055,39 +1055,45 @@ async function submitKm() {
   // il valore sembra anomalo.
   var kmNum = parseInt(km);
   var SOGLIA_AVVISO_KM = 300;
+  // CONTROLLO SEMPRE OBBLIGATORIO: ad ogni invio compare la conferma.
+  // Se il server non risponde si usa l'ultimo storico già scaricato;
+  // se non c'è nessun dato la conferma compare comunque coi dati inseriti.
+  var registrazioniTarga = null;
+  var nonAggiornato = false;
   try {
-    var resUltimo = await fetchConTimeout(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente), null, 5000);
+    var resUltimo = await fetchConTimeout(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente), null, 12000);
     var dUltimo = await resUltimo.json();
-    var registrazioniTarga = (dUltimo.km || []).filter(function(r){
+    if (dUltimo && Array.isArray(dUltimo.km)) { window._storicoKmCache = dUltimo.km; }
+    else { nonAggiornato = true; }
+  } catch(e) { nonAggiornato = true; }
+  if (window._storicoKmCache) {
+    registrazioniTarga = window._storicoKmCache.filter(function(r){
       return (r.targa || '').toString().toUpperCase().trim() === targa.toString().toUpperCase().trim() && parseInt(r.kmFinali) > 0;
     });
-    if (registrazioniTarga.length > 0) {
-      var ultimaReg = registrazioniTarga[registrazioniTarga.length - 1];
-      var ultimoKm = parseInt(ultimaReg.kmFinali) || 0;
-      var deltaOggi = kmNum - ultimoKm;
-
-      var messaggioBase = '📋 CONTROLLO PRIMA DEL SALVATAGGIO\n\n' +
-        'Targa: ' + targa + '\n' +
-        'Ultimo km registrato: ' + ultimoKm + ' km\n' +
-        'Inserito da: ' + (ultimaReg.conducente || '—') + '\n' +
-        'Il: ' + (ultimaReg.dataOra || '—') + '\n\n' +
-        'Km che stai per registrare ora: ' + kmNum + ' km (percorsi: ' + (deltaOggi >= 0 ? '+' : '') + deltaOggi + ' km)\n\n';
-
-      var avviso = '';
-      if (deltaOggi < 0) {
-        avviso = '⚠️ Il km inserito è INFERIORE all\'ultimo registrato — un veicolo non può percorrere km negativi: controlla di aver scelto la targa giusta.\n\n';
-      } else if (deltaOggi > SOGLIA_AVVISO_KM) {
-        avviso = '⚠️ Percorso insolitamente lungo (oltre ' + SOGLIA_AVVISO_KM + ' km) — controlla di aver digitato il numero giusto.\n\n';
-      }
-
-      var confermato = confirm(messaggioBase + avviso + 'Premi OK per confermare e salvare, Annulla per tornare indietro e correggere.');
-      if (!confermato) { btnSalva.disabled = false; btnSalva.textContent = testoOriginale; return; }
-    }
-  } catch(e) {
-    // Se il controllo preventivo fallisce (es. rete assente), non
-    // blocchiamo la registrazione: meglio salvare senza conferma che
-    // perdere il dato.
   }
+  var messaggioCtl = '📋 CONTROLLO PRIMA DEL SALVATAGGIO\n\nTarga: ' + targa + '\n';
+  var avvisoCtl = '';
+  if (registrazioniTarga && registrazioniTarga.length > 0) {
+    var ultimaReg = registrazioniTarga[registrazioniTarga.length - 1];
+    var ultimoKm = parseInt(ultimaReg.kmFinali) || 0;
+    var deltaOggi = kmNum - ultimoKm;
+    messaggioCtl += 'Ultimo km registrato: ' + ultimoKm + ' km\n' +
+      'Inserito da: ' + (ultimaReg.conducente || '—') + '\n' +
+      'Il: ' + (ultimaReg.dataOra || '—') + '\n\n' +
+      'Km che stai per registrare ora: ' + kmNum + ' km (percorsi: ' + (deltaOggi >= 0 ? '+' : '') + deltaOggi + ' km)\n\n';
+    if (deltaOggi < 0) {
+      avvisoCtl = '⚠️ Il km inserito è INFERIORE all\'ultimo registrato — un veicolo non può percorrere km negativi: controlla di aver scelto la targa giusta.\n\n';
+    } else if (deltaOggi > SOGLIA_AVVISO_KM) {
+      avvisoCtl = '⚠️ Percorso insolitamente lungo (oltre ' + SOGLIA_AVVISO_KM + ' km) — controlla di aver digitato il numero giusto.\n\n';
+    }
+  } else {
+    messaggioCtl += 'Km che stai per registrare: ' + kmNum + ' km\nConducente: ' + conducente + '\n\n⚠️ Ultimo km di questa targa non disponibile: controlla bene il numero.\n\n';
+  }
+  if (nonAggiornato && registrazioniTarga && registrazioniTarga.length > 0) {
+    messaggioCtl += '(ultimo km preso dai dati già scaricati: connessione lenta)\n\n';
+  }
+  var confermato = confirm(messaggioCtl + avvisoCtl + 'Premi OK per confermare e salvare, Annulla per tornare indietro e correggere.');
+  if (!confermato) { btnSalva.disabled = false; btnSalva.textContent = testoOriginale; return; }
 
   await invia({tipo:'KM', dataOra:fmtDT(dataOra), targa, conducente, kmFinali:kmNum, note, inseritoDa:operatoreCorrente});
   document.getElementById('kmTarga').value = '';
@@ -1234,6 +1240,13 @@ async function sincronizzaCodaOffline() {
         aggiornaBadgeCodaOffline();
         continue;
       }
+      if (esito === 'error' && d && d.message === 'Accesso non autorizzato') {
+        // Login scaduto: NON si scarta nulla, si resta in coda e si
+        // chiede di rientrare (il dato è valido, manca solo l'accesso).
+        if (typeof mostraLoginGoogle === 'function') mostraLoginGoogle();
+        toast('🔒 Accedi di nuovo per inviare i dati in sospeso', true);
+        break;
+      }
       if (esito === 'error') {
         // Rifiutato dal server (es. km minore/uguale al precedente): non
         // si può correggere in automatico in background. Lo togliamo dalla
@@ -1341,6 +1354,12 @@ async function invia(payload) {
       } else {
         toast('Salvataggio annullato — correggi il dato', true);
       }
+    } else if (d.message === 'Accesso non autorizzato') {
+      // Login scaduto: il dato è valido, non va perso. Lo teniamo sul
+      // dispositivo e parte da solo appena si rientra.
+      accodaOffline(payload);
+      if (typeof mostraLoginGoogle === 'function') mostraLoginGoogle();
+      toast('🔒 Accesso scaduto — dato salvato sul dispositivo, rieffettua il login per inviarlo', true);
     } else {
       // status 'error': rifiuto secco (es. km minore/uguale al
       // precedente) — il dato non è stato scritto, va corretto.
