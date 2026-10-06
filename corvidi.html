@@ -269,9 +269,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <div id="avvisoDati" style="display:none;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.5);border-radius:10px;padding:10px;margin-bottom:10px;color:#ff8a8f;font-size:13px;text-align:center;"></div>
 <div class="stats-row">
     <div class="stat-card"><div class="num" id="statMese">0</div><div class="label">Mese</div></div>
-    <div class="stat-card"><div class="num" id="statAnno">135</div><div class="label">Anno</div></div>
-    <div class="stat-card"><div class="num" id="statInterventi">16</div><div class="label">Interventi</div></div>
-    <div class="stat-card total"><div class="num" id="statTot">135</div><div class="label">Totale</div></div>
+    <div class="stat-card"><div class="num" id="statAnno">0</div><div class="label">Anno</div></div>
+    <div class="stat-card"><div class="num" id="statInterventi">0</div><div class="label">Interventi</div></div>
+    <div class="stat-card total"><div class="num" id="statTot">0</div><div class="label">Totale</div></div>
   </div>
   <div class="section-title">Nuovo intervento</div>
   <button class="btn-main" onclick="vai(&#39;screenForm&#39;)">
@@ -1285,6 +1285,9 @@ function leggiJsonDiag(r){
 }
 
 function gsGet(action, params) {
+  // Nessun token ancora (all'apertura, prima della verifica): non chiamare il server
+  // e non mostrare la schermata di login: se ne occupa window.onload.
+  if (!idTokenCorrente) return Promise.reject({status:'error', message:'Accesso non autorizzato', senzaToken:true});
   var url = URL_GS + '?action=' + encodeURIComponent(action);
   if (idTokenCorrente) url += '&idToken=' + encodeURIComponent(idTokenCorrente);
   if (params) {
@@ -1294,6 +1297,7 @@ function gsGet(action, params) {
   }
   return fetchConTimeout(url, null, 25000).then(leggiJsonDiag).then(function(res){
     if (res && res.status === 'error' && res.message === 'Accesso non autorizzato') {
+      if (idTokenCorrente && String(idTokenCorrente).indexOf('S1.') === 0) { cancellaSessione(); idTokenCorrente = null; }
       mostraLoginGoogle();
       throw res;
     }
@@ -1308,6 +1312,7 @@ function gsPost(payload) {
     .then(leggiJsonDiag)
     .then(function(res){
       if (res && res.status === 'error' && res.message === 'Accesso non autorizzato') {
+        if (idTokenCorrente && String(idTokenCorrente).indexOf('S1.') === 0) { cancellaSessione(); idTokenCorrente = null; }
         mostraLoginGoogle();
         throw res;
       }
@@ -1456,6 +1461,22 @@ function salvaTokenCondiviso(token) {
   } catch(e) {}
 }
 
+// SESSIONE LUNGA (30 giorni) rilasciata dal nostro server dopo il login Google
+var CHIAVE_SESSIONE = 'corvidi_sessione_v1';
+function salvaSessione(tok) {
+  try { localStorage.setItem(CHIAVE_SESSIONE, JSON.stringify({ t: tok, s: Date.now() + 29*24*60*60*1000 })); } catch(e) {}
+}
+function leggiSessione() {
+  try {
+    var o = JSON.parse(localStorage.getItem(CHIAVE_SESSIONE) || 'null');
+    if (o && o.t && Date.now() < o.s) return o.t;
+  } catch(e) {}
+  return null;
+}
+function cancellaSessione() {
+  try { localStorage.removeItem(CHIAVE_SESSIONE); } catch(e) {}
+}
+
 function leggiTokenCondiviso() {
   try {
     var token = localStorage.getItem('pp_shared_idtoken');
@@ -1517,7 +1538,8 @@ function handleGoogleCredentialResponse(response) {
         nomeOperatoreGoogle = verifica.nome;
         operatoreCorrente = verifica.nome;
         try { localStorage.setItem('corvidi_operatore_v1', verifica.nome); } catch(e) {}
-        salvaTokenCondiviso(idTokenCorrente);
+        salvaTokenCondiviso(response.credential);
+        if (verifica.sessione) { salvaSessione(verifica.sessione); idTokenCorrente = verifica.sessione; }
         segnaDispositivoFidato();
         var hU = document.getElementById('headerUtente');
         if (hU) hU.textContent = verifica.nome;
@@ -1587,7 +1609,8 @@ function inizializzaBottoneGoogle(){
 }
 
 window.onload = function(){
-  var tokenCondiviso = leggiTokenCondiviso();
+  var sessione = leggiSessione();
+  var tokenCondiviso = sessione || leggiTokenCondiviso();
   if (tokenCondiviso) {
     idTokenCorrente = tokenCondiviso;
     fetchConTimeout(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(tokenCondiviso), {}, 25000)
@@ -1597,6 +1620,7 @@ window.onload = function(){
           nomeOperatoreGoogle = verifica.nome;
           operatoreCorrente = verifica.nome;
           try { localStorage.setItem('corvidi_operatore_v1', verifica.nome); } catch(e) {}
+          if (verifica.sessione) { salvaSessione(verifica.sessione); idTokenCorrente = verifica.sessione; }
           var hU = document.getElementById('headerUtente');
           if (hU) hU.textContent = verifica.nome;
           segnaDispositivoFidato();
@@ -1604,14 +1628,16 @@ window.onload = function(){
           syncPinMapDaSheet();
           loadStats();
           caricaCacciatoriDalFoglio();
+          setTimeout(sincronizzaCodaOffline, 1500);
         } else {
+          if (sessione) cancellaSessione();
           idTokenCorrente = null;
           inizializzaBottoneGoogle();
         }
       })
       .catch(function(e){
         inizializzaBottoneGoogle();
-        // Il token condiviso c'è ma il server non risponde: mostra perché
+        // Il token c'è ma il server non risponde: mostra perché
         setTimeout(function(){ erroreLoginVisibile((e&&e.name==='AbortError')?'Il server non ha risposto entro 25 secondi':((e&&e.message)||'Errore di connessione')); }, 600);
       });
   } else {
@@ -2507,6 +2533,7 @@ async function loadStats(){
     document.getElementById('statMese').textContent=d.mese??0;document.getElementById('statAnno').textContent=d.anno??0;document.getElementById('statInterventi').textContent=d.interventi??0;document.getElementById('statTot').textContent=d.tot??0;
     _tentativiStats=0; if(avviso) avviso.style.display='none';
   }catch(e){
+    if(e&&e.senzaToken) return;   // non ancora autenticato: nessun avviso, si riprova dopo il login
     ['statMese','statAnno','statInterventi','statTot'].forEach(function(id){document.getElementById(id).textContent='—';});
     var motivo=(e&&e.name==='AbortError')?'il server non ha risposto in tempo':(e&&e.message&&e.message!=='Accesso non autorizzato'?e.message:(e&&e.message==='Accesso non autorizzato'?'accesso Google scaduto: accedi di nuovo':'connessione assente o risposta non valida'));
     if(avviso){avviso.style.display='block';avviso.innerHTML='⚠️ Dati non caricati: '+htmlEsc(motivo)+' <button onclick="loadStats()" style="margin-left:8px;padding:6px 12px;border-radius:8px;border:1px solid #e8c547;background:transparent;color:#e8c547;font-weight:700;">🔄 Riprova</button>';}
