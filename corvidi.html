@@ -1298,6 +1298,7 @@ function gsGet(action, params) {
   return fetchConTimeout(url, null, 25000).then(leggiJsonDiag).then(function(res){
     if (res && res.status === 'error' && res.message === 'Accesso non autorizzato') {
       if (idTokenCorrente && String(idTokenCorrente).indexOf('S1.') === 0) { cancellaSessione(); idTokenCorrente = null; }
+      window._motivoAuth = res.motivo || '';
       mostraLoginGoogle();
       throw res;
     }
@@ -1313,6 +1314,7 @@ function gsPost(payload) {
     .then(function(res){
       if (res && res.status === 'error' && res.message === 'Accesso non autorizzato') {
         if (idTokenCorrente && String(idTokenCorrente).indexOf('S1.') === 0) { cancellaSessione(); idTokenCorrente = null; }
+        window._motivoAuth = res.motivo || '';
         mostraLoginGoogle();
         throw res;
       }
@@ -1505,6 +1507,12 @@ function apriLoginCompleto() {
   var m = document.getElementById('modalLoginGoogle'); if (m) m.style.display = 'flex';
 }
 function mostraLoginGoogle() {
+  var mo = window._motivoAuth || '';
+  var errEl = document.getElementById('loginGoogleErrore');
+  if (mo && errEl && !errEl.textContent) errEl.textContent = 'Motivo: ' + mo;
+  var barra = document.getElementById('barraLogin');
+  if (barra) barra.textContent = '🔒 Sessione scaduta — tocca qui per accedere con Google' + (mo ? ' (' + mo + ')' : '');
+  if (!idTokenCorrente) { apriLoginCompleto(); return; }   // nessun accesso valido: serve il login
   if (dispositivoFidato()) {
     var m = document.getElementById('modalLoginGoogle');
     if (m && m.style.display === 'flex') return;   // già aperto dall'utente
