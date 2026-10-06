@@ -2755,8 +2755,17 @@ async function stampaERegistraCras() {
   try {
     var res = await fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'GET_NUM_PRATICA', categoria:'CRAS', idToken:idTokenCorrente})});
     var d = await res.json();
-    var numPratica = d.numeroPratica || 'CRAS-'+new Date().getFullYear()+'-???';
     loading(false);
+    // Se il server non ha potuto assegnare un numero di pratica valido
+    // (errore, timeout, risposta anomala), NON si procede con un numero
+    // segnaposto "???" stampato e registrato come se fosse buono — si
+    // blocca e si avvisa, così l'operatore può riprovare.
+    if (d.status !== 'ok' || !d.numeroPratica) {
+      sblocca();
+      toast('Errore: numero pratica non assegnato ('+(d.message||'riprova')+')', true);
+      return;
+    }
+    var numPratica = d.numeroPratica;
     // Stampa verbale con numero pratica
     stampaVerbaleCompleto(dati, numPratica, function() {
       // Dopo stampa, registra de-identificato
@@ -2772,8 +2781,12 @@ async function stampaERegistraZoo() {
   try {
     var res = await fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'GET_NUM_PRATICA', categoria:'ZOO', idToken:idTokenCorrente})});
     var d = await res.json();
-    var numPratica = d.numeroPratica || 'IZP-'+new Date().getFullYear()+'-???';
     loading(false);
+    if (d.status !== 'ok' || !d.numeroPratica) {
+      toast('Errore: numero pratica non assegnato ('+(d.message||'riprova')+')', true);
+      return;
+    }
+    var numPratica = d.numeroPratica;
     dati.numeroPratica = numPratica;
     stampaModuloRegioneRecord(dati, function() {
       registraDeidZoo(dati, numPratica);
