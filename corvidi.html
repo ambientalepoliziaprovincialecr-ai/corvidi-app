@@ -149,6 +149,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <body>
 
 <!-- MODAL LOGIN GOOGLE — mostrato finché l'account non è verificato -->
+<div id="barraLogin" onclick="apriLoginCompleto()" style="display:none;position:fixed;left:0;right:0;bottom:0;z-index:9000;background:#e8c547;color:#0d1b2a;padding:14px 12px;text-align:center;font-family:Arial,sans-serif;font-size:14px;font-weight:700;cursor:pointer;">🔒 Sessione scaduta — tocca qui per accedere con Google</div>
 <div id="modalLoginGoogle" style="display: none; position: fixed; inset: 0px; z-index: 99999; background: rgba(13, 27, 42, 0.97); align-items: center; justify-content: center; flex-direction: column; padding: 24px; text-align: center;">
   <div style="font-size:40px;margin-bottom:12px;">🔒</div>
   <h2 style="color:#f0d060;font-family:Arial,sans-serif;font-size:20px;margin-bottom:8px;">Accesso riservato</h2>
@@ -265,6 +266,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <button onclick="installApp()">INSTALLA</button>
   </div>
   <button onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.add(&#39;show&#39;)" style="width:100%;padding:11px;background:rgba(240,208,96,0.08);border:1px solid rgba(240,208,96,0.3);border-radius:10px;color:#f0d060;font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
+<div id="avvisoDati" style="display:none;background:rgba(230,57,70,0.12);border:1px solid rgba(230,57,70,0.5);border-radius:10px;padding:10px;margin-bottom:10px;color:#ff8a8f;font-size:13px;text-align:center;"></div>
 <div class="stats-row">
     <div class="stat-card"><div class="num" id="statMese">0</div><div class="label">Mese</div></div>
     <div class="stat-card"><div class="num" id="statAnno">135</div><div class="label">Anno</div></div>
@@ -1450,9 +1452,32 @@ function leggiTokenCondiviso() {
   return null;
 }
 
+// Dispositivo "fidato" per 24 ore dopo un accesso riuscito: se la sessione
+// Google (che dura ~1 ora) scade, l'app NON si blocca con la schermata a
+// tutto schermo ma mostra solo una barra gialla in basso; l'app resta usabile
+// e si rinnova da sola appena Google lo permette.
+var CHIAVE_FIDATO = 'pp_dispositivo_scadenza';
+function dispositivoFidato() {
+  try { return Date.now() < parseInt(localStorage.getItem(CHIAVE_FIDATO) || '0'); } catch(e) { return false; }
+}
+function segnaDispositivoFidato() {
+  try { localStorage.setItem(CHIAVE_FIDATO, String(Date.now() + 24*60*60*1000)); } catch(e) {}
+}
+function nascondiLoginGoogle() {
+  var m = document.getElementById('modalLoginGoogle'); if (m) m.style.display = 'none';
+  var b = document.getElementById('barraLogin'); if (b) b.style.display = 'none';
+}
+function apriLoginCompleto() {
+  var m = document.getElementById('modalLoginGoogle'); if (m) m.style.display = 'flex';
+}
 function mostraLoginGoogle() {
-  var modal = document.getElementById('modalLoginGoogle');
-  if (modal) modal.style.display = 'flex';
+  if (dispositivoFidato()) {
+    var m = document.getElementById('modalLoginGoogle');
+    if (m && m.style.display === 'flex') return;   // già aperto dall'utente
+    var b = document.getElementById('barraLogin'); if (b) b.style.display = 'block';
+    return;
+  }
+  apriLoginCompleto();
 }
 
 function handleGoogleCredentialResponse(response) {
@@ -1467,10 +1492,11 @@ function handleGoogleCredentialResponse(response) {
         operatoreCorrente = verifica.nome;
         try { localStorage.setItem('corvidi_operatore_v1', verifica.nome); } catch(e) {}
         salvaTokenCondiviso(idTokenCorrente);
+        segnaDispositivoFidato();
         var hU = document.getElementById('headerUtente');
         if (hU) hU.textContent = verifica.nome;
 
-        document.getElementById('modalLoginGoogle').style.display = 'none';
+        nascondiLoginGoogle();
         document.getElementById('loginGoogleErrore').textContent = '';
 
         // Ricarica tutti i dati che prima erano falliti (venivano
@@ -1480,11 +1506,13 @@ function handleGoogleCredentialResponse(response) {
         caricaCacciatoriDalFoglio();
       } else {
         document.getElementById('loginGoogleErrore').textContent = '❌ ' + verifica.message;
+        apriLoginCompleto();
         idTokenCorrente = null;
       }
     })
     .catch(function(){
       document.getElementById('loginGoogleErrore').textContent = '❌ Errore di verifica (connessione lenta?), riprova.';
+      apriLoginCompleto();
     });
 }
 
@@ -1546,7 +1574,8 @@ window.onload = function(){
           try { localStorage.setItem('corvidi_operatore_v1', verifica.nome); } catch(e) {}
           var hU = document.getElementById('headerUtente');
           if (hU) hU.textContent = verifica.nome;
-          document.getElementById('modalLoginGoogle').style.display = 'none';
+          segnaDispositivoFidato();
+          nascondiLoginGoogle();
           syncPinMapDaSheet();
           loadStats();
           caricaCacciatoriDalFoglio();
@@ -2440,9 +2469,20 @@ async function mostraStatSpecie(){
 }
 
 // STATS
+var _tentativiStats=0;
 async function loadStats(){
-  try{var d=await gsGet('statsCorvidi');document.getElementById('statMese').textContent=d.mese??0;document.getElementById('statAnno').textContent=d.anno??0;document.getElementById('statInterventi').textContent=d.interventi??0;document.getElementById('statTot').textContent=d.tot??0;}
-  catch(e){['statMese','statAnno','statInterventi','statTot'].forEach(function(id){document.getElementById(id).textContent='—';});}
+  var avviso=document.getElementById('avvisoDati');
+  try{
+    var d=await gsGet('statsCorvidi');
+    if(d&&d.status==='error') throw new Error(d.message||'Errore del server');
+    document.getElementById('statMese').textContent=d.mese??0;document.getElementById('statAnno').textContent=d.anno??0;document.getElementById('statInterventi').textContent=d.interventi??0;document.getElementById('statTot').textContent=d.tot??0;
+    _tentativiStats=0; if(avviso) avviso.style.display='none';
+  }catch(e){
+    ['statMese','statAnno','statInterventi','statTot'].forEach(function(id){document.getElementById(id).textContent='—';});
+    var motivo=(e&&e.name==='AbortError')?'il server non ha risposto in tempo':(e&&e.message&&e.message!=='Accesso non autorizzato'?e.message:(e&&e.message==='Accesso non autorizzato'?'accesso Google scaduto: accedi di nuovo':'connessione assente o risposta non valida'));
+    if(avviso){avviso.style.display='block';avviso.innerHTML='⚠️ Dati non caricati: '+htmlEsc(motivo)+' <button onclick="loadStats()" style="margin-left:8px;padding:6px 12px;border-radius:8px;border:1px solid #e8c547;background:transparent;color:#e8c547;font-weight:700;">🔄 Riprova</button>';}
+    if(_tentativiStats<2 && !(e&&e.message==='Accesso non autorizzato')){_tentativiStats++;setTimeout(loadStats,4000);}
+  }
 }
 
 // REPORT
