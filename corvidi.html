@@ -152,7 +152,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 .stat-card .num{font-size:30px;color:#ffeb3b;}
 .stat-card .label{font-size:9px;font-weight:700;margin-top:3px;}
 .stat-card.total{border-color:#ffeb3b;background:rgba(200,146,42,0.1);}
-.section-title,.form-label,.form-divider,.gps-status,.nuovo-cac-label,.empty-state,.loading-text,.modal-text,.report-data,.report-detail,.btn-main-text span,.form-header-title span,.totale-box .t-label,.istr-text,.autocomplete-item small{font-weight:700;}
+.section-title,.form-label,.form-divider,.gps-status,.nuovo-cac-label,.empty-state,.loading-text,.modal-text,.report-data,.report-detail,.btn-main-text span,.form-header-title span,.totale-box .t-label,.autocomplete-item small{font-weight:700;}
+.istr-text strong{font-weight:800;}
 .form-header-title{font-size:20px;}
 .form-input,.form-select,.form-textarea{font-weight:700;text-transform:uppercase;padding:11px 13px;}
 .form-input::placeholder,.form-textarea::placeholder{color:rgba(255,235,59,0.92);font-weight:700;text-transform:uppercase;opacity:1;}
@@ -1236,7 +1237,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 
     <div class="istr-section">
       <div class="istr-title">Accesso ricordato dal dispositivo</div>
-      <div class="istr-text">Una volta effettuato l'accesso, il dispositivo lo ricorda in automatico: alle aperture successive dell'app non ti verrà richiesto nulla, l'accesso avviene da solo in pochi istanti. Ti verrà richiesto di nuovo solo se cancelli i dati/cookie del browser oppure esci esplicitamente dal tuo account Google su quel dispositivo.</div>
+      <div class="istr-text">Dopo il primo accesso con Google il dispositivo resta autorizzato per <strong>30 giorni</strong>: alle aperture successive non ti viene chiesto nulla e le statistiche si caricano da sole. Se la sessione scade o viene revocata compare una barra gialla in basso <strong>“Sessione scaduta — tocca qui per accedere con Google”</strong>: toccala e rifai l'accesso. Se i dati non si caricano, nella home compare un riquadro rosso con il motivo e il pulsante <strong>🔄 Riprova</strong>. L'accesso viene chiesto di nuovo anche se cancelli i dati del browser.</div>
     </div>
 
     <div class="istr-section">
@@ -1251,20 +1252,28 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
         2. Compila i dati: data, qualifica, comune, ubicazione, GPS, specie, scopo, mezzi e capi abbattuti<br>
         3. Per operatori già in archivio digita le prime lettere del cognome — il sistema compila automaticamente i dati<br>
         4. Per un nuovo operatore seleziona "Aggiungi nuovo" — verrà salvato per i prossimi inserimenti<br>
-        5. Tocca <strong>Invia</strong> — dati inviati immediatamente
+        5. Tocca <strong>Invia</strong> e attendi il messaggio verde di conferma: <strong>non toccare Invia due volte</strong>, il sistema evita comunque i doppioni<br>
+        6. Se il server rifiuta la scheda il modulo <strong>non si svuota</strong>: correggi e riprova senza riscrivere tutto
       </div>
     </div>
 
     <div class="istr-section">
       <div class="istr-title">Coordinate GPS</div>
-      <div class="istr-text">Tocca <strong>📍 Rileva</strong> per acquisire automaticamente la posizione nel punto esatto dell'intervento.</div>
+      <div class="istr-text">Tocca <strong>📍 Rileva</strong> per acquisire automaticamente la posizione nel punto esatto dell'intervento. Se le scrivi a mano usa i <strong>gradi decimali con il punto</strong>: latitudine <strong>45.143729</strong>, longitudine <strong>9.886424</strong> (la virgola, le lettere N/E e i gradi° vengono convertiti da soli). L'app salva sempre il formato corretto per Regione Lombardia e ti avvisa se le coordinate sono incomplete o fuori Lombardia.</div>
+    </div>
+
+    <div class="istr-section">
+      <div class="istr-title">Se manca la linea</div>
+      <div class="istr-text">Se il segnale è assente la scheda <strong>non si perde</strong>: viene tenuta sul telefono e inviata da sola appena torna la rete. In home compare il riquadro arancione <strong>📤 N in attesa di invio</strong>: toccandolo l'app riprova subito l'invio e, per le schede bloccate dopo più tentativi, ti mostra i dati e ti permette di eliminarle. Non reinserire una scheda già in attesa, altrimenti la registreresti due volte.</div>
     </div>
 
     <div class="istr-section">
       <div class="istr-title">Report Disponibili</div>
       <div class="istr-text">
-        📅 <strong>Report Mensile</strong> — interventi del mese con riepilogo capi per specie<br>
+        📅 <strong>Report Mensile</strong> — interventi di ogni mese con operatore, comune, specie e capi; il totale del mese corrente è in evidenza<br>
         📆 <strong>Report Annuale</strong> — totali per anno e per specie<br>
+        🖨️ <strong>Stampa report</strong> — dal report scegli un mese (o “Tutti i mesi”) e tocca <strong>Stampa report</strong>: si apre il foglio pronto da stampare o salvare in PDF; nel report annuale stampa i totali per specie<br>
+        🦅 <strong>Statistiche per specie</strong> — dal pulsante in home<br>
         📄 <strong>Stampa Esenzione Tassa</strong> — elenco ufficiale nominativi per esenzione tassa regionale caccia con creazione automatica foglio Excel
       </div>
     </div>
