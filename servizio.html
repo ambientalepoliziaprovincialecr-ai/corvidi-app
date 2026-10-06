@@ -99,7 +99,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 .btn-submit:hover{opacity:0.85;}
 
 /* REPORT */
-.report-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:16px;}
+.report-tabs{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:16px;}
 .tab-btn{padding:9px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.7);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
 .tab-btn.active{background:rgba(245,166,35,0.15);border-color:#ffeb3b;color:#ffeb3b;}
 .report-card{background:var(--grigio);border:1px solid var(--bordo);border-radius:10px;padding:14px;margin-bottom:10px;}
@@ -284,6 +284,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 
 <!-- HOME -->
 <div class="screen active" id="screenHome">
+  <div id="badgeCodaOffline" onclick="gestisciBadgeCodaOffline()" style="display:none;align-items:center;justify-content:center;gap:8px;background:rgba(230,126,34,0.15);border:1px solid rgba(230,126,34,0.5);border-radius:10px;padding:11px;margin-bottom:12px;color:#e67e22;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;cursor:pointer;"></div>
   <div class="install-banner" id="installBanner">
     <span>📲 Installa l'app sulla schermata home</span>
     <button onclick="installApp()">INSTALLA</button>
@@ -433,6 +434,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <button class="tab-btn active" id="tabRiepilogo" onclick="switchReport(&#39;riepilogo&#39;)">📊 Riepilogo</button>
     <button class="tab-btn" id="tabMensile" onclick="switchReport(&#39;mensile&#39;)">📅 Mensile</button>
     <button class="tab-btn" id="tabStorico" onclick="switchReport(&#39;storico&#39;)">📋 Storico</button>
+    <button class="tab-btn" id="tabMancanti" onclick="switchReport(&#39;mancanti&#39;)">🚫 Mancanti</button>
   </div>
   <div id="reportContent"><div class="report-card"><div class="report-card-title">📊 Totali generali</div><div class="report-row"><span>Servizi totali</span><span class="val">29</span></div><div class="report-row"><span>Verbali caccia</span><span class="val">1</span></div><div class="report-row"><span>Verbali pesca</span><span class="val">0</span></div><div class="report-row"><span>Verbali CdS</span><span class="val">0</span></div><div class="report-row" style="font-weight:600;border-top:1px solid rgba(245,166,35,0.3);margin-top:4px;padding-top:8px;"><span>Totale verbali</span><span class="val" style="color:#ffeb3b;">1</span></div><div class="report-row"><span>Sopralluoghi iniziativa</span><span class="val">3</span></div><div class="report-row"><span>Sopralluoghi segnalazione</span><span class="val">2</span></div><div class="report-row"><span>Richieste intervento</span><span class="val">2</span></div><div class="report-row"><span>Animali recuperati</span><span class="val">28</span></div><div class="report-row"><span>Denunce P.G.</span><span class="val">1</span></div></div><div class="report-card"><div class="report-card-title">🔧 Servizi per tipologia</div><div class="bar-container"><div class="bar-row"><div class="bar-label">Ambientale</div><div class="bar-track"><div class="bar-fill" style="width:100%"></div></div><div class="bar-val">20</div></div><div class="bar-row"><div class="bar-label">Centrale Operativa</div><div class="bar-track"><div class="bar-fill" style="width:20%"></div></div><div class="bar-val">4</div></div><div class="bar-row"><div class="bar-label">Stradale</div><div class="bar-track"><div class="bar-fill" style="width:20%"></div></div><div class="bar-val">4</div></div><div class="bar-row"><div class="bar-label">Ufficio</div><div class="bar-track"><div class="bar-fill" style="width:5%"></div></div><div class="bar-val">1</div></div></div></div><div class="report-card"><div class="report-card-title">🕐 Servizi per turno</div><div class="bar-container"><div class="bar-row"><div class="bar-label">Mattino</div><div class="bar-track"><div class="bar-fill" style="width:100%;background:#ffeb3b;"></div></div><div class="bar-val" style="color:#ffeb3b;">18</div></div><div class="bar-row"><div class="bar-label">Pomeriggio</div><div class="bar-track"><div class="bar-fill" style="width:50%;background:#ffeb3b;"></div></div><div class="bar-val" style="color:#ffeb3b;">9</div></div><div class="bar-row"><div class="bar-label">Straordinario</div><div class="bar-track"><div class="bar-fill" style="width:11%;background:#ffeb3b;"></div></div><div class="bar-val" style="color:#ffeb3b;">2</div></div></div></div></div>
 </div>
@@ -941,6 +943,126 @@ function renderAgentiManager(){
 }
 
 // SUBMIT
+// ============================================================
+// INVIO SICURO + CODA OFFLINE — se il salvataggio fallisce per
+// mancanza di linea (non per un errore del server), il report resta
+// sul dispositivo e viene reinviato da solo appena torna la rete.
+// Se il server rifiuta il dato o il login è scaduto, il modulo NON
+// viene svuotato: si può correggere e riprovare senza riscrivere tutto.
+// ============================================================
+function fetchConTimeout(url, opzioni, msTimeout){
+  msTimeout = msTimeout || 25000;
+  var controller = new AbortController();
+  var timer = setTimeout(function(){ controller.abort(); }, msTimeout);
+  var opzioniComplete = Object.assign({}, opzioni || {}, { signal: controller.signal });
+  return fetch(url, opzioniComplete).finally(function(){ clearTimeout(timer); });
+}
+
+var CHIAVE_CODA_OFFLINE = 'servizio_coda_offline_v1';
+function leggiCodaOffline(){
+  try{ var raw=localStorage.getItem(CHIAVE_CODA_OFFLINE); return raw?JSON.parse(raw):[]; }catch(e){ return []; }
+}
+function scriviCodaOffline(coda){
+  try{ localStorage.setItem(CHIAVE_CODA_OFFLINE, JSON.stringify(coda)); }catch(e){}
+}
+function riassuntoElementoCoda(el){
+  var p=(el&&el.payload)||{};
+  return 'Report '+(p.tipo||'?')+' '+(p.turno||'?')+' del '+(p.data||'?')+' ('+(p.agenti||'?')+')';
+}
+function aggiornaBadgeCodaOffline(){
+  var n=leggiCodaOffline().length;
+  var badge=document.getElementById('badgeCodaOffline');
+  if(!badge) return;
+  if(n>0){ badge.style.display='flex'; badge.textContent='📤 '+n+' in attesa di invio'; }
+  else { badge.style.display='none'; }
+}
+function accodaOffline(payload){
+  var coda=leggiCodaOffline();
+  coda.push({ payload:payload, timestamp:new Date().toISOString(), tentativi:0 });
+  scriviCodaOffline(coda);
+  aggiornaBadgeCodaOffline();
+}
+
+// Ritorna true se il modulo può essere svuotato (salvato, o messo in
+// coda sul dispositivo), false se va lasciato com'è per correggere.
+async function inviaReport(payload){
+  if(!payload.clientId) payload.clientId = Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+  loading(true);
+  try{
+    payload.idToken = idTokenCorrente;
+    var res=await fetchConTimeout(URL_GS,{method:'POST',body:JSON.stringify(payload)},25000);
+    var d=await res.json();
+    if(d.status==='ok'){ toast('✅ Report salvato!'); return true; }
+    if(d.message==='Accesso non autorizzato'){
+      mostraLoginGoogle();
+      toast('Accesso scaduto — rieffettua il login e premi di nuovo Salva', true);
+      return false;
+    }
+    toast('Errore: '+(d.message||'?'), true);
+    return false;
+  }catch(e){
+    accodaOffline(payload);
+    toast('💾 Salvato sul dispositivo — verrà inviato appena torna la connessione');
+    return true;
+  }finally{ loading(false); }
+}
+
+var sincronizzazioneInCorso=false;
+async function sincronizzaCodaOffline(){
+  if(sincronizzazioneInCorso) return;
+  if(!idTokenCorrente) return;
+  var coda=leggiCodaOffline();
+  if(coda.length===0) return;
+  sincronizzazioneInCorso=true;
+  try{
+    while(coda.length>0){
+      var el=coda[0];
+      var esito='networkfail', errore='', d=null;
+      try{
+        el.payload.idToken=idTokenCorrente;
+        var res=await fetchConTimeout(URL_GS,{method:'POST',body:JSON.stringify(el.payload)},25000);
+        d=await res.json();
+        esito=d.status;
+      }catch(e){
+        esito='networkfail';
+        errore=(e&&e.name==='AbortError')?'timeout — risposta troppo lenta':((e&&e.message)||'connessione assente');
+      }
+      if(esito==='ok'){ coda.shift(); scriviCodaOffline(coda); aggiornaBadgeCodaOffline(); continue; }
+      if(esito==='error' && d && d.message==='Accesso non autorizzato'){
+        mostraLoginGoogle();
+        toast('🔒 Accedi di nuovo per inviare i dati in sospeso', true);
+        break;
+      }
+      el.tentativi=(el.tentativi||0)+1;
+      el.ultimoErrore=errore||(d&&d.message)||'errore del server';
+      coda[0]=el;
+      scriviCodaOffline(coda);
+      if(el.tentativi>=2) toast('⚠️ Invio bloccato da '+el.tentativi+' tentativi — '+riassuntoElementoCoda(el)+'. Tocca il banner per i dettagli.', true);
+      break;
+    }
+    if(leggiCodaOffline().length===0){ toast('✅ Tutti i report in sospeso sono stati inviati!'); }
+  }finally{ sincronizzazioneInCorso=false; }
+}
+
+async function gestisciBadgeCodaOffline(){
+  await sincronizzaCodaOffline();
+  var bloccati=leggiCodaOffline().filter(function(el){ return (el.tentativi||0)>=2; });
+  for(var i=0;i<bloccati.length;i++){
+    var el=bloccati[i];
+    var rimuovi=confirm('⚠️ Inserimento bloccato ('+el.tentativi+' tentativi)\n'+riassuntoElementoCoda(el)+
+      '\nSalvato il: '+el.timestamp+'\nUltimo errore: '+(el.ultimoErrore||'sconosciuto')+
+      "\n\nOK = ELIMINA dalla coda (se l'hai già registrato a mano o non serve più).\nAnnulla = lascialo in coda e riprova più tardi.");
+    if(rimuovi){
+      var attuale=leggiCodaOffline();
+      var idx=attuale.findIndex(function(x){ return x.timestamp===el.timestamp; });
+      if(idx>=0){ attuale.splice(idx,1); scriviCodaOffline(attuale); aggiornaBadgeCodaOffline(); toast('🗑️ Inserimento rimosso dalla coda'); }
+    }
+  }
+}
+window.addEventListener('online', sincronizzaCodaOffline);
+setInterval(sincronizzaCodaOffline, 30000);
+document.addEventListener('DOMContentLoaded', aggiornaBadgeCodaOffline);
+
 async function submitForm(){
   var data=document.getElementById('fData').value;
   if(!data||!tipoServizio||!turno||agentiSelezionati.length===0){
@@ -968,15 +1090,8 @@ async function submitForm(){
     note: document.getElementById('fNote').value.trim(),
     inseritoDa: operatoreCorrente
   };
-  loading(true);
-  try{
-    payload.idToken = idTokenCorrente;
-    var res=await fetch(URL_GS,{method:'POST',body:JSON.stringify(payload)});
-    var d=await res.json();
-    if(d.status==='ok') toast('✅ Report salvato!');
-    else toast('Errore: '+(d.message||'?'),true);
-  }catch(e){toast('Errore di connessione',true);}
-  finally{loading(false);}
+  var okInvio=await inviaReport(payload);
+  if(!okInvio) return;
   resetForm();
   vai('screenHome');
 }
@@ -1002,7 +1117,7 @@ function resetForm(){
 // STATS
 async function loadStats(){
   try{
-    var res=await fetch(URL_GS+'?action=stats&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res=await fetchConTimeout(URL_GS+'?action=stats&idToken=' + encodeURIComponent(idTokenCorrente), null, 25000);
     var d=await res.json();
     document.getElementById('statMese').textContent=d.mese??0;
     document.getElementById('statAnno').textContent=d.anno??0;
@@ -1016,20 +1131,156 @@ async function loadStats(){
 // REPORT
 function switchReport(tab){
   reportTab=tab;
-  ['tabRiepilogo','tabMensile','tabStorico'].forEach(function(id){document.getElementById(id).classList.remove('active');});
+  ['tabRiepilogo','tabMensile','tabStorico','tabMancanti'].forEach(function(id){document.getElementById(id).classList.remove('active');});
   document.getElementById('tab'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
-  renderReport();
+  if(tab==='mancanti') renderMancanti(); else renderReport();
 }
 
 async function loadReport(){
   document.getElementById('reportContent').innerHTML='<div class="empty-state"><div>📊</div>Caricamento...</div>';
   try{
-    var res=await fetch(URL_GS+'?action=report&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res=await fetchConTimeout(URL_GS+'?action=report&idToken=' + encodeURIComponent(idTokenCorrente), null, 25000);
     var d=await res.json();
     reportData=d.records||[];
-    renderReport();
+    if(reportTab==='mancanti') renderMancanti(); else renderReport();
   }catch(e){
     document.getElementById('reportContent').innerHTML='<div class="empty-state"><div>⚠️</div>Errore caricamento</div>';
+  }
+}
+
+// ===== RELAZIONI MANCANTI =====
+function turnoELavorativo(t){
+  t=String(t||'').trim().toUpperCase();
+  if(!t) return false;
+  if(/^\d{1,2}([,.:]\d{2})?\s*\/\s*\d{1,2}([,.:]\d{2})?$/.test(t)) return true;
+  if(/^DALLE\s+\d/.test(t)) return true;
+  return t==='C/O'||t==='CENTRALE OPERATIVA'||t==='CACCIA'||t==='C'||t==='U';
+}
+function chiaveCognome(s){return String(s||'').trim().toUpperCase().replace(/\s+/g,' ');}
+function dataReportToIso(s){
+  var m=String(s||'').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if(m) return m[3]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[1]).slice(-2);
+  m=String(s||'').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m?m[1]+'-'+m[2]+'-'+m[3]:null;
+}
+// turniAgenti: [{nome, giorni:{'yyyy-mm-dd':{turno}}}]; records: report; da/a: 'yyyy-mm-dd' inclusi
+function calcolaMancanti(turniAgenti, records, da, a){
+  var fatti={};
+  (records||[]).forEach(function(r){
+    var iso=dataReportToIso(r.data); if(!iso) return;
+    var lista=Array.isArray(r.agenti)?r.agenti:String(r.agenti||'').split(',');
+    lista.forEach(function(n){n=chiaveCognome(n); if(n) fatti[iso+'|'+n]=true;});
+  });
+  var perAgente={}, mancanti=[];
+  (turniAgenti||[]).forEach(function(ag){
+    var n=chiaveCognome(ag.nome);
+    var o=perAgente[n]=perAgente[n]||{nome:n,lavorati:0,fatti:0,mancanti:[]};
+    Object.keys(ag.giorni||{}).sort().forEach(function(iso){
+      if(iso<da||iso>a) return;
+      var g=ag.giorni[iso];
+      if(!turnoELavorativo(g&&g.turno)) return;
+      o.lavorati++;
+      if(fatti[iso+'|'+n]) o.fatti++;
+      else {o.mancanti.push({data:iso,turno:String(g.turno)}); mancanti.push({data:iso,nome:n,turno:String(g.turno)});}
+    });
+  });
+  return {perAgente:perAgente, mancanti:mancanti};
+}
+
+var mancantiCache={}, mancantiPeriodo='', mancantiVista='agenti';
+function isoOggiLocale(){var o=new Date();return new Date(o.getTime()-o.getTimezoneOffset()*60000).toISOString().slice(0,10);}
+function isoIeri(){var o=new Date();o.setDate(o.getDate()-1);return new Date(o.getTime()-o.getTimezoneOffset()*60000).toISOString().slice(0,10);}
+function fmtIsoIt(iso){var p=iso.split('-');return p[2]+'/'+p[1]+'/'+p[0];}
+var MESI_IT=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+function primoIsoReport(){
+  var min=null;
+  (reportData||[]).forEach(function(r){var i=dataReportToIso(r.data);if(i&&(!min||i<min))min=i;});
+  return min;
+}
+function mesiDisponibili(){
+  var primo=primoIsoReport(); if(!primo) return [];
+  var y=parseInt(primo.slice(0,4)),m=parseInt(primo.slice(5,7));
+  var fine=isoIeri(),yf=parseInt(fine.slice(0,4)),mf=parseInt(fine.slice(5,7));
+  var out=[];
+  while(y<yf||(y===yf&&m<=mf)){out.push({y:y,m:m});m++;if(m>12){m=1;y++;}}
+  return out;
+}
+async function caricaTurniMese(y,m){
+  var k=y+'-'+m;
+  var oggiMese=isoOggiLocale().slice(0,7)===y+'-'+('0'+m).slice(-2);
+  if(mancantiCache[k]&&!oggiMese) return mancantiCache[k];
+  var res=await fetchConTimeout(URL_TURNI+'?anno='+y+'&mese='+m+'&idToken='+encodeURIComponent(idTokenCorrente),null,30000);
+  var d=await res.json();
+  if(!d||!d.agents) throw new Error((d&&d.message)||'Turni non disponibili');
+  mancantiCache[k]=d.agents;
+  return d.agents;
+}
+function unisciTurni(liste){
+  var map={};
+  liste.forEach(function(agents){
+    agents.forEach(function(a){
+      var n=chiaveCognome(a.nome);
+      map[n]=map[n]||{nome:a.nome,giorni:{}};
+      for(var g in a.giorni) map[n].giorni[g]=a.giorni[g];
+    });
+  });
+  return Object.keys(map).map(function(k){return map[k];});
+}
+async function renderMancanti(){
+  var el=document.getElementById('reportContent');
+  var mesi=mesiDisponibili();
+  if(!mesi.length){el.innerHTML='<div class="empty-state"><div>📂</div>Nessun dato</div>';return;}
+  if(!mancantiPeriodo) mancantiPeriodo='all';
+  var opt='<option value="all"'+(mancantiPeriodo==='all'?' selected':'')+'>Tutto il periodo</option>';
+  mesi.slice().reverse().forEach(function(x){
+    var v=x.y+'-'+x.m;
+    opt+='<option value="'+v+'"'+(mancantiPeriodo===v?' selected':'')+'>'+MESI_IT[x.m-1]+' '+x.y+'</option>';
+  });
+  var head='<div class="report-card"><div class="report-card-title">🚫 Relazioni non inserite</div>'
+    +'<select class="form-input" id="selMancanti" onchange="mancantiPeriodo=this.value;renderMancanti();" style="font-size:16px;margin-bottom:8px;">'+opt+'</select>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">'
+    +'<button class="tab-btn'+(mancantiVista==='agenti'?' active':'')+'" onclick="mancantiVista=\'agenti\';renderMancanti();">Per agente</button>'
+    +'<button class="tab-btn'+(mancantiVista==='giorni'?' active':'')+'" onclick="mancantiVista=\'giorni\';renderMancanti();">Per giorno</button></div>'
+    +'<div style="font-size:11px;opacity:.6;margin-top:8px;line-height:1.4;">Contano solo i giorni con orario di lavoro (esclusi riposi, recuperi, ferie, malattia, art. 32/35). Se in un report sono indicati più agenti, la relazione vale per tutti. Oggi escluso.</div></div>';
+  el.innerHTML=head+'<div class="empty-state"><div>⏳</div>Caricamento turni...</div>';
+  var sel=mesi;
+  if(mancantiPeriodo!=='all'){sel=mesi.filter(function(x){return (x.y+'-'+x.m)===mancantiPeriodo;});}
+  try{
+    var liste=await Promise.all(sel.map(function(x){return caricaTurniMese(x.y,x.m);}));
+    var da,a=isoIeri();
+    if(mancantiPeriodo==='all'){da=primoIsoReport();}
+    else{var x=sel[0];da=x.y+'-'+('0'+x.m).slice(-2)+'-01';var fm=x.y+'-'+('0'+x.m).slice(-2)+'-31';if(fm<a)a=fm;}
+    var r=calcolaMancanti(unisciTurni(liste),reportData,da,a);
+    var righe=Object.keys(r.perAgente).map(function(k){return r.perAgente[k];}).filter(function(o){return o.lavorati>0;});
+    var body='';
+    if(mancantiVista==='agenti'){
+      righe.sort(function(p,q){return q.mancanti.length-p.mancanti.length;});
+      var tl=0,tm=0;righe.forEach(function(o){tl+=o.lavorati;tm+=o.mancanti.length;});
+      body+='<div class="report-card"><div class="report-row"><span>Giorni lavorativi</span><span class="val">'+tl+'</span></div>'
+        +'<div class="report-row"><span>Relazione inserita</span><span class="val" style="color:#2ecc71;">'+(tl-tm)+'</span></div>'
+        +'<div class="report-row"><span>Relazione mancante</span><span class="val" style="color:#e74c3c;">'+tm+'</span></div></div>';
+      righe.forEach(function(o){
+        var pct=o.lavorati?Math.round(o.fatti/o.lavorati*100):0;
+        var det='';
+        o.mancanti.forEach(function(m){det+='<div class="report-row"><span>'+fmtIsoIt(m.data)+'</span><span style="opacity:.7;font-size:12px;">'+m.turno+'</span></div>';});
+        body+='<div class="report-card"><details><summary style="cursor:pointer;list-style:none;">'
+          +'<div class="report-row" style="border:none;"><span style="font-weight:600;">'+o.nome+'</span><span><span class="val" style="color:'+(o.mancanti.length?'#e74c3c':'#2ecc71')+';">'+o.mancanti.length+'</span> <span style="font-size:12px;opacity:.7;">mancanti su '+o.lavorati+' ('+pct+'% ok)</span></span></div>'
+          +'<div class="bar-track" style="height:6px;"><div class="bar-fill" style="width:'+pct+'%;background:#2ecc71;"></div></div></summary>'
+          +'<div style="margin-top:10px;">'+(det||'<div style="opacity:.6;font-size:13px;">Nessuna mancanza ✅</div>')+'</div></details></div>';
+      });
+    } else {
+      var perG={};
+      r.mancanti.forEach(function(m){(perG[m.data]=perG[m.data]||[]).push(m.nome);});
+      var giorni=Object.keys(perG).sort().reverse();
+      if(!giorni.length) body+='<div class="empty-state"><div>✅</div>Nessuna relazione mancante</div>';
+      giorni.forEach(function(g){
+        body+='<div class="report-card"><div class="report-row" style="border:none;"><span style="font-weight:600;">'+fmtIsoIt(g)+'</span><span class="val" style="color:#e74c3c;">'+perG[g].length+'</span></div>'
+          +'<div style="font-size:13px;opacity:.85;">'+perG[g].sort().join(', ')+'</div></div>';
+      });
+    }
+    el.innerHTML=head+body;
+  }catch(e){
+    el.innerHTML=head+'<div class="empty-state"><div>⚠️</div>Turni non caricati: '+(e&&e.message?e.message:'errore')+'<br><button class="tab-btn" style="margin-top:12px;padding:9px 18px;" onclick="renderMancanti()">Riprova</button></div>';
   }
 }
 
@@ -1160,7 +1411,7 @@ async function generaStampa(){
   document.getElementById('anteprima-stampa').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento...</div>';
 
   try {
-    var res=await fetch(URL_GS+'?action=report&idToken=' + encodeURIComponent(idTokenCorrente));
+    var res=await fetchConTimeout(URL_GS+'?action=report&idToken=' + encodeURIComponent(idTokenCorrente), null, 25000);
     var d=await res.json();
     var records=(d.records||[]).filter(function(r){ return r.data===dataIT; });
 
