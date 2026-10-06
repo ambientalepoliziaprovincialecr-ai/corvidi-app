@@ -145,7 +145,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<link rel="manifest" href="blob:https://ambientalepoliziaprovincialecr-ai.github.io/43c597b5-c53a-4d5f-b969-268bf7635dcf"></head>
+</head>
 <body>
 
 <!-- MODAL LOGIN GOOGLE — mostrato finché l'account non è verificato -->
@@ -1457,7 +1457,7 @@ function mostraLoginGoogle() {
 
 function handleGoogleCredentialResponse(response) {
   idTokenCorrente = response.credential;
-  fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(idTokenCorrente))
+  fetchConTimeout(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(idTokenCorrente), {}, 25000)
     .then(function(r){ return r.json(); })
     .then(function(verifica){
       if (verifica.ok) {
@@ -1484,10 +1484,11 @@ function handleGoogleCredentialResponse(response) {
       }
     })
     .catch(function(){
-      document.getElementById('loginGoogleErrore').textContent = '❌ Errore di verifica, riprova.';
+      document.getElementById('loginGoogleErrore').textContent = '❌ Errore di verifica (connessione lenta?), riprova.';
     });
 }
 
+var tentativiGoogle = 0;
 function inizializzaBottoneGoogle(){
   if (window.google && google.accounts && google.accounts.id) {
     google.accounts.id.initialize({
@@ -1495,15 +1496,34 @@ function inizializzaBottoneGoogle(){
       callback: handleGoogleCredentialResponse,
       auto_select: true
     });
+    var cont = document.getElementById('googleSignInButton');
+    if (cont) cont.innerHTML = '';
     google.accounts.id.renderButton(
-      document.getElementById('googleSignInButton'),
+      cont,
       { theme: 'outline', size: 'large', text: 'signin_with', width: 280 }
     );
-    google.accounts.id.prompt();
+    var errEl = document.getElementById('loginGoogleErrore');
+    if (errEl) errEl.textContent = '';
+    mostraLoginGoogle();
+    try { google.accounts.id.prompt(); } catch(e) {}
 
-    setInterval(function(){
-      try { google.accounts.id.prompt(); } catch(e) {}
-    }, 45 * 60 * 1000);
+    if (!window._googleRinnovoAttivo) {
+      window._googleRinnovoAttivo = true;
+      setInterval(function(){
+        try { google.accounts.id.prompt(); } catch(e) {}
+      }, 45 * 60 * 1000);
+    }
+    return;
+  }
+  // La libreria Google non è ancora pronta: riprova per circa 20 secondi
+  tentativiGoogle++;
+  mostraLoginGoogle();
+  var errEl2 = document.getElementById('loginGoogleErrore');
+  if (tentativiGoogle < 40) {
+    if (errEl2) errEl2.textContent = '⏳ Caricamento accesso Google…';
+    setTimeout(inizializzaBottoneGoogle, 500);
+  } else if (errEl2) {
+    errEl2.innerHTML = '❌ Impossibile caricare l\'accesso Google. Controlla la connessione e <a href="#" style="color:#f0d060" onclick="tentativiGoogle=0;inizializzaBottoneGoogle();return false;">riprova</a>.';
   }
 }
 
@@ -1511,7 +1531,7 @@ window.onload = function(){
   var tokenCondiviso = leggiTokenCondiviso();
   if (tokenCondiviso) {
     idTokenCorrente = tokenCondiviso;
-    fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(tokenCondiviso))
+    fetchConTimeout(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(tokenCondiviso), {}, 25000)
       .then(function(r){ return r.json(); })
       .then(function(verifica){
         if (verifica.ok) {
