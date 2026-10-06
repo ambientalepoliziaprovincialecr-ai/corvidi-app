@@ -1271,6 +1271,19 @@ function fetchConTimeout(url, opzioni, msTimeout){
   return fetch(url, opzioniComplete).finally(function(){ clearTimeout(timer); });
 }
 
+// Legge la risposta del server come JSON; se non lo è (pagina di errore di
+// Google, distribuzione non valida, autorizzazione mancante...) mostra COSA
+// è arrivato invece di un generico "errore".
+function leggiJsonDiag(r){
+  return r.text().then(function(t){
+    try { return JSON.parse(t); }
+    catch(e){
+      var anteprima=String(t||'').replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim().slice(0,110);
+      throw new Error('Risposta non valida dal server (codice '+r.status+'): '+(anteprima||'vuota'));
+    }
+  });
+}
+
 function gsGet(action, params) {
   var url = URL_GS + '?action=' + encodeURIComponent(action);
   if (idTokenCorrente) url += '&idToken=' + encodeURIComponent(idTokenCorrente);
@@ -1279,7 +1292,7 @@ function gsGet(action, params) {
       url += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
     });
   }
-  return fetchConTimeout(url, null, 25000).then(function(r){ return r.json(); }).then(function(res){
+  return fetchConTimeout(url, null, 25000).then(leggiJsonDiag).then(function(res){
     if (res && res.status === 'error' && res.message === 'Accesso non autorizzato') {
       mostraLoginGoogle();
       throw res;
@@ -1292,7 +1305,7 @@ function gsPost(payload) {
   payload = payload || {};
   payload.idToken = idTokenCorrente;
   return fetchConTimeout(URL_GS, {method:'POST', body: JSON.stringify(payload)}, 25000)
-    .then(function(r){ return r.json(); })
+    .then(leggiJsonDiag)
     .then(function(res){
       if (res && res.status === 'error' && res.message === 'Accesso non autorizzato') {
         mostraLoginGoogle();
@@ -1480,10 +1493,23 @@ function mostraLoginGoogle() {
   apriLoginCompleto();
 }
 
+var ultimoCredentialGoogle = null;
+function erroreLoginVisibile(testo){
+  var el=document.getElementById('loginGoogleErrore');
+  if(el) el.innerHTML='❌ '+htmlEsc(testo)+'<br><button onclick="riprovaVerificaLogin()" style="margin-top:10px;padding:10px 18px;border-radius:8px;border:none;background:#e8c547;color:#0d1b2a;font-weight:700;font-size:14px;">🔄 Riprova</button>';
+  apriLoginCompleto();
+}
+function riprovaVerificaLogin(){
+  if(ultimoCredentialGoogle){
+    var el=document.getElementById('loginGoogleErrore'); if(el) el.textContent='⏳ Verifica in corso…';
+    handleGoogleCredentialResponse({credential:ultimoCredentialGoogle});
+  } else { location.reload(); }
+}
 function handleGoogleCredentialResponse(response) {
   idTokenCorrente = response.credential;
+  ultimoCredentialGoogle = response.credential;
   fetchConTimeout(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(idTokenCorrente), {}, 25000)
-    .then(function(r){ return r.json(); })
+    .then(leggiJsonDiag)
     .then(function(verifica){
       if (verifica.ok) {
         // Il nome arriva direttamente dall'account Google verificato:
@@ -1505,14 +1531,13 @@ function handleGoogleCredentialResponse(response) {
         loadStats();
         caricaCacciatoriDalFoglio();
       } else {
-        document.getElementById('loginGoogleErrore').textContent = '❌ ' + verifica.message;
-        apriLoginCompleto();
+        erroreLoginVisibile(verifica.message || 'Accesso non riuscito');
         idTokenCorrente = null;
       }
     })
-    .catch(function(){
-      document.getElementById('loginGoogleErrore').textContent = '❌ Errore di verifica (connessione lenta?), riprova.';
-      apriLoginCompleto();
+    .catch(function(e){
+      var motivo=(e&&e.name==='AbortError')?'Il server non ha risposto entro 25 secondi':((e&&e.message)||'Errore di connessione');
+      erroreLoginVisibile(motivo);
     });
 }
 
@@ -1566,7 +1591,7 @@ window.onload = function(){
   if (tokenCondiviso) {
     idTokenCorrente = tokenCondiviso;
     fetchConTimeout(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(tokenCondiviso), {}, 25000)
-      .then(function(r){ return r.json(); })
+      .then(leggiJsonDiag)
       .then(function(verifica){
         if (verifica.ok) {
           nomeOperatoreGoogle = verifica.nome;
@@ -1584,7 +1609,11 @@ window.onload = function(){
           inizializzaBottoneGoogle();
         }
       })
-      .catch(function(){ inizializzaBottoneGoogle(); });
+      .catch(function(e){
+        inizializzaBottoneGoogle();
+        // Il token condiviso c'è ma il server non risponde: mostra perché
+        setTimeout(function(){ erroreLoginVisibile((e&&e.name==='AbortError')?'Il server non ha risposto entro 25 secondi':((e&&e.message)||'Errore di connessione')); }, 600);
+      });
   } else {
     inizializzaBottoneGoogle();
   }
