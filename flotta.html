@@ -810,6 +810,18 @@ window.onload = function(){
     // Un'unica richiesta al posto di 4 separate (login, statistiche,
     // targhe, PIN) — l'apertura dell'app aspetta una sola "partenza"
     // invece di quattro in fila.
+    // subito gli ultimi dati salvati su questo telefono (poi arrivano quelli aggiornati)
+    try {
+      var cIni = JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache') || 'null');
+      if (cIni) {
+        var opS = localStorage.getItem('flotta_operatore_v1');
+        var hU0 = document.getElementById('headerUtente');
+        if (opS && hU0) hU0.textContent = opS;
+        document.getElementById('modalLoginGoogle').style.display = 'none';
+        if (cIni.stats) applicaStats(cIni.stats);
+        if (cIni.targhe) applicaTarghe(cIni.targhe);
+      }
+    } catch(e) {}
     fetchConTimeout(URL_GS + '?action=datiIniziali&idToken=' + encodeURIComponent(tokenCondiviso), null, 10000)
       .then(function(r){ return r.json(); })
       .then(function(d){
@@ -823,9 +835,11 @@ window.onload = function(){
           if (d.stats) applicaStats(d.stats);
           if (d.targhe) applicaTarghe(d.targhe);
           if (d.pinMap) applicaPinMap(d.pinMap);
+          try { localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify({stats:d.stats, targhe:d.targhe})); } catch(e) {}
           sincronizzaCodaOffline();
         } else {
           idTokenCorrente = null;
+          try { mostraLoginGoogle(); } catch(e2) { document.getElementById('modalLoginGoogle').style.display = 'flex'; }
           inizializzaBottoneGoogle();
         }
       })
