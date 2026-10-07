@@ -822,7 +822,7 @@ window.onload = function(){
         if (cIni.targhe) applicaTarghe(cIni.targhe);
       }
     } catch(e) {}
-    fetchConTimeout(URL_GS + '?action=datiIniziali&idToken=' + encodeURIComponent(tokenCondiviso), null, 10000)
+    fetchConTimeout(URL_GS + '?action=datiIniziali&idToken=' + encodeURIComponent(tokenCondiviso), null, 30000)
       .then(function(r){ return r.json(); })
       .then(function(d){
         if (d.ok) {
@@ -833,9 +833,16 @@ window.onload = function(){
           if (hU) hU.textContent = d.nome;
           document.getElementById('modalLoginGoogle').style.display = 'none';
           if (d.stats) applicaStats(d.stats);
+          else {
+            // statistiche non pronte sul server: le chiedo a parte, senza bloccare l'apertura
+            fetchConTimeout(URL_GS + '?action=stats&idToken=' + encodeURIComponent(tokenCondiviso), null, 40000)
+              .then(function(r){ return r.json(); })
+              .then(function(st){ if (st && st.status !== 'error') { applicaStats(st); try { var c0 = JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}'); c0.stats = st; localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify(c0)); } catch(e3) {} } })
+              .catch(function(){});
+          }
           if (d.targhe) applicaTarghe(d.targhe);
           if (d.pinMap) applicaPinMap(d.pinMap);
-          try { localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify({stats:d.stats, targhe:d.targhe})); } catch(e) {}
+          try { localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify({stats:d.stats||(JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}').stats), targhe:d.targhe})); } catch(e) {}
           sincronizzaCodaOffline();
         } else {
           idTokenCorrente = null;
@@ -848,7 +855,8 @@ window.onload = function(){
         // attesa — mostriamo il pulsante di accesso e un avviso,
         // così la persona può almeno riprovare invece di fissare
         // una schermata ferma.
-        toast(e && e.name === 'AbortError' ? '⏱️ Connessione lenta — riprova' : 'Errore di connessione — riprova', true);
+        var haCache = false; try { haCache = !!localStorage.getItem('flotta_dati_iniziali_cache'); } catch(e4) {}
+        if (!haCache) toast(e && e.name === 'AbortError' ? '⏱️ Connessione lenta — riprova' : 'Errore di connessione — riprova', true);
         inizializzaBottoneGoogle();
       });
   } else {
