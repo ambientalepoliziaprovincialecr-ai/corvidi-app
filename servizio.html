@@ -638,6 +638,15 @@ window.onload = function(){
   var tokenCondiviso = leggiTokenCondiviso();
   if (tokenCondiviso) {
     idTokenCorrente = tokenCondiviso;
+    // operatore gia' verificato su questo telefono: nome subito, senza aspettare la rete
+    try {
+      var opSalvato = localStorage.getItem('servizio_operatore_v1');
+      var hU0 = document.getElementById('headerUtente');
+      if (opSalvato && hU0) hU0.textContent = opSalvato;
+    } catch(e) {}
+    document.getElementById('modalLoginGoogle').style.display = 'none';
+    // PARALLELO: dati e verifica login partono insieme (prima erano in fila)
+    caricaDatiDopoLogin();
     fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(tokenCondiviso))
       .then(function(r){ return r.json(); })
       .then(function(verifica){
@@ -647,14 +656,13 @@ window.onload = function(){
           try { localStorage.setItem('servizio_operatore_v1', verifica.nome); } catch(e) {}
           var hU = document.getElementById('headerUtente');
           if (hU) hU.textContent = verifica.nome;
-          document.getElementById('modalLoginGoogle').style.display = 'none';
-          caricaDatiDopoLogin();
         } else {
           idTokenCorrente = null;
+          mostraLoginGoogle();
           inizializzaBottoneGoogle();
         }
       })
-      .catch(function(){ inizializzaBottoneGoogle(); });
+      .catch(function(){ /* rete lenta: i dati salvati restano visibili */ });
   } else {
     inizializzaBottoneGoogle();
   }
@@ -1115,16 +1123,25 @@ function resetForm(){
 }
 
 // STATS
+function mostraStats(d){
+  document.getElementById('statMese').textContent=d.mese??0;
+  document.getElementById('statAnno').textContent=d.anno??0;
+  document.getElementById('statVerbali').textContent=d.verbali??0;
+  document.getElementById('statAnimali').textContent=d.animali??0;
+}
 async function loadStats(){
+  // subito l'ultimo dato salvato, poi aggiorna dal server
+  var mostrato=false;
+  try{ var c=localStorage.getItem('servizio_stats_cache'); if(c){ mostraStats(JSON.parse(c)); mostrato=true; } }catch(e){}
   try{
     var res=await fetchConTimeout(URL_GS+'?action=stats&idToken=' + encodeURIComponent(idTokenCorrente), null, 25000);
     var d=await res.json();
-    document.getElementById('statMese').textContent=d.mese??0;
-    document.getElementById('statAnno').textContent=d.anno??0;
-    document.getElementById('statVerbali').textContent=d.verbali??0;
-    document.getElementById('statAnimali').textContent=d.animali??0;
+    if(d && d.mese!==undefined){
+      mostraStats(d);
+      try{ localStorage.setItem('servizio_stats_cache',JSON.stringify(d)); }catch(e){}
+    } else if(!mostrato){ mostraStats(d||{}); }
   }catch(e){
-    ['statMese','statAnno','statVerbali','statAnimali'].forEach(function(id){document.getElementById(id).textContent='—';});
+    if(!mostrato) ['statMese','statAnno','statVerbali','statAnimali'].forEach(function(id){document.getElementById(id).textContent='—';});
   }
 }
 
@@ -1137,14 +1154,21 @@ function switchReport(tab){
 }
 
 async function loadReport(){
-  document.getElementById('reportContent').innerHTML='<div class="empty-state"><div>📊</div>Caricamento...</div>';
+  var mostrato=false;
+  try{
+    var c=localStorage.getItem('servizio_report_cache');
+    if(c){ reportData=JSON.parse(c); mostrato=true; if(reportTab==='mancanti') renderMancanti(); else renderReport(); }
+  }catch(e){}
+  if(!mostrato) document.getElementById('reportContent').innerHTML='<div class="empty-state"><div>📊</div>Caricamento...</div>';
   try{
     var res=await fetchConTimeout(URL_GS+'?action=report&idToken=' + encodeURIComponent(idTokenCorrente), null, 25000);
     var d=await res.json();
-    reportData=d.records||[];
+    if(!d || !d.records) throw new Error('risposta non valida');
+    reportData=d.records;
+    try{ localStorage.setItem('servizio_report_cache',JSON.stringify(reportData)); }catch(e){}
     if(reportTab==='mancanti') renderMancanti(); else renderReport();
   }catch(e){
-    document.getElementById('reportContent').innerHTML='<div class="empty-state"><div>⚠️</div>Errore caricamento</div>';
+    if(!mostrato) document.getElementById('reportContent').innerHTML='<div class="empty-state"><div>⚠️</div>Errore caricamento</div>';
   }
 }
 
