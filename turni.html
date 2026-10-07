@@ -488,20 +488,30 @@ function getDayDots(dv){
 }
 
 // ── CARICAMENTO DATI ──────────────────────────────────────
-function loadData(anno, mese){
-  anno = anno || viewingYear;
-  mese = mese || viewingMonth;
-  setSync('busy','CARICAMENTO...');
-  var url = API_URL + '?anno=' + anno + '&mese=' + (mese < 10 ? '0'+mese : mese) + '&idToken=' + encodeURIComponent(idTokenCorrente);
-  fetch(url)
-    .then(function(r){return r.json();})
-    .then(function(data){
+function chiaveCacheMese(anno,mese){return 'turni_cache_'+anno+'_'+mese;}
+function salvaCacheMese(anno,mese,data){
+  try{
+    var copia={};
+    for(var k in data){ if(k!=='pinMap') copia[k]=data[k]; } // niente PIN nella cache del telefono
+    localStorage.setItem(chiaveCacheMese(anno,mese),JSON.stringify(copia));
+  }catch(e){}
+}
+function leggiCacheMese(anno,mese){
+  try{ var r=localStorage.getItem(chiaveCacheMese(anno,mese)); return r?JSON.parse(r):null; }catch(e){ return null; }
+}
+
+// Applica i dati del mese (da cache o dal server) alla schermata
+function applicaDati(data, anno, mese, daCache){
+      var giornoAperto = (document.getElementById('view-day').style.display==='block') ? currentDay : null;
       SCHED = data;
-      PIN_MAP = data.pinMap || {};
-      setSync('ok','SINCRONIZZATO');
-      datiCaricatiConSuccesso = true;
-      appareCollegato = true;
-      setConnBanner('ok');
+      if(!daCache){ PIN_MAP = data.pinMap || {}; }
+      if(daCache){ setSync('busy','AGGIORNAMENTO...'); }
+      else {
+        setSync('ok','SINCRONIZZATO');
+        datiCaricatiConSuccesso = true;
+        appareCollegato = true;
+        setConnBanner('ok');
+      }
       if (data.ultimaModifica) controllaBannerModifica(data.ultimaModifica, data.dettaglioModifica);
       aggiornaNavMese();
       // Resetta currentDay se appartiene a un mese diverso
@@ -512,6 +522,15 @@ function loadData(anno, mese){
         }
       }
       buildCal();
+      // Se questo mese era già a schermo (mostrato dalla cache) e arriva il dato
+      // fresco: aggiorna soltanto, senza cambiare la schermata dove si trova l'utente
+      var rifresco = (window._meseMostrato === anno+'-'+mese);
+      window._meseMostrato = anno+'-'+mese;
+      if(rifresco){
+        if(giornoAperto){ currentDay = giornoAperto; showDay(giornoAperto); }
+        if (operatoreCorrente) document.getElementById('operatoreBadge').textContent = '👤 '+operatoreCorrente;
+        return;
+      }
       // Mostra il calendario (non il giorno) dopo caricamento dati
       document.getElementById('view-cal').style.display = 'block';
       document.getElementById('view-day').style.display = 'none';
@@ -531,11 +550,33 @@ function loadData(anno, mese){
       if (operatoreCorrente) {
         document.getElementById('operatoreBadge').textContent = '👤 '+operatoreCorrente;
       }
+}
+
+function loadData(anno, mese){
+  anno = anno || viewingYear;
+  mese = mese || viewingMonth;
+  setSync('busy','CARICAMENTO...');
+  // (1) mostra SUBITO l'ultimo dato salvato su questo telefono (se c'è)
+  var cached = leggiCacheMese(anno,mese);
+  if(cached && cached.agents){ try{ applicaDati(cached,anno,mese,true); }catch(e){ console.error(e); } }
+  // (2) intanto scarica il dato aggiornato dal server
+  var url = API_URL + '?anno=' + anno + '&mese=' + (mese < 10 ? '0'+mese : mese) + '&idToken=' + encodeURIComponent(idTokenCorrente);
+  return fetch(url)
+    .then(function(r){return r.json();})
+    .then(function(data){
+      if(!data || !data.agents){
+        // risposta d'errore (es. accesso non autorizzato / token scaduto)
+        var e=new Error((data&&data.message)||'Risposta non valida'); e.auth=true; throw e;
+      }
+      salvaCacheMese(anno,mese,data);
+      if(anno!==viewingYear||mese!==viewingMonth) return; // nel frattempo ha cambiato mese
+      applicaDati(data,anno,mese,false);
     })
     .catch(function(err){
-      setSync('err','ERRORE CARICAMENTO');
+      if(err && err.auth){ idTokenCorrente=null; try{inizializzaBottoneGoogle();}catch(e2){} mostraLoginGoogle(); setConnBanner('err'); setSync('err','LOGIN SCADUTO'); return; }
+      setSync('err',(cached&&cached.agents)?'OFFLINE — DATI SALVATI':'ERRORE CARICAMENTO');
       appareCollegato = false;
-      setConnBanner('err');
+      if(!(cached&&cached.agents)) setConnBanner('err');
       console.error(err);
     });
 }
@@ -956,6 +997,15 @@ window.onload = function(){
   var tokenCondiviso = leggiTokenCondiviso();
   if (tokenCondiviso) {
     idTokenCorrente = tokenCondiviso;
+    // operatore già verificato su questo telefono: mostra il nome subito
+    try {
+      var opSalvato = localStorage.getItem('turni_operatore');
+      if (opSalvato) document.getElementById('operatoreBadge').textContent = '👤 ' + opSalvato;
+    } catch(e) {}
+    document.getElementById('modalLoginGoogle').style.display = 'none';
+    // PARALLELO: carica i turni e verifica il login nello stesso momento
+    // (prima erano uno dopo l'altro: tempo doppio)
+    loadData(viewingYear, viewingMonth);
     fetch(API_URL + '?action=verificaLogin&idToken=' + encodeURIComponent(tokenCondiviso))
       .then(function(r){ return r.json(); })
       .then(function(verifica){
@@ -964,14 +1014,13 @@ window.onload = function(){
           operatoreCorrente = verifica.nome;
           try { localStorage.setItem('turni_operatore', verifica.nome); } catch(e) {}
           document.getElementById('operatoreBadge').textContent = '👤 ' + verifica.nome;
-          document.getElementById('modalLoginGoogle').style.display = 'none';
-          loadData(viewingYear, viewingMonth);
         } else {
           idTokenCorrente = null;
+          mostraLoginGoogle();
           inizializzaBottoneGoogle();
         }
       })
-      .catch(function(){ inizializzaBottoneGoogle(); });
+      .catch(function(){ /* rete lenta: i turni salvati restano visibili */ });
   } else {
     inizializzaBottoneGoogle();
   }
