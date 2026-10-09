@@ -1088,15 +1088,22 @@ async function submitKm() {
   // se non c'è nessun dato la conferma compare comunque coi dati inseriti.
   var registrazioniTarga = null;
   var nonAggiornato = false;
+  var targaUp = targa.toString().toUpperCase().trim();
+  // Ultimo km della targa su TUTTO lo storico (prima si guardavano solo gli ultimi 2 giorni)
   try {
-    var resUltimo = await fetchConTimeout(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente), null, 12000);
+    var resUltimo = await fetchConTimeout(URL_GS + '?action=ultimoKm&targa=' + encodeURIComponent(targaUp) + '&idToken=' + encodeURIComponent(idTokenCorrente), null, 15000);
     var dUltimo = await resUltimo.json();
-    if (dUltimo && Array.isArray(dUltimo.km)) { window._storicoKmCache = dUltimo.km; }
-    else { nonAggiornato = true; }
+    if (dUltimo && dUltimo.trovato) {
+      registrazioniTarga = [{ kmFinali: dUltimo.kmFinali, conducente: dUltimo.conducente, dataOra: dUltimo.dataOra }];
+    } else if (dUltimo && dUltimo.trovato === false) {
+      registrazioniTarga = []; // risposta valida: nessun km mai registrato per questa targa
+    } else {
+      nonAggiornato = true;
+    }
   } catch(e) { nonAggiornato = true; }
-  if (window._storicoKmCache) {
+  if (registrazioniTarga === null && window._storicoKmCache) {
     registrazioniTarga = window._storicoKmCache.filter(function(r){
-      return (r.targa || '').toString().toUpperCase().trim() === targa.toString().toUpperCase().trim() && parseInt(r.kmFinali) > 0;
+      return (r.targa || '').toString().toUpperCase().trim() === targaUp && parseInt(r.kmFinali) > 0;
     });
   }
   var messaggioCtl = '📋 CONTROLLO PRIMA DEL SALVATAGGIO\n\nTarga: ' + targa + '\n';
@@ -1115,7 +1122,7 @@ async function submitKm() {
       avvisoCtl = '⚠️ Percorso insolitamente lungo (oltre ' + SOGLIA_AVVISO_KM + ' km) — controlla di aver digitato il numero giusto.\n\n';
     }
   } else {
-    messaggioCtl += 'Km che stai per registrare: ' + kmNum + ' km\nConducente: ' + conducente + '\n\n⚠️ Ultimo km di questa targa non disponibile: controlla bene il numero.\n\n';
+    messaggioCtl += 'Km che stai per registrare: ' + kmNum + ' km\nConducente: ' + conducente + '\n\n' + (nonAggiornato ? '⚠️ Non riesco a leggere l\'ultimo km (connessione lenta): controlla bene il numero.' : '⚠️ Nessun km registrato in precedenza per questa targa: controlla bene il numero.') + '\n\n';
   }
   if (nonAggiornato && registrazioniTarga && registrazioniTarga.length > 0) {
     messaggioCtl += '(ultimo km preso dai dati già scaricati: connessione lenta)\n\n';
