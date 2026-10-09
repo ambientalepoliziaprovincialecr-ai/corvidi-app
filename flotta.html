@@ -1214,7 +1214,7 @@ function scriviCodaOffline(coda) {
 
 function accodaOffline(payload) {
   var coda = leggiCodaOffline();
-  coda.push({ payload: payload, timestamp: new Date().toISOString(), tentativi: 0 });
+  coda.push({ payload: payload, timestamp: new Date().toISOString(), tentativi: 0, qid: 'q' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8) });
   scriviCodaOffline(coda);
   aggiornaBadgeCodaOffline();
 }
@@ -1241,6 +1241,24 @@ function aggiornaBadgeCodaOffline() {
 // ordine. Si ferma al primo che fallisce ancora (probabile assenza
 // di linea), lasciando il resto in coda per il prossimo tentativo —
 // così l'ordine cronologico degli inserimenti resta corretto.
+// Modifiche alla coda fatte sempre sulla copia piu' recente salvata sul dispositivo:
+// cosi' un inserimento accodato nel frattempo non viene perso e uno gia' inviato non resta in coda
+function chiaveElementoCoda(el) {
+  return (el && (el.qid || ((el.payload && el.payload.idRichiesta) || '') + '|' + el.timestamp)) || '';
+}
+function rimuoviDaCoda(elemento) {
+  var k = chiaveElementoCoda(elemento);
+  var fresca = leggiCodaOffline().filter(function(x){ return chiaveElementoCoda(x) !== k; });
+  scriviCodaOffline(fresca);
+  return fresca;
+}
+function aggiornaInCoda(elemento) {
+  var k = chiaveElementoCoda(elemento);
+  var fresca = leggiCodaOffline().map(function(x){ return chiaveElementoCoda(x) === k ? elemento : x; });
+  scriviCodaOffline(fresca);
+  return fresca;
+}
+
 var sincronizzazioneInCorso = false;
 async function sincronizzaCodaOffline() {
   if (sincronizzazioneInCorso) return;
@@ -1263,8 +1281,7 @@ async function sincronizzaCodaOffline() {
       }
 
       if (esito === 'ok') {
-        coda.shift();
-        scriviCodaOffline(coda);
+        coda = rimuoviDaCoda(elemento);
         aggiornaBadgeCodaOffline();
         continue;
       }
@@ -1280,8 +1297,7 @@ async function sincronizzaCodaOffline() {
         // si può correggere in automatico in background. Lo togliamo dalla
         // coda per non bloccare per sempre gli invii successivi, e
         // avvisiamo l'operatore di ricontrollare e reinserire a mano.
-        coda.shift();
-        scriviCodaOffline(coda);
+        coda = rimuoviDaCoda(elemento);
         aggiornaBadgeCodaOffline();
         toast('⚠️ Un dato salvato offline (' + riassuntoElementoCoda(elemento) + ') è stato rifiutato dal server — controlla il dato e reinseriscilo a mano.', true);
         continue;
@@ -1290,8 +1306,7 @@ async function sincronizzaCodaOffline() {
         // Salto km sospetto: in background non possiamo chiedere conferma
         // all'operatore. Lo togliamo dalla coda e avvisiamo di reinserirlo
         // a mano, dove potrà confermarlo tramite il popup dedicato.
-        coda.shift();
-        scriviCodaOffline(coda);
+        coda = rimuoviDaCoda(elemento);
         aggiornaBadgeCodaOffline();
         toast('⚠️ Un dato salvato offline (' + riassuntoElementoCoda(elemento) + ') ha un salto km sospetto — reinseriscilo a mano per confermarlo.', true);
         continue;
@@ -1303,8 +1318,7 @@ async function sincronizzaCodaOffline() {
       // così il tocco sul banner può offrire l'ispezione/rimozione manuale.
       elemento.tentativi = (elemento.tentativi || 0) + 1;
       elemento.ultimoErrore = erroreDettaglio;
-      coda[0] = elemento;
-      scriviCodaOffline(coda);
+      coda = aggiornaInCoda(elemento);
       if (elemento.tentativi >= 2) {
         toast('⚠️ Invio bloccato da ' + elemento.tentativi + ' tentativi — ' + riassuntoElementoCoda(elemento) + '. Tocca di nuovo il banner per i dettagli.', true);
       }
@@ -1361,6 +1375,11 @@ window.addEventListener('online', sincronizzaCodaOffline);
 setInterval(sincronizzaCodaOffline, 30000);
 
 async function invia(payload) {
+  // ID univoco della richiesta: resta uguale in ogni reinvio (anche dalla coda offline),
+  // cosi' il server riconosce lo stesso dato e non lo scrive due volte
+  if (!payload.idRichiesta && (payload.tipo === 'KM' || payload.tipo === 'RIF')) {
+    payload.idRichiesta = 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+  }
   loading(true);
   try {
     payload.idToken = idTokenCorrente;
