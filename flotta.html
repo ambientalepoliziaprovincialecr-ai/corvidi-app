@@ -563,6 +563,12 @@ function fetchConTimeout(url, opzioni, msTimeout){
   var opzioniComplete = Object.assign({}, opzioni || {}, { signal: controller.signal });
   return fetch(url, opzioniComplete).finally(function(){ clearTimeout(timer); });
 }
+// Storico completo per le stampe: pesante lato server, quindi timeout lungo e un secondo tentativo
+async function fetchStoricoTutto(){
+  var url = URL_GS + '?action=storico&tutto=1&idToken=' + encodeURIComponent(idTokenCorrente);
+  try { return await fetchConTimeout(url, null, 45000); }
+  catch(e) { return await fetchConTimeout(url, null, 45000); }
+}
 const URL_TURNI = 'https://script.google.com/macros/s/AKfycbyVBPIGRRJigXuoQsHialZiFugbN-jKRM-rB6jUnKHw7w52AE_H9rVr20TYxE-sazMs/exec';
 
 // TARGHE VEICOLI
@@ -1599,9 +1605,9 @@ async function generaStampaKm(){
   if(!mese||!targa){toast('Seleziona mese e targa',true);return;}
   var parts=mese.split('-'); var anno=parseInt(parts[0]),meseNum=parseInt(parts[1]);
   var meseLabel=nomeMese(meseNum-1)+' '+anno;
-  document.getElementById('anteprimaKm').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento...</div>';
+  document.getElementById('anteprimaKm').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento (può servire qualche secondo)...</div>';
   try{
-    var res=await fetchConTimeout(URL_GS + '?action=storico&tutto=1&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
+    var res=await fetchStoricoTutto();
     var d=await res.json();
     var righe=(d.km||[]).filter(function(r){
       if(!r.dataOra)return false;
@@ -1637,9 +1643,9 @@ async function generaStampaKm(){
   if(!mese||!targa){toast('Seleziona mese e targa',true);return;}
   var parts=mese.split('-'); var anno=parseInt(parts[0]),meseNum=parseInt(parts[1]);
   var meseLabel=nomeMese(meseNum-1)+' '+anno;
-  document.getElementById('anteprimaKm').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento...</div>';
+  document.getElementById('anteprimaKm').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento (può servire qualche secondo)...</div>';
   try{
-    var res=await fetchConTimeout(URL_GS + '?action=storico&tutto=1&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
+    var res=await fetchStoricoTutto();
     var d=await res.json();
     var righe=(d.km||[]).filter(function(r){
       if(!r.dataOra)return false;
@@ -1697,9 +1703,9 @@ async function generaStampaRif(){
   if(!mese||!targa){toast('Seleziona mese e targa',true);return;}
   var parts=mese.split('-'); var anno=parseInt(parts[0]),meseNum=parseInt(parts[1]);
   var meseLabel=nomeMese(meseNum-1)+' '+anno;
-  document.getElementById('anteprimaRif').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento...</div>';
+  document.getElementById('anteprimaRif').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento (può servire qualche secondo)...</div>';
   try{
-    var res=await fetchConTimeout(URL_GS + '?action=storico&tutto=1&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
+    var res=await fetchStoricoTutto();
     var d=await res.json();
     var righe=(d.rif||[]).filter(function(r){
       if(!r.dataOra)return false;
@@ -1857,7 +1863,7 @@ async function generaStampaTutto(){
   document.getElementById('anteprimaTutto').innerHTML='<div style="text-align:center;color:#ffeb3b;padding:12px;">⏳ Caricamento dati...</div>';
 
   try{
-    var res=await fetchConTimeout(URL_GS + '?action=storico&tutto=1&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
+    var res=await fetchStoricoTutto();
     var d=await res.json();
     var tuttiKm=d.km||[];
     var tuttiRif=d.rif||[];
