@@ -284,6 +284,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <button onclick="installApp()">INSTALLA</button>
   </div>
   <button onclick="document.getElementById('modalIstruzioni').classList.add('show')" style="width:100%;padding:11px;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.3);border-radius:10px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
+  <div id="boxScadenze" style="display:none;"></div>
   <div class="stats-row">
     <div class="stat-card"><div class="num" id="statKmOggi">—</div><div class="label">KM oggi</div></div>
     <div class="stat-card"><div class="num" id="statKmMese">—</div><div class="label">KM mese</div></div>
@@ -308,6 +309,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   <button class="btn-report" style="color:#ffeb3b;border-color:rgba(39,174,96,0.3);background:rgba(39,174,96,0.08);" onclick="vai('screenConsumi')">⛽ &nbsp;Consumo per veicolo</button>
   <button class="btn-report" style="color:#f0d060;border-color:rgba(240,208,96,0.3);background:rgba(240,208,96,0.06);margin-top:8px;" onclick="vai('screenStampaKm')">🖨️ &nbsp;Stampa Scheda Viaggio Mensile</button>
   <button class="btn-report" style="color:#ffeb3b;border-color:rgba(39,174,96,0.3);background:rgba(39,174,96,0.06);margin-top:8px;" onclick="vai('screenStampaRif')">🖨️ &nbsp;Stampa Foglio Carburante</button>
+  <button class="btn-report" style="color:#ffd166;border-color:rgba(255,209,102,0.4);background:rgba(255,209,102,0.08);margin-top:8px;" onclick="apriOfficina()">🔧 &nbsp;Officina / Manutenzioni</button>
   <button class="btn-report" style="color:#a78bfa;border-color:rgba(167,139,250,0.3);background:rgba(167,139,250,0.06);margin-top:8px;" onclick="apriGestioneTarghe()">🚗 &nbsp;Gestisci veicoli</button>
   <button class="btn-report" style="color:#f87171;border-color:rgba(248,113,113,0.3);background:rgba(248,113,113,0.06);margin-top:8px;" onclick="vai('screenStampaTutto')">🖨️ &nbsp;Stampa Tutto (mese)</button>
   <div style="height:20px;"></div>
@@ -850,6 +852,7 @@ window.onload = function(){
           if (d.pinMap) applicaPinMap(d.pinMap);
           try { localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify({stats:d.stats||(JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}').stats), targhe:d.targhe})); } catch(e) {}
           sincronizzaCodaOffline();
+          loadScadenze();
         } else {
           idTokenCorrente = null;
           try { mostraLoginGoogle(); } catch(e2) { document.getElementById('modalLoginGoogle').style.display = 'flex'; }
@@ -1127,7 +1130,8 @@ async function submitKm() {
   if (nonAggiornato && registrazioniTarga && registrazioniTarga.length > 0) {
     messaggioCtl += '(ultimo km preso dai dati già scaricati: connessione lenta)\n\n';
   }
-  var confermato = confirm(messaggioCtl + avvisoCtl + 'Premi OK per confermare e salvare, Annulla per tornare indietro e correggere.');
+  var avvisoScad = (typeof testoScadenzeTarga === 'function') ? testoScadenzeTarga(targa) : '';
+  var confermato = confirm(messaggioCtl + avvisoCtl + avvisoScad + 'Premi OK per confermare e salvare, Annulla per tornare indietro e correggere.');
   if (!confermato) { btnSalva.disabled = false; btnSalva.textContent = testoOriginale; return; }
 
   await invia({tipo:'KM', dataOra:fmtDT(dataOra), targa, conducente, kmFinali:kmNum, note, inseritoDa:operatoreCorrente});
@@ -1384,9 +1388,10 @@ setInterval(sincronizzaCodaOffline, 30000);
 async function invia(payload) {
   // ID univoco della richiesta: resta uguale in ogni reinvio (anche dalla coda offline),
   // cosi' il server riconosce lo stesso dato e non lo scrive due volte
-  if (!payload.idRichiesta && (payload.tipo === 'KM' || payload.tipo === 'RIF')) {
+  if (!payload.idRichiesta && (payload.tipo === 'KM' || payload.tipo === 'RIF' || payload.tipo === 'SCADENZA_ESEGUITA' || payload.tipo === 'MANUTENZIONE')) {
     payload.idRichiesta = 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
   }
+  var riuscito = false;
   loading(true);
   try {
     payload.idToken = idTokenCorrente;
@@ -1394,6 +1399,7 @@ async function invia(payload) {
     var d = await res.json();
     if (d.status === 'ok') {
       toast('✅ Salvato!');
+      riuscito = true;
     } else if (d.status === 'warning') {
       // Il server ha rilevato un salto km sospetto (oltre soglia) ma
       // non l'ha ancora scritto: chiediamo conferma esplicita e, se
@@ -1403,8 +1409,7 @@ async function invia(payload) {
       var confermaSalto = confirm('⚠️ ' + (d.message || 'Controllare il dato.') + '\n\nPremi OK per salvare comunque, Annulla per non salvare e correggere.');
       if (confermaSalto) {
         payload.confermaSalto = true;
-        await invia(payload);
-        return;
+        return await invia(payload);
       } else {
         toast('Salvataggio annullato — correggi il dato', true);
       }
@@ -1414,6 +1419,7 @@ async function invia(payload) {
       accodaOffline(payload);
       if (typeof mostraLoginGoogle === 'function') mostraLoginGoogle();
       toast('🔒 Accesso scaduto — dato salvato sul dispositivo, rieffettua il login per inviarlo', true);
+      riuscito = true;
     } else {
       // status 'error': rifiuto secco (es. km minore/uguale al
       // precedente) — il dato non è stato scritto, va corretto.
@@ -1425,8 +1431,10 @@ async function invia(payload) {
     // invece di bloccare il lavoro sul campo.
     accodaOffline(payload);
     toast('💾 Salvato sul dispositivo — verrà inviato appena torna la connessione', false);
+    riuscito = true;
   }
   finally { loading(false); }
+  return riuscito;
 }
 
 function applicaStats(d) {
@@ -1434,6 +1442,266 @@ function applicaStats(d) {
   document.getElementById('statKmMese').textContent = d.kmMese ?? '0';
   document.getElementById('statRifMese').textContent = d.rifMese ?? '0';
   document.getElementById('statKmAnno').textContent = d.kmAnno ?? '0';
+}
+
+
+// ============================================================
+//  SCADENZE VEICOLI — tagliando e revisione (foglio "Scadenze Veicoli")
+// ============================================================
+var _scadenzeAvvisi = [];
+function etichettaTarga(t) {
+  try {
+    var o = document.querySelector('#kmTarga option[value="' + t + '"]');
+    return o ? o.textContent : t;
+  } catch(e) { return t; }
+}
+function renderScadenze(avvisi) {
+  _scadenzeAvvisi = avvisi || [];
+  var box = document.getElementById('boxScadenze');
+  if (!box) return;
+  var attivi = _scadenzeAvvisi.filter(function(a){ return !a.prenotato; });
+  var prenotati = _scadenzeAvvisi.filter(function(a){ return a.prenotato; });
+  if (!attivi.length && !prenotati.length) { box.style.display = 'none'; box.innerHTML = ''; return; }
+  var h = '<div style="background:rgba(231,76,60,0.12);border:1px solid rgba(231,76,60,0.5);border-radius:12px;padding:12px;margin-bottom:12px;">';
+  h += '<div style="font-family:Bebas Neue,sans-serif;letter-spacing:2px;font-size:16px;color:#ff8a80;margin-bottom:8px;">🔧 SCADENZE VEICOLI</div>';
+  attivi.forEach(function(a) {
+    var rosso = a.livello === 'scaduto';
+    h += '<div style="padding:8px 0;border-top:1px solid rgba(255,255,255,0.08);">' +
+      '<div style="font-size:13px;color:' + (rosso ? '#ff6b6b' : '#ffd166') + ';font-weight:bold;">' + (rosso ? '🔴 ' : '🟠 ') + etichettaTarga(a.targa) + '</div>' +
+      '<div style="font-size:13px;color:#e2e8f0;margin:2px 0 6px;">' + a.testo + (a.voce === 'DATI' ? '' : ' — <strong>prenota!</strong>') + '</div>' +
+      (a.voce === 'DATI' ? '' : '<button onclick="segnaPrenotato(\'' + a.targa + '\',\'' + a.voce + '\')" style="padding:6px 12px;border-radius:8px;border:1px solid rgba(39,174,96,0.5);background:rgba(39,174,96,0.12);color:#7ee2a8;font-size:12px;cursor:pointer;">✅ Ho prenotato</button> <button onclick="apriOfficina(\'' + a.targa + '\',\'' + a.voce + '\')" style="padding:6px 12px;border-radius:8px;border:1px solid rgba(255,209,102,0.5);background:rgba(255,209,102,0.12);color:#ffd166;font-size:12px;cursor:pointer;">🔧 Già eseguito</button>') +
+      '</div>';
+  });
+  if (prenotati.length) {
+    h += '<div style="font-size:11px;color:#9aa5b1;margin-top:6px;">Già prenotati: ' + prenotati.map(function(a){ return a.targa + ' (' + a.voce.toLowerCase() + ')'; }).join(', ') + '</div>';
+  }
+  h += '</div>';
+  box.innerHTML = h;
+  box.style.display = 'block';
+}
+async function loadScadenze() {
+  try { var c = localStorage.getItem('flotta_scadenze_cache'); if (c) renderScadenze(JSON.parse(c)); } catch(e) {}
+  if (!idTokenCorrente) return;
+  try {
+    var res = await fetchConTimeout(URL_GS + '?action=scadenze&idToken=' + encodeURIComponent(idTokenCorrente), null, 20000);
+    var d = await res.json();
+    if (d && d.ok && Array.isArray(d.avvisi)) {
+      renderScadenze(d.avvisi);
+      try { localStorage.setItem('flotta_scadenze_cache', JSON.stringify(d.avvisi)); } catch(e) {}
+    }
+  } catch(e) {}
+}
+async function segnaPrenotato(targa, voce) {
+  if (!confirm('Confermi di aver prenotato ' + voce.toLowerCase() + ' per ' + targa + '?\nL\'avviso verrà tolto per tutti.')) return;
+  loading(true);
+  try {
+    var res = await fetchConTimeout(URL_GS, { method: 'POST', body: JSON.stringify({ tipo: 'SCADENZA_PRENOTATA', targa: targa, voce: voce, idToken: idTokenCorrente }) }, 20000);
+    var d = await res.json();
+    if (d.status === 'ok') { toast('✅ Segnato come prenotato'); }
+    else { toast('Errore: ' + (d.message || '?'), true); }
+  } catch(e) { toast('Connessione assente, riprova', true); }
+  finally { loading(false); }
+  loadScadenze();
+}
+// Testo di promemoria per una targa, da aggiungere al controllo prima del salvataggio km
+function testoScadenzeTarga(targa) {
+  var t = (targa || '').toString().toUpperCase().trim();
+  var righe = _scadenzeAvvisi.filter(function(a){ return a.targa === t && !a.prenotato; });
+  if (!righe.length) return '';
+  return '🔧 PROMEMORIA SCADENZE:\n' + righe.map(function(a){ return '• ' + a.testo + (a.voce === 'DATI' ? '' : ' — prenota!'); }).join('\n') + '\n\n';
+}
+
+
+// ---- Tagliando / Revisione ESEGUITI: lo registra chi li ha fatti, il foglio Scadenze si aggiorna da solo
+function apriModalEseguito(targa, voce) {
+  var m = document.getElementById('modalEseguito');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'modalEseguito';
+    m.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9998;align-items:center;justify-content:center;padding:16px;';
+    m.innerHTML =
+      '<div style="background:#16213e;border:1px solid rgba(255,209,102,0.4);border-radius:14px;padding:18px;width:100%;max-width:380px;color:#e2e8f0;">' +
+      '<div style="font-family:Bebas Neue,sans-serif;letter-spacing:2px;font-size:20px;color:#ffd166;margin-bottom:12px;">🔧 INTERVENTO ESEGUITO</div>' +
+      '<label style="font-size:12px;color:#9aa5b1;">Veicolo</label>' +
+      '<select id="esegTarga" class="form-select" style="margin-bottom:10px;"></select>' +
+      '<label style="font-size:12px;color:#9aa5b1;">Cosa è stato fatto</label>' +
+      '<select id="esegVoce" class="form-select" onchange="aggiornaCampiEseguito()" style="margin-bottom:10px;"><option value="TAGLIANDO">Tagliando</option><option value="REVISIONE">Revisione</option></select>' +
+      '<label style="font-size:12px;color:#9aa5b1;">Data dell\'intervento</label>' +
+      '<input type="date" id="esegData" class="form-input" style="font-size:16px;margin-bottom:10px;">' +
+      '<div id="esegKmBox"><label style="font-size:12px;color:#9aa5b1;">Km del veicolo al tagliando</label>' +
+      '<input type="number" inputmode="numeric" id="esegKm" class="form-input" style="font-size:16px;margin-bottom:6px;"><div id="esegKmHint" style="font-size:11px;color:#9aa5b1;margin-bottom:10px;"></div></div>' +
+      '<div style="display:flex;gap:8px;margin-top:6px;">' +
+      '<button id="btnEseguito" onclick="salvaEseguito()" style="flex:1;padding:12px;border:none;border-radius:10px;background:linear-gradient(135deg,#2d5a1a,#f5a623);color:#0d1b2e;font-weight:bold;font-size:15px;cursor:pointer;">Salva</button>' +
+      '<button onclick="document.getElementById(\'modalEseguito\').style.display=\'none\'" style="padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:#e2e8f0;cursor:pointer;">Annulla</button>' +
+      '</div></div>';
+    document.body.appendChild(m);
+  }
+  var sel = document.getElementById('esegTarga');
+  var origine = document.getElementById('kmTarga');
+  sel.innerHTML = origine ? origine.innerHTML : '';
+  sel.value = targa || '';
+  document.getElementById('esegVoce').value = voce === 'REVISIONE' ? 'REVISIONE' : 'TAGLIANDO';
+  var oggi = new Date();
+  document.getElementById('esegData').value = new Date(oggi.getTime() - oggi.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  document.getElementById('esegKm').value = '';
+  sel.onchange = suggerisciKmEseguito;
+  aggiornaCampiEseguito();
+  suggerisciKmEseguito();
+  m.style.display = 'flex';
+}
+function aggiornaCampiEseguito() {
+  var t = document.getElementById('esegVoce').value === 'TAGLIANDO';
+  document.getElementById('esegKmBox').style.display = t ? 'block' : 'none';
+}
+async function suggerisciKmEseguito() {
+  var targa = document.getElementById('esegTarga').value;
+  var hint = document.getElementById('esegKmHint');
+  if (!hint) return;
+  hint.textContent = '';
+  if (!targa || !idTokenCorrente) return;
+  try {
+    var res = await fetchConTimeout(URL_GS + '?action=ultimoKm&targa=' + encodeURIComponent(targa) + '&idToken=' + encodeURIComponent(idTokenCorrente), null, 12000);
+    var d = await res.json();
+    if (d && d.trovato && document.getElementById('esegTarga').value === targa) hint.textContent = 'Ultimo km registrato per questo veicolo: ' + d.kmFinali;
+  } catch(e) {}
+}
+async function salvaEseguito() {
+  var btn = document.getElementById('btnEseguito');
+  if (btn.disabled) return;
+  var targa = document.getElementById('esegTarga').value;
+  var voce = document.getElementById('esegVoce').value;
+  var data = document.getElementById('esegData').value;
+  var km = document.getElementById('esegKm').value;
+  if (!targa || !data) { toast('Scegli veicolo e data', true); return; }
+  if (voce === 'TAGLIANDO' && (!km || parseInt(km) <= 0)) { toast('Inserisci i km del veicolo', true); return; }
+  var riepilogo = (voce === 'TAGLIANDO' ? 'TAGLIANDO' : 'REVISIONE') + ' eseguito\nVeicolo: ' + targa + '\nData: ' + data.split('-').reverse().join('/') + (voce === 'TAGLIANDO' ? '\nKm: ' + km : '') + '\n\nConfermi?';
+  if (!confirm(riepilogo)) return;
+  btn.disabled = true; btn.textContent = '⏳ Salvataggio...';
+  await invia({ tipo: 'SCADENZA_ESEGUITA', targa: targa, voce: voce, data: data, km: voce === 'TAGLIANDO' ? parseInt(km) : 0, inseritoDa: operatoreCorrente });
+  btn.disabled = false; btn.textContent = 'Salva';
+  document.getElementById('modalEseguito').style.display = 'none';
+  try { localStorage.removeItem('flotta_scadenze_cache'); } catch(e) {}
+  loadScadenze();
+}
+
+
+// ============================================================
+//  OFFICINA — storico manutenzioni per targa + nuovo intervento
+// ============================================================
+var TIPI_INTERVENTO = [['TAGLIANDO','Tagliando'],['REVISIONE','Revisione'],['GOMME','Gomme / pneumatici'],['FRENI','Freni'],['BATTERIA','Batteria'],['CARROZZERIA','Carrozzeria'],['MECCANICA','Meccanica / riparazione'],['ALTRO','Altro']];
+function escOff_(t) { return String(t == null ? '' : t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function apriOfficina(targa, tipo) {
+  var m = document.getElementById('modalOfficina');
+  if (!m) {
+    m = document.createElement('div');
+    m.id = 'modalOfficina';
+    m.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9998;align-items:flex-start;justify-content:center;padding:12px;overflow-y:auto;';
+    var optTipi = TIPI_INTERVENTO.map(function(t){ return '<option value="' + t[0] + '">' + t[1] + '</option>'; }).join('');
+    m.innerHTML =
+      '<div style="background:#16213e;border:1px solid rgba(255,209,102,0.4);border-radius:14px;padding:16px;width:100%;max-width:420px;color:#e2e8f0;margin:auto 0;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">' +
+      '<div style="font-family:Bebas Neue,sans-serif;letter-spacing:2px;font-size:20px;color:#ffd166;">🔧 OFFICINA</div>' +
+      '<button onclick="document.getElementById(\'modalOfficina\').style.display=\'none\'" style="background:transparent;border:none;color:#e2e8f0;font-size:22px;cursor:pointer;">✕</button></div>' +
+      '<label style="font-size:12px;color:#9aa5b1;">Veicolo</label>' +
+      '<select id="offTarga" class="form-select" onchange="caricaOfficina()" style="margin-bottom:10px;"></select>' +
+      '<div id="offStorico" style="margin-bottom:12px;"></div>' +
+      '<div style="border-top:1px solid rgba(255,255,255,0.12);padding-top:12px;">' +
+      '<div style="font-family:Bebas Neue,sans-serif;letter-spacing:2px;font-size:16px;color:#7ee2a8;margin-bottom:8px;">➕ NUOVO INTERVENTO</div>' +
+      '<label style="font-size:12px;color:#9aa5b1;">Tipo di intervento</label>' +
+      '<select id="offTipo" class="form-select" onchange="aggiornaCampiOfficina()" style="margin-bottom:8px;">' + optTipi + '</select>' +
+      '<label style="font-size:12px;color:#9aa5b1;">Data intervento</label>' +
+      '<input type="date" id="offData" class="form-input" style="font-size:16px;margin-bottom:8px;">' +
+      '<label id="offKmLabel" style="font-size:12px;color:#9aa5b1;">Km del veicolo</label>' +
+      '<input type="number" inputmode="numeric" id="offKm" class="form-input" style="font-size:16px;margin-bottom:2px;">' +
+      '<div id="offKmHint" style="font-size:11px;color:#9aa5b1;margin-bottom:8px;"></div>' +
+      '<label style="font-size:12px;color:#9aa5b1;">Officina (dove è stato fatto)</label>' +
+      '<input type="text" id="offOfficina" list="offOfficineList" class="form-input" style="font-size:16px;margin-bottom:8px;" placeholder="Nome officina" autocomplete="off">' +
+      '<datalist id="offOfficineList"></datalist>' +
+      '<label style="font-size:12px;color:#9aa5b1;">Cosa è stato fatto</label>' +
+      '<textarea id="offDescr" class="form-input" rows="3" style="font-size:15px;margin-bottom:8px;" placeholder="Es. cambio olio e filtri, pastiglie anteriori…"></textarea>' +
+      '<label style="font-size:12px;color:#9aa5b1;">Costo in € (facoltativo)</label>' +
+      '<input type="text" inputmode="decimal" id="offCosto" class="form-input" style="font-size:16px;margin-bottom:12px;" placeholder="Es. 180,50">' +
+      '<button id="btnOfficina" onclick="salvaOfficina()" style="width:100%;padding:13px;border:none;border-radius:10px;background:linear-gradient(135deg,#2d5a1a,#f5a623);color:#0d1b2e;font-weight:bold;font-size:15px;cursor:pointer;">Salva intervento</button>' +
+      '</div></div>';
+    document.body.appendChild(m);
+  }
+  var sel = document.getElementById('offTarga');
+  var origine = document.getElementById('kmTarga');
+  sel.innerHTML = origine ? origine.innerHTML : '';
+  sel.value = targa || '';
+  document.getElementById('offTipo').value = (tipo === 'REVISIONE') ? 'REVISIONE' : 'TAGLIANDO';
+  var oggi = new Date();
+  document.getElementById('offData').value = new Date(oggi.getTime() - oggi.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  ['offKm','offOfficina','offDescr','offCosto'].forEach(function(id){ document.getElementById(id).value = ''; });
+  aggiornaCampiOfficina();
+  m.style.display = 'flex';
+  m.scrollTop = 0;
+  caricaOfficina();
+}
+function aggiornaCampiOfficina() {
+  var t = document.getElementById('offTipo').value === 'TAGLIANDO';
+  document.getElementById('offKmLabel').textContent = t ? 'Km del veicolo (obbligatorio per il tagliando)' : 'Km del veicolo (facoltativo)';
+}
+async function caricaOfficina() {
+  var targa = document.getElementById('offTarga').value;
+  var box = document.getElementById('offStorico');
+  var hint = document.getElementById('offKmHint');
+  hint.textContent = '';
+  if (!targa) { box.innerHTML = '<div style="font-size:12px;color:#9aa5b1;">Scegli un veicolo per vedere le manutenzioni già registrate.</div>'; return; }
+  if (!idTokenCorrente) { box.innerHTML = ''; return; }
+  box.innerHTML = '<div style="font-size:12px;color:#9aa5b1;">⏳ Caricamento manutenzioni…</div>';
+  try {
+    var res = await fetchConTimeout(URL_GS + '?action=manutenzioni&targa=' + encodeURIComponent(targa) + '&idToken=' + encodeURIComponent(idTokenCorrente), null, 20000);
+    var d = await res.json();
+    if (document.getElementById('offTarga').value !== targa) return;
+    if (!d || !d.ok) { box.innerHTML = '<div style="font-size:12px;color:#ff6b6b;">Non riesco a leggere lo storico.</div>'; return; }
+    var dl = document.getElementById('offOfficineList');
+    dl.innerHTML = (d.officine || []).map(function(o){ return '<option value="' + escOff_(o) + '">'; }).join('');
+    if (!d.interventi.length) {
+      box.innerHTML = '<div style="font-size:12px;color:#9aa5b1;">Nessuna manutenzione registrata per ' + escOff_(targa) + '.</div>';
+    } else {
+      box.innerHTML = '<div style="font-size:12px;color:#9aa5b1;margin-bottom:6px;">Manutenzioni registrate (' + d.interventi.length + '):</div>' +
+        d.interventi.map(function(i) {
+          return '<div style="background:rgba(255,255,255,0.05);border-radius:8px;padding:8px 10px;margin-bottom:6px;font-size:12px;">' +
+            '<div style="display:flex;justify-content:space-between;gap:8px;"><strong style="color:#ffd166;">' + escOff_(i.tipo) + '</strong><span style="color:#9aa5b1;">' + escOff_(i.data) + (i.km ? ' · ' + escOff_(i.km) + ' km' : '') + '</span></div>' +
+            '<div style="margin-top:2px;">🏭 ' + escOff_(i.officina) + (i.costo !== '' && i.costo != null ? ' · € ' + escOff_(i.costo) : '') + '</div>' +
+            (i.descrizione ? '<div style="color:#cbd5e1;margin-top:2px;">' + escOff_(i.descrizione) + '</div>' : '') +
+            '</div>';
+        }).join('');
+    }
+  } catch(e) { box.innerHTML = '<div style="font-size:12px;color:#ff6b6b;">Connessione lenta: storico non disponibile (puoi comunque inserire un nuovo intervento).</div>'; }
+  try {
+    var r2 = await fetchConTimeout(URL_GS + '?action=ultimoKm&targa=' + encodeURIComponent(targa) + '&idToken=' + encodeURIComponent(idTokenCorrente), null, 12000);
+    var d2 = await r2.json();
+    if (d2 && d2.trovato && document.getElementById('offTarga').value === targa) hint.textContent = 'Ultimo km registrato per questo veicolo: ' + d2.kmFinali;
+  } catch(e) {}
+}
+async function salvaOfficina() {
+  var btn = document.getElementById('btnOfficina');
+  if (btn.disabled) return;
+  var targa = document.getElementById('offTarga').value;
+  var tipo = document.getElementById('offTipo').value;
+  var data = document.getElementById('offData').value;
+  var km = document.getElementById('offKm').value;
+  var officina = document.getElementById('offOfficina').value.trim();
+  var descr = document.getElementById('offDescr').value.trim();
+  var costo = document.getElementById('offCosto').value.trim();
+  if (!targa) { toast('Scegli il veicolo', true); return; }
+  if (!data) { toast('Scegli la data', true); return; }
+  if (!officina) { toast('Scrivi il nome dell\'officina', true); return; }
+  if (tipo === 'TAGLIANDO' && (!km || parseInt(km) <= 0)) { toast('Per il tagliando inserisci i km', true); return; }
+  if (tipo === 'ALTRO' && !descr) { toast('Descrivi cosa è stato fatto', true); return; }
+  var riepilogo = '🔧 ' + tipo + ' — ' + targa + '\nData: ' + data.split('-').reverse().join('/') + (km ? '\nKm: ' + km : '') + '\nOfficina: ' + officina + (descr ? '\nLavori: ' + descr : '') + (costo ? '\nCosto: € ' + costo : '') +
+    ((tipo === 'TAGLIANDO' || tipo === 'REVISIONE') ? '\n\nAggiorna anche le scadenze del veicolo.' : '') + '\n\nConfermi?';
+  if (!confirm(riepilogo)) return;
+  btn.disabled = true; btn.textContent = '⏳ Salvataggio...';
+  var okMan = await invia({ tipo: 'MANUTENZIONE', targa: targa, tipoInt: tipo, data: data, km: km ? parseInt(km) : 0, officina: officina, descrizione: descr, costo: costo, inseritoDa: operatoreCorrente });
+  btn.disabled = false; btn.textContent = 'Salva intervento';
+  if (okMan) ['offKm','offDescr','offCosto'].forEach(function(id){ document.getElementById(id).value = ''; });
+  try { localStorage.removeItem('flotta_scadenze_cache'); } catch(e) {}
+  caricaOfficina();
+  loadScadenze();
 }
 
 async function loadStats() {
@@ -2010,6 +2278,7 @@ Promise.all([syncPinMapDaSheet(), syncAgentiDaSheet()]).then(function(){
   if (typeof renderRif === 'function') { try{ renderRif(); }catch(e){} }
 });
 loadStats();
+try { loadScadenze(); } catch(e) {}
 // Popola select con default poi aggiorna dal foglio
 ['kmTarga','rifTarga','kmStampaTarga','rifStampaTarga'].forEach(function(id){ renderSelectTarghe(id, false); });
 renderSelectTarghe('filtraTarga', true);
