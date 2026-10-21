@@ -60,6 +60,16 @@ body{margin:0;background:var(--bg);color:#e8e8e8;font-family:Arial,Helvetica,san
 .stat-box .num{font-size:22px;font-weight:bold;color:var(--yellow);}
 .stat-box .lbl{font-size:10px;color:var(--muted);letter-spacing:1px;}
 .stat-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+
+.timbra-ora{text-align:center;font-size:40px;color:var(--yellow);font-family:var(--mono);letter-spacing:2px;margin:4px 0 2px;}
+.timbra-stato{text-align:center;font-size:13px;color:var(--muted);margin-bottom:12px;min-height:34px;line-height:1.4;}
+.btn-timbra{width:100%;padding:22px 14px;border:none;border-radius:14px;font-size:20px;font-weight:bold;letter-spacing:1px;cursor:pointer;color:#06210f;background:linear-gradient(135deg,#22c55e,#4ade80);}
+.btn-timbra.fine{color:#fff;background:linear-gradient(135deg,#b91c1c,#ef4444);}
+.link-mini{background:none;border:none;color:var(--muted);font-size:12px;text-decoration:underline;cursor:pointer;padding:8px;}
+.modal-fine{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:700;display:none;align-items:center;justify-content:center;padding:14px;}
+.modal-fine .box{background:var(--panel);border:1px solid var(--yellow);border-radius:14px;width:100%;max-width:460px;max-height:92vh;overflow:auto;padding:16px;}
+.ov-box{background:rgba(240,208,96,0.10);border:1px solid var(--yellow);border-radius:10px;padding:10px;margin:10px 0;font-size:13px;color:var(--yellow);text-align:center;}
+.ok-box{background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,.35);border-radius:10px;padding:10px;margin:10px 0;font-size:13px;color:var(--success);text-align:center;}
 </style>
 </head>
 <body>
@@ -86,8 +96,17 @@ body{margin:0;background:var(--bg);color:#e8e8e8;font-family:Arial,Helvetica,san
   </div>
 
   <div class="screen active" id="screenHome">
-    <div class="card">
-      <div class="card-title">Registra turno</div>
+    <div class="card" id="cardTimbra">
+      <div class="card-title">Timbratore</div>
+      <div class="timbra-ora" id="timbraOra">--:--</div>
+      <div class="timbra-stato" id="timbraStato"></div>
+      <button type="button" class="btn-timbra" id="btnTimbra" onclick="timbra()">▶ INIZIO TURNO</button>
+      <div style="text-align:center;" id="timbraExtra"></div>
+    </div>
+    <details class="card" id="cardManuale">
+      <summary style="cursor:pointer;font-size:12px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;">Inserimento manuale (riposo, ferie, correzioni)</summary>
+      <div style="height:12px;"></div>
+      <div class="card-title" style="display:none;">Registra turno</div>
       <div class="form-group">
         <label class="form-label">Data</label>
         <input type="date" class="form-input" id="dataInput">
@@ -130,7 +149,7 @@ body{margin:0;background:var(--bg);color:#e8e8e8;font-family:Arial,Helvetica,san
         </div>
       </div>
       <button class="btn-primary" onclick="salvaTurno()">💾 Salva turno</button>
-    </div>
+    </details>
   </div>
 
   <div class="screen" id="screenStorico">
@@ -160,6 +179,44 @@ body{margin:0;background:var(--bg);color:#e8e8e8;font-family:Arial,Helvetica,san
       <p style="font-size:12px;color:#8a8f98;">Crea il modulo mensile pronto da stampare, con lo stesso formato usato per la liquidazione dei compensi.</p>
       <button class="btn-primary" onclick="generaRapporto()">🖨️ Genera rapporto del mese</button>
     </div>
+  </div>
+</div>
+
+
+<div class="modal-fine" id="modalFine">
+  <div class="box">
+    <div style="font-size:16px;font-weight:bold;color:var(--yellow);margin-bottom:4px;" id="mfTitolo">Fine turno</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:10px;" id="mfData"></div>
+    <div class="form-group">
+      <label class="form-label">Turno</label>
+      <div class="turno-grid" id="mfTurni" style="grid-template-columns:1fr 1fr 1fr;">
+        <button type="button" class="btn-turno" data-t="7/13" onclick="mfSelTurno('7/13')">7 — 13</button>
+        <button type="button" class="btn-turno" data-t="13/19" onclick="mfSelTurno('13/19')">13 — 19</button>
+        <button type="button" class="btn-turno" data-t="19/7" onclick="mfSelTurno('19/7')">19 — 7</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <div style="flex:1;"><label class="form-label">Entrata</label><input type="time" class="form-input" id="mfEntrata" oninput="mfAggiorna()"></div>
+      <div style="flex:1;"><label class="form-label">Uscita</label><input type="time" class="form-input" id="mfUscita" oninput="mfAggiorna()"></div>
+    </div>
+    <div id="mfRiepilogo"></div>
+    <div class="form-group" id="mfConfermaWrap" style="display:none;">
+      <label class="form-label" id="mfConfermaTxt">Registrare lo straordinario?</label>
+      <div class="turno-grid">
+        <button type="button" class="btn-turno" id="mfSi" onclick="mfConferma(true)">✅ SÌ, registra</button>
+        <button type="button" class="btn-turno" id="mfNo" onclick="mfConferma(false)">❌ NO, nessuno</button>
+      </div>
+    </div>
+    <div class="form-group" id="mfMotivoWrap" style="display:none;">
+      <label class="form-label">Motivo straordinario (obbligatorio)</label>
+      <input type="text" class="form-input" id="mfMotivo" placeholder="Es. VIABILITÀ, SEGUITO INTERVENTO..." oninput="mfAggiorna()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Note (facoltativo)</label>
+      <input type="text" class="form-input" id="mfNote" placeholder="Es. RECUPERO, R35...">
+    </div>
+    <button class="btn-primary" id="mfSalva" onclick="mfSalva()">💾 Salva turno</button>
+    <button class="btn-secondary" onclick="mfChiudi()">Annulla (il turno resta aperto)</button>
   </div>
 </div>
 
@@ -243,6 +300,7 @@ function formatMinutiDecimale(min) {
 }
 
 async function salvaTurno() {
+  if (!(await assicuraToken())) { toast('Rifai l\'accesso Google e riprova', true); return; }
   var data = document.getElementById('dataInput').value;
   var note = document.getElementById('noteInput').value.trim();
   if (!data || !turnoSelezionato) { toast('Seleziona data e turno', true); return; }
@@ -280,6 +338,7 @@ function nomeMese(n){ return ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Gi
 function nomeGiorno(d){ return ['dom','lun','mar','mer','gio','ven','sab'][d]; }
 
 async function caricaStorico() {
+  if (!(await assicuraToken())) { document.getElementById('listaGiorni').innerHTML = '<div style="text-align:center;color:#f87171;padding:12px;">Rifai l\'accesso Google</div>'; return; }
   document.getElementById('meseLabelStorico').textContent = nomeMese(viewMonthStorico-1) + ' ' + viewYearStorico;
   var lista = document.getElementById('listaGiorni');
   lista.innerHTML = '<div style="text-align:center;color:#8a8f98;padding:12px;">Caricamento...</div>';
@@ -338,6 +397,7 @@ function calcolaOreDiurne(turno) {
 
 async function eliminaGiorno(data) {
   if (!confirm('Eliminare la registrazione del ' + data + '?')) return;
+  if (!(await assicuraToken())) { toast('Rifai l\'accesso Google e riprova', true); return; }
   try {
     var res = await fetch(URL_GS, { method: 'POST', body: JSON.stringify({ idToken: idTokenCorrente, tipo: 'ELIMINA', data: data }) });
     var d = await res.json();
@@ -360,6 +420,7 @@ function cambiaMeseStampa(delta) {
 }
 
 async function generaRapporto() {
+  if (!(await assicuraToken())) { toast('Rifai l\'accesso Google e riprova', true); return; }
   try {
     var res = await fetch(URL_GS + '?action=storico&idToken=' + encodeURIComponent(idTokenCorrente) + '&anno=' + viewYearStampa + '&mese=' + viewMonthStampa);
     var d = await res.json();
@@ -447,39 +508,357 @@ async function generaRapporto() {
   } catch(e) { toast('Errore nel generare il rapporto', true); }
 }
 
+
+// =====================================================================
+//  TIMBRATORE
+//  Inizio/fine turno con un tocco. Il turno si deduce dall'ora di entrata
+//  (si puo' timbrare fino a 20 minuti prima); lo straordinario e' il tempo
+//  oltre la fine del turno (tolleranza di 30 minuti in uscita) e ne viene
+//  chiesto il motivo. La timbratura di entrata resta sul telefono finche'
+//  non chiudi il turno: funziona anche senza rete.
+// =====================================================================
+var TOLLERANZA_MIN = 20;        // entrata: si puo' timbrare fino a 20 minuti prima
+var TOLLERANZA_USCITA_MIN = 30; // uscita: fino a 30 minuti dopo la fine turno niente straordinario; da 31 minuti in poi conta tutto dalla fine turno
+var TURNI_DEF = {
+  '7/13':  { ini: 7*60,  fine: 13*60,       nome: 'Mattino' },
+  '13/19': { ini: 13*60, fine: 19*60,       nome: 'Pomeriggio' },
+  '19/7':  { ini: 19*60, fine: 24*60 + 7*60, nome: 'Notte' }
+};
+var CHIAVE_APERTO = 'rapporto_turno_aperto';
+var turnoModal = null;      // turno scelto nel modal
+var dataModal = null;       // data (ISO) del turno nel modal
+var confermaStraord = null; // null = non risposto, true = registra lo straordinario, false = no
+var firmaStraord = '';       // per azzerare la risposta se cambiano gli orari
+
+function oraAttuale(){ var d = new Date(); return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+function isoDi(d){ return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+function minDa(hhmm){ if (!hhmm) return null; var p = hhmm.split(':'); return parseInt(p[0])*60 + parseInt(p[1]); }
+function hhmmDa(min){ min = ((min % 1440) + 1440) % 1440; return pad(Math.floor(min/60)) + ':' + pad(min%60); }
+function fmtDurata(min){ return Math.floor(min/60) + ':' + pad(min%60); }
+
+function leggiAperto(){
+  try { var r = localStorage.getItem(CHIAVE_APERTO); return r ? JSON.parse(r) : null; } catch(e) { return null; }
+}
+function scriviAperto(o){
+  try { if (o) localStorage.setItem(CHIAVE_APERTO, JSON.stringify(o)); else localStorage.removeItem(CHIAVE_APERTO); } catch(e) {}
+}
+
+// Turno dedotto dall'ora di entrata: dalle 06:40 mattino, dalle 12:40 pomeriggio, dalle 18:40 notte.
+// Prima delle 06:40 non e' chiaro: si chiede.
+function rilevaTurno(minEntrata){
+  var t = TOLLERANZA_MIN;
+  if (minEntrata >= 19*60 - t) return '19/7';
+  if (minEntrata >= 13*60 - t) return '13/19';
+  if (minEntrata >= 7*60 - t) return '7/13';
+  return null;
+}
+
+// Calcola lo straordinario: tempo oltre la fine turno (oltre tolleranza) oppure
+// l'anticipo prima dell'inizio (oltre tolleranza). Un solo intervallo al giorno.
+function calcolaTimbratura(turno, entrata, uscita){
+  var def = TURNI_DEF[turno];
+  var s = minDa(entrata), e = minDa(uscita);
+  if (!def || s === null || e === null) return null;
+  if (turno === '19/7' && s < 12*60) s += 1440;   // entrata dopo mezzanotte (turno notte iniziato prima)
+  if (e <= s) e += 1440;                           // uscita il giorno dopo
+  var res = { ordinario: Math.min(e, def.fine) - Math.max(s, def.ini), post: null, pre: null, straord: null, notaAnticipo: '' };
+  if (e > def.fine + TOLLERANZA_USCITA_MIN) res.post = { dalle: def.fine, alle: e, min: e - def.fine };
+  if (s < def.ini - TOLLERANZA_MIN)  res.pre  = { dalle: s, alle: def.ini, min: def.ini - s };
+  if (res.post) {
+    res.straord = res.post;
+    if (res.pre) res.notaAnticipo = 'ANTICIPO ' + hhmmDa(res.pre.dalle) + '-' + hhmmDa(res.pre.alle);
+  } else if (res.pre) {
+    res.straord = res.pre;
+  }
+  return res;
+}
+
+function aggiornaOraTimbra(){
+  var el = document.getElementById('timbraOra'); if (el) el.textContent = oraAttuale();
+}
+
+function disegnaTimbratore(){
+  var ap = leggiAperto();
+  var btn = document.getElementById('btnTimbra');
+  var st = document.getElementById('timbraStato');
+  var ex = document.getElementById('timbraExtra');
+  if (!btn) return;
+  if (!ap) {
+    btn.className = 'btn-timbra'; btn.textContent = '▶ INIZIO TURNO';
+    st.innerHTML = 'Tocca all\'inizio del turno.<br>Il turno viene riconosciuto dall\'orario.';
+    ex.innerHTML = '';
+  } else {
+    var p = ap.data.split('-');
+    btn.className = 'btn-timbra fine'; btn.textContent = '■ FINE TURNO';
+    var def = TURNI_DEF[ap.turno];
+    st.innerHTML = '<b style="color:#4ade80;">IN SERVIZIO</b> dalle <b style="color:#fff;">' + ap.entrata + '</b> del ' + p[2] + '/' + p[1] +
+      '<br>' + (def ? def.nome + ' ' + ap.turno.replace('/', ' – ') : '');
+    ex.innerHTML = '<button class="link-mini" onclick="annullaTimbratura()">Annulla timbratura</button>';
+  }
+}
+
+function timbra(){
+  var ap = leggiAperto();
+  if (ap) { apriModalFine(ap); return; }
+  var ora = oraAttuale();
+  var turno = rilevaTurno(minDa(ora));
+  var oggi = isoDi(new Date());
+  if (!turno) {
+    // orario insolito: si sceglie il turno nel modal
+    apriModalFine({ data: oggi, entrata: ora, turno: null, nuovo: true });
+    return;
+  }
+  scriviAperto({ data: oggi, entrata: ora, turno: turno });
+  disegnaTimbratore();
+  toast('Inizio turno ' + ora + ' — ' + TURNI_DEF[turno].nome);
+}
+
+function annullaTimbratura(){
+  if (!confirm('Annullare la timbratura di entrata?')) return;
+  scriviAperto(null); disegnaTimbratore();
+}
+
+function apriModalFine(ap){
+  dataModal = ap.data;
+  turnoModal = ap.turno;
+  var p = ap.data.split('-');
+  var nuovo = !!ap.nuovo;
+  document.getElementById('mfTitolo').textContent = nuovo ? 'Che turno è?' : 'Fine turno';
+  document.getElementById('mfData').textContent = 'Turno del ' + p[2] + '/' + p[1] + '/' + p[0];
+  document.getElementById('mfEntrata').value = ap.entrata;
+  // uscita: ora attuale, salvo turno aperto da piu' di 20 ore (si dimenticava di timbrare): in quel caso la si scrive a mano
+  var uscita = oraAttuale();
+  if (!nuovo) {
+    var inizio = new Date(p[0], p[1]-1, p[2], parseInt(ap.entrata.split(':')[0]), parseInt(ap.entrata.split(':')[1]));
+    if (Date.now() - inizio.getTime() > 20*3600*1000) uscita = '';
+  }
+  document.getElementById('mfUscita').value = nuovo ? '' : uscita;
+  document.getElementById('mfMotivo').value = '';
+  document.getElementById('mfNote').value = '';
+  confermaStraord = null; firmaStraord = '';
+  document.getElementById('modalFine').style.display = 'flex';
+  mfSelTurno(turnoModal);
+}
+function mfChiudi(){
+  document.getElementById('modalFine').style.display = 'none';
+  // se era una nuova entrata senza turno scelto, non si apre nessun turno
+}
+function mfSelTurno(t){
+  turnoModal = t;
+  document.querySelectorAll('#mfTurni .btn-turno').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-t') === t); });
+  mfAggiorna();
+}
+function mfConferma(si){
+  confermaStraord = si;
+  mfAggiorna();
+  if (si) { try { document.getElementById('mfMotivo').focus(); } catch(e) {} }
+}
+function mfAggiorna(){
+  var box = document.getElementById('mfRiepilogo');
+  var wrap = document.getElementById('mfMotivoWrap');
+  var cw = document.getElementById('mfConfermaWrap');
+  var entrata = document.getElementById('mfEntrata').value;
+  var uscita = document.getElementById('mfUscita').value;
+  var salva = document.getElementById('mfSalva');
+  cw.style.display = 'none'; wrap.style.display = 'none';
+  if (!turnoModal) { box.innerHTML = '<div class="ov-box">Scegli il turno</div>'; return; }
+  if (!uscita) {
+    // solo registrazione dell'entrata (turno scelto a mano)
+    box.innerHTML = '<div class="ok-box">Inserisci l\'ora di uscita per chiudere il turno</div>';
+    salva.textContent = (leggiAperto() ? '💾 Salva turno' : '▶ Inizia turno');
+    return;
+  }
+  salva.textContent = '💾 Salva turno';
+  var c = calcolaTimbratura(turnoModal, entrata, uscita);
+  if (!c) { box.innerHTML = ''; return; }
+  var def = TURNI_DEF[turnoModal];
+  var html = '<div class="ok-box">' + def.nome + ' ' + turnoModal.replace('/', ' – ') + ' — ordinarie ' + fmtDurata(Math.max(c.ordinario, 0)) + ' ore</div>';
+  if (c.straord) {
+    var firma = turnoModal + '|' + c.straord.dalle + '|' + c.straord.alle;
+    if (firma !== firmaStraord) { firmaStraord = firma; confermaStraord = null; }   // orari cambiati: si richiede conferma
+    var testo = hhmmDa(c.straord.dalle) + ' – ' + hhmmDa(c.straord.alle) + ' (' + fmtDurata(c.straord.min) + ')';
+    html += '<div class="ov-box">⏱️ Risulta uno STRAORDINARIO ' + testo +
+      (c.notaAnticipo ? '<br><span style="font-size:11px;">+ ' + c.notaAnticipo.toLowerCase() + ' (annotato nel motivo)</span>' : '') + '</div>';
+    cw.style.display = 'block';
+    document.getElementById('mfConfermaTxt').textContent = 'Confermi lo straordinario di ' + fmtDurata(c.straord.min) + '?';
+    document.getElementById('mfSi').classList.toggle('active', confermaStraord === true);
+    document.getElementById('mfNo').classList.toggle('active', confermaStraord === false);
+    if (confermaStraord === true) wrap.style.display = 'block';
+    if (confermaStraord === false) html += '<div class="ok-box">Turno registrato senza straordinario</div>';
+  } else {
+    firmaStraord = ''; confermaStraord = null;
+  }
+  box.innerHTML = html;
+}
+
+async function mfSalva(){
+  var entrata = document.getElementById('mfEntrata').value;
+  var uscita = document.getElementById('mfUscita').value;
+  if (!turnoModal) { toast('Scegli il turno', true); return; }
+  if (!entrata) { toast('Inserisci l\'ora di entrata', true); return; }
+  if (!uscita) {
+    // nessuna uscita: si apre soltanto il turno con il turno scelto
+    scriviAperto({ data: dataModal, entrata: entrata, turno: turnoModal });
+    mfChiudi(); disegnaTimbratore(); toast('Inizio turno ' + entrata); return;
+  }
+  var c = calcolaTimbratura(turnoModal, entrata, uscita);
+  var motivo = document.getElementById('mfMotivo').value.trim().toUpperCase();
+  var conStraord = !!(c && c.straord && confermaStraord === true);
+  if (c && c.straord && confermaStraord === null) { toast('Conferma se registrare lo straordinario: SÌ o NO', true); return; }
+  if (conStraord && !motivo) { toast('Scrivi il motivo dello straordinario', true); document.getElementById('mfMotivo').focus(); return; }
+  var note = document.getElementById('mfNote').value.trim();
+  var payload = { tipo: 'REGISTRA', data: dataModal, turno: turnoModal, note: note, straordDalle: '', straordAlle: '', straordMotivo: '' };
+  if (conStraord) {
+    payload.straordDalle = hhmmDa(c.straord.dalle);
+    payload.straordAlle = hhmmDa(c.straord.alle);
+    payload.straordMotivo = motivo + (c.notaAnticipo ? ' (' + c.notaAnticipo + ')' : '');
+  }
+  var btn = document.getElementById('mfSalva');
+  btn.disabled = true; btn.textContent = 'Salvataggio...';
+  try {
+    var ok = await assicuraToken();
+    if (!ok) { toast('Devi rifare l\'accesso Google: la timbratura è al sicuro, poi riprova', true); return; }
+    payload.idToken = idTokenCorrente;
+    var res = await fetch(URL_GS, { method: 'POST', body: JSON.stringify(payload) });
+    var d = await res.json();
+    if (d.success) {
+      scriviAperto(null);
+      mfChiudi(); disegnaTimbratore();
+      toast('Turno salvato' + (conStraord ? ' con straordinario' : ''));
+    } else {
+      toast(d.error || 'Errore nel salvataggio', true);
+    }
+  } catch(e) {
+    toast('Errore di connessione: la timbratura è al sicuro, riprova', true);
+  } finally {
+    btn.disabled = false; mfAggiorna();
+  }
+}
+
+// =====================================================================
+//  ACCESSO GOOGLE (stesso schema del portale: token condiviso nella suite,
+//  dispositivo di fiducia 24 ore, rinnovo silenzioso del token)
+// =====================================================================
+var tokenOttenutoIl = 0;
+var attesaToken = null;
+
+function salvaTokenCondiviso(token){
+  try {
+    localStorage.setItem('pp_shared_idtoken', token);
+    localStorage.setItem('pp_shared_idtoken_scadenza', String(Date.now() + 55*60*1000));
+  } catch(e) {}
+}
+function leggiTokenCondiviso(){
+  try {
+    var t = localStorage.getItem('pp_shared_idtoken');
+    var sc = parseInt(localStorage.getItem('pp_shared_idtoken_scadenza') || '0');
+    if (t && Date.now() < sc) return t;
+  } catch(e) {}
+  return null;
+}
+function salvaFiducia(){ try { localStorage.setItem('pp_dispositivo_scadenza', String(Date.now() + 24*60*60*1000)); } catch(e) {} }
+function dispositivoDiFiducia(){
+  try { return Date.now() < parseInt(localStorage.getItem('pp_dispositivo_scadenza') || '0'); } catch(e) { return false; }
+}
+
+function mostraApp(){
+  document.getElementById('loginOverlay').style.display = 'none';
+  document.getElementById('appWrap').style.display = 'block';
+  if (viewYearStorico === undefined) {
+    var oggi = new Date();
+    document.getElementById('dataInput').value = isoDi(oggi);
+    viewYearStorico = oggi.getFullYear(); viewMonthStorico = oggi.getMonth()+1;
+    viewYearStampa = oggi.getFullYear(); viewMonthStampa = oggi.getMonth()+1;
+    document.getElementById('meseLabelStampa').textContent = nomeMese(viewMonthStampa-1) + ' ' + viewYearStampa;
+  }
+  disegnaTimbratore();
+}
+
 function handleGoogleCredentialResponse(response) {
   idTokenCorrente = response.credential;
+  tokenOttenutoIl = Date.now();
   fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(idTokenCorrente))
     .then(function(r){ return r.json(); })
     .then(function(v){
       if (v.ok) {
         operatoreCorrente = v.nome;
-        document.getElementById('loginOverlay').style.display = 'none';
-        document.getElementById('appWrap').style.display = 'block';
-        var oggi = new Date();
-        document.getElementById('dataInput').value = oggi.getFullYear() + '-' + pad(oggi.getMonth()+1) + '-' + pad(oggi.getDate());
-        viewYearStorico = oggi.getFullYear(); viewMonthStorico = oggi.getMonth()+1;
-        viewYearStampa = oggi.getFullYear(); viewMonthStampa = oggi.getMonth()+1;
-        document.getElementById('meseLabelStampa').textContent = nomeMese(viewMonthStampa-1) + ' ' + viewYearStampa;
+        try { localStorage.setItem('rapporto_operatore', v.nome); } catch(e) {}
+        salvaTokenCondiviso(idTokenCorrente); salvaFiducia();
+        mostraApp();
+        if (attesaToken) { attesaToken(true); attesaToken = null; }
       } else {
+        idTokenCorrente = null;
         document.getElementById('loginErrore').textContent = '❌ ' + v.message;
+        document.getElementById('loginOverlay').style.display = 'flex';
+        if (attesaToken) { attesaToken(false); attesaToken = null; }
       }
     })
-    .catch(function(){ document.getElementById('loginErrore').textContent = '❌ Errore di verifica, riprova.'; });
+    .catch(function(){
+      document.getElementById('loginErrore').textContent = '❌ Errore di verifica, riprova.';
+      if (attesaToken) { attesaToken(false); attesaToken = null; }
+    });
+}
+
+// Prima di scrivere sul foglio: il token Google dura circa un'ora, il turno anche 8-12.
+// Se e' vecchio lo si rinnova in silenzio; se non e' possibile compare l'accesso (la timbratura resta salvata).
+function assicuraToken(){
+  return new Promise(function(resolve){
+    var fresco = idTokenCorrente && (Date.now() - tokenOttenutoIl) < 50*60*1000;
+    if (fresco) { resolve(true); return; }
+    var cond = leggiTokenCondiviso();
+    if (cond && cond !== idTokenCorrente) { idTokenCorrente = cond; tokenOttenutoIl = Date.now(); resolve(true); return; }
+    var finito = false;
+    attesaToken = function(esito){ if (!finito) { finito = true; resolve(esito); } };
+    try { google.accounts.id.prompt(); } catch(e) {}
+    setTimeout(function(){
+      if (!finito) {
+        finito = true; attesaToken = null;
+        document.getElementById('loginOverlay').style.display = 'flex';
+        resolve(false);
+      }
+    }, 9000);
+  });
+}
+
+function inizializzaGoogle(){
+  if (!(window.google && google.accounts && google.accounts.id)) { setTimeout(inizializzaGoogle, 400); return; }
+  google.accounts.id.initialize({
+    client_id: '226909521211-tk40j8dfcr6dr428uqb4sd4s2lt5qbi6.apps.googleusercontent.com',
+    callback: handleGoogleCredentialResponse,
+    auto_select: true
+  });
+  google.accounts.id.renderButton(document.getElementById('googleSignInButton'), { theme: 'outline', size: 'large', text: 'signin_with', width: 280 });
+  google.accounts.id.prompt();
+  setInterval(function(){ try { google.accounts.id.prompt(); } catch(e) {} }, 45*60*1000);
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'visible') { try { google.accounts.id.prompt(); } catch(e) {} aggiornaOraTimbra(); disegnaTimbratore(); }
+  });
 }
 
 window.onload = function() {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw-rapporto.js').catch(function(){});
   }
-  if (window.google && google.accounts && google.accounts.id) {
-    google.accounts.id.initialize({
-      client_id: '226909521211-tk40j8dfcr6dr428uqb4sd4s2lt5qbi6.apps.googleusercontent.com',
-      callback: handleGoogleCredentialResponse
-    });
-    google.accounts.id.renderButton(document.getElementById('googleSignInButton'), { theme: 'outline', size: 'large', text: 'signin_with', width: 280 });
-    google.accounts.id.prompt();
+  aggiornaOraTimbra();
+  setInterval(aggiornaOraTimbra, 15000);
+  var tok = leggiTokenCondiviso();
+  var fiducia = dispositivoDiFiducia();
+  try { operatoreCorrente = localStorage.getItem('rapporto_operatore') || null; } catch(e) {}
+  if (fiducia && operatoreCorrente) {
+    // dispositivo gia' autorizzato nelle ultime 24 ore: il timbratore e' subito disponibile
+    // (l'entrata/uscita si registra sul telefono, il rinnovo del token avviene dietro le quinte)
+    if (tok) { idTokenCorrente = tok; tokenOttenutoIl = Date.now(); }
+    mostraApp();
+  } else if (tok) {
+    idTokenCorrente = tok; tokenOttenutoIl = Date.now();
+    fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(tok))
+      .then(function(r){ return r.json(); })
+      .then(function(v){
+        if (v.ok) { operatoreCorrente = v.nome; try { localStorage.setItem('rapporto_operatore', v.nome); } catch(e) {} salvaFiducia(); mostraApp(); }
+        else { idTokenCorrente = null; }
+      }).catch(function(){});
   }
+  inizializzaGoogle();
 };
 </script>
 </body>
