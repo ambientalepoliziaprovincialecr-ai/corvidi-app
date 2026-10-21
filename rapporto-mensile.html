@@ -93,6 +93,7 @@ body{margin:0;background:var(--bg);color:#e8e8e8;font-family:Arial,Helvetica,san
     <button id="navHome" class="active" onclick="vai('home')">Oggi</button>
     <button id="navStorico" onclick="vai('storico')">Storico mese</button>
     <button id="navStampa" onclick="vai('stampa')">Rapporto</button>
+    <button id="navManuale" onclick="vai('manuale')">Manuale</button>
   </div>
 
   <div class="screen active" id="screenHome">
@@ -103,10 +104,11 @@ body{margin:0;background:var(--bg);color:#e8e8e8;font-family:Arial,Helvetica,san
       <button type="button" class="btn-timbra" id="btnTimbra" onclick="timbra()">▶ INIZIO TURNO</button>
       <div style="text-align:center;" id="timbraExtra"></div>
     </div>
-    <details class="card" id="cardManuale">
-      <summary style="cursor:pointer;font-size:12px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;">Inserimento manuale (riposo, ferie, correzioni)</summary>
-      <div style="height:12px;"></div>
-      <div class="card-title" style="display:none;">Registra turno</div>
+  </div>
+
+  <div class="screen" id="screenManuale">
+    <div class="card" id="cardManuale">
+      <div class="card-title">Inserimento manuale (riposo, ferie, correzioni)</div>
       <div class="form-group">
         <label class="form-label">Data</label>
         <input type="date" class="form-input" id="dataInput">
@@ -149,7 +151,7 @@ body{margin:0;background:var(--bg);color:#e8e8e8;font-family:Arial,Helvetica,san
         </div>
       </div>
       <button class="btn-primary" onclick="salvaTurno()">💾 Salva turno</button>
-    </details>
+    </div>
   </div>
 
   <div class="screen" id="screenStorico">
@@ -761,6 +763,30 @@ function dispositivoDiFiducia(){
   try { return Date.now() < parseInt(localStorage.getItem('pp_dispositivo_scadenza') || '0'); } catch(e) { return false; }
 }
 
+// Nell'app installata ("standalone") su Android Google blocca il popup di accesso (errore 400 invalid_request):
+// li' si accede dal browser e l'app riprende il token condiviso quando si torna.
+function inStandalone(){
+  try { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; } catch(e) { return false; }
+}
+function urlApriInChrome(){
+  return 'intent://' + location.host + location.pathname + '#Intent;scheme=https;package=com.android.chrome;end';
+}
+function riprendiTokenCondiviso(){
+  var t = leggiTokenCondiviso();
+  if (!t || t === idTokenCorrente) return;
+  var scad = parseInt(localStorage.getItem('pp_shared_idtoken_scadenza') || '0');
+  fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(t))
+    .then(function(r){ return r.json(); })
+    .then(function(v){
+      if (v.ok) {
+        idTokenCorrente = t; tokenOttenutoIl = scad - 55*60*1000;
+        operatoreCorrente = v.nome; try { localStorage.setItem('rapporto_operatore', v.nome); } catch(e) {}
+        salvaFiducia(); mostraApp();
+        if (attesaToken) { attesaToken(true); attesaToken = null; }
+      }
+    }).catch(function(){});
+}
+
 function mostraApp(){
   document.getElementById('loginOverlay').style.display = 'none';
   document.getElementById('appWrap').style.display = 'block';
@@ -809,7 +835,8 @@ function assicuraToken(){
     if (cond && cond !== idTokenCorrente) { idTokenCorrente = cond; tokenOttenutoIl = Date.now(); resolve(true); return; }
     var finito = false;
     attesaToken = function(esito){ if (!finito) { finito = true; resolve(esito); } };
-    try { google.accounts.id.prompt(); } catch(e) {}
+    try { if (!inStandalone()) google.accounts.id.prompt(); } catch(e) {}
+    riprendiTokenCondiviso();
     setTimeout(function(){
       if (!finito) {
         finito = true; attesaToken = null;
@@ -827,11 +854,17 @@ function inizializzaGoogle(){
     callback: handleGoogleCredentialResponse,
     auto_select: true
   });
-  google.accounts.id.renderButton(document.getElementById('googleSignInButton'), { theme: 'outline', size: 'large', text: 'signin_with', width: 280 });
-  google.accounts.id.prompt();
-  setInterval(function(){ try { google.accounts.id.prompt(); } catch(e) {} }, 45*60*1000);
+  if (inStandalone()) {
+    document.getElementById('googleSignInButton').innerHTML =
+      '<div style="text-align:center;max-width:300px;font-size:13px;color:#ccc;line-height:1.5;">Da qui Google non permette l\'accesso.<br>Tocca il bottone: si apre Chrome, accedi, poi torna a questa app.<br><br>' +
+      '<a href="' + urlApriInChrome() + '" style="display:block;padding:14px;border-radius:10px;background:#f0d060;color:#0f1115;font-weight:bold;text-decoration:none;font-size:15px;">🌐 Apri in Chrome per accedere</a></div>';
+  } else {
+    google.accounts.id.renderButton(document.getElementById('googleSignInButton'), { theme: 'outline', size: 'large', text: 'signin_with', width: 280 });
+  }
+  if (!inStandalone()) google.accounts.id.prompt();
+  setInterval(function(){ riprendiTokenCondiviso(); if (!inStandalone()) { try { google.accounts.id.prompt(); } catch(e) {} } }, 45*60*1000);
   document.addEventListener('visibilitychange', function(){
-    if (document.visibilityState === 'visible') { try { google.accounts.id.prompt(); } catch(e) {} aggiornaOraTimbra(); disegnaTimbratore(); }
+    if (document.visibilityState === 'visible') { riprendiTokenCondiviso(); if (!inStandalone()) { try { google.accounts.id.prompt(); } catch(e) {} } aggiornaOraTimbra(); disegnaTimbratore(); }
   });
 }
 
