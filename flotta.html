@@ -260,7 +260,11 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     </div>
     <div id="targheManagerSection" style="display:none;">
       <div class="modal-title">🚗 Veicoli</div>
-      <div id="targheManagerList" style="max-height:200px;overflow-y:auto;margin-bottom:12px;"></div>
+      <div id="targheManagerList" style="max-height:260px;overflow-y:auto;margin-bottom:12px;"></div>
+      <div style="display:flex;gap:8px;margin-bottom:6px;">
+        <input type="text" class="form-input" id="nuovaMarca" placeholder="Marca" style="font-size:13px;padding:8px 10px;text-transform:uppercase;">
+        <input type="text" class="form-input" id="nuovoModello" placeholder="Modello" style="font-size:13px;padding:8px 10px;text-transform:uppercase;">
+      </div>
       <div style="display:flex;gap:8px;margin-bottom:6px;">
         <input type="text" class="form-input" id="nuovaTarga" placeholder="Es. YA123AB..." style="font-size:13px;padding:8px 10px;text-transform:uppercase;">
         <button class="modal-btn confirm" onclick="aggiungiTarga()" style="white-space:nowrap;padding:8px 12px;">+ Aggiungi</button>
@@ -580,7 +584,11 @@ var TARGHE_CORRENTI = [];
 // Usa sempre TARGHE_DEFAULT come base, merge con eventuali aggiunte salvate
 // Targhe caricate dal foglio Google
 var targhe = TARGHE_DEFAULT.slice();
-function applicaTarghe(listaTarghe){
+var VEICOLI = {'YA365AM':{marca:'DACIA',modello:'DUSTER'},'YA772AL':{marca:'SUBARU',modello:'FORESTER'},'YA773AL':{marca:'SUBARU',modello:'FORESTER'},'YA743AB':{marca:'FIAT',modello:'PANDA'},'YA295AP':{marca:'FIAT',modello:'PANDA'},'YA754AP':{marca:'MITSUBISHI',modello:'L200'},'YA438AR':{marca:'SUZUKI',modello:'JIMNY'},'YA632AS':{marca:'SUBARU',modello:'XV'},'YA358AV':{marca:'SUBARU',modello:'XV'},'YA250AT':{marca:'FIAT',modello:'PANDA'},'YA256AX':{marca:'SUZUKI',modello:'SCROSS'},'YA564AX':{marca:'DACIA',modello:'DUSTER'},'GB443ZX':{marca:'FIAT',modello:"DOBLO'"},'YA148AY':{marca:'TOYOTA',modello:'RAV4'}};
+function descVeicolo(t){ var v=VEICOLI[t]; return v ? ((v.marca||'')+' '+(v.modello||'')).trim() : ''; }
+function etichettaVeicolo(t,i){ var d=descVeicolo(t); return t + (d ? ' · '+d : '') + ' (AUTO '+(i+1)+')'; }
+function applicaTarghe(listaTarghe, veicoli){
+  if (veicoli && Object.keys(veicoli).length) { VEICOLI = veicoli; }
   targhe = listaTarghe || TARGHE_DEFAULT;
   TARGHE_CORRENTI = targhe;
   var selects = ['kmTarga','rifTarga','filtraTarga','kmStampaTarga','rifStampaTarga'];
@@ -594,7 +602,7 @@ function applicaTarghe(listaTarghe){
     targhe.forEach(function(t, i){
       var opt = document.createElement('option');
       opt.value = t;
-      opt.textContent = t + ' (AUTO ' + (i+1) + ')';
+      opt.textContent = etichettaVeicolo(t,i);
       sel.appendChild(opt);
     });
     if(val) sel.value = val;
@@ -605,7 +613,7 @@ async function caricaTargheDalFoglio(){
   try {
     var res = await fetchConTimeout(URL_GS + '?action=targhe&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
     var d = await res.json();
-    applicaTarghe(d.targhe);
+    applicaTarghe(d.targhe, d.veicoli);
   } catch(e) {
     // Fallback: usa targhe default
     TARGHE_CORRENTI = TARGHE_DEFAULT;
@@ -619,7 +627,7 @@ async function caricaTargheDalFoglio(){
       TARGHE_DEFAULT.forEach(function(t, i){
         var opt = document.createElement('option');
         opt.value = t;
-        opt.textContent = t + ' (AUTO ' + (i+1) + ')';
+        opt.textContent = etichettaVeicolo(t,i);
         sel.appendChild(opt);
       });
     });
@@ -631,7 +639,7 @@ function renderSelectTarghe(selectId, withAll){
   if(!sel) return;
   var current = sel.value;
   sel.innerHTML = withAll ? '<option value="">Tutte le targhe</option>' : '<option value="">— Seleziona —</option>';
-  targhe.forEach(function(t, i){ sel.innerHTML += '<option value="'+t+'"'+(t===current?' selected':'')+'>'+t+' (AUTO '+(i+1)+')</option>'; });
+  targhe.forEach(function(t, i){ sel.innerHTML += '<option value="'+t+'"'+(t===current?' selected':'')+'>'+etichettaVeicolo(t,i)+'</option>'; });
 }
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1mfferoe17zbeW0Pe_WLhe1GM3oNr00YEkMHOdF16fL4/edit';
 
@@ -828,7 +836,7 @@ window.onload = function(){
         if (opS && hU0) hU0.textContent = opS;
         document.getElementById('modalLoginGoogle').style.display = 'none';
         if (cIni.stats) applicaStats(cIni.stats);
-        if (cIni.targhe) applicaTarghe(cIni.targhe);
+        if (cIni.targhe) applicaTarghe(cIni.targhe, cIni.veicoli);
       }
     } catch(e) {}
     fetchConTimeout(URL_GS + '?action=datiIniziali&idToken=' + encodeURIComponent(tokenCondiviso), null, 30000)
@@ -849,9 +857,9 @@ window.onload = function(){
               .then(function(st){ if (st && st.status !== 'error') { applicaStats(st); try { var c0 = JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}'); c0.stats = st; localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify(c0)); } catch(e3) {} } })
               .catch(function(){});
           }
-          if (d.targhe) applicaTarghe(d.targhe);
+          if (d.targhe) applicaTarghe(d.targhe, d.veicoli);
           if (d.pinMap) applicaPinMap(d.pinMap);
-          try { localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify({stats:d.stats||(JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}').stats), targhe:d.targhe})); } catch(e) {}
+          try { localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify({stats:d.stats||(JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}').stats), targhe:d.targhe, veicoli:d.veicoli})); } catch(e) {}
           sincronizzaCodaOffline();
           loadScadenze();
         } else {
@@ -2067,8 +2075,22 @@ function renderTargheManager(){
   list.innerHTML='';
   TARGHE_CORRENTI.forEach(function(t){
     var div=document.createElement('div');
-    div.style.cssText='display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:13px;';
-    var sp=document.createElement('span');sp.textContent='🚗 '+t;
+    div.style.cssText='display:flex;justify-content:space-between;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.08);font-size:13px;';
+    var sp=document.createElement('span');sp.style.flex='1';
+    var d=descVeicolo(t);
+    sp.textContent='🚗 '+t+(d?' · '+d:'');
+    var bm=document.createElement('button');
+    bm.textContent='Modifica';
+    bm.style.cssText='background:rgba(52,152,219,0.2);border:1px solid rgba(52,152,219,0.4);border-radius:6px;color:#5dade2;cursor:pointer;font-size:12px;padding:3px 8px;font-family:Barlow Condensed,sans-serif;';
+    bm.onclick=(function(targa){return function(){
+      var v=VEICOLI[targa]||{};
+      var marca=prompt('Marca di '+targa+':', v.marca||''); if(marca===null) return;
+      var modello=prompt('Modello di '+targa+':', v.modello||''); if(modello===null) return;
+      fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'TARGA_INFO', targa:targa, marca:marca, modello:modello, idToken:idTokenCorrente})})
+        .then(function(){ return caricaTargheDalFoglio(); })
+        .then(function(){ renderTargheManager(); toast('✅ Dati di '+targa+' aggiornati'); })
+        .catch(function(){ toast('Errore di connessione', true); });
+    };})(t);
     var btn=document.createElement('button');
     btn.textContent='Rimuovi';
     btn.style.cssText='background:rgba(231,76,60,0.2);border:1px solid rgba(231,76,60,0.4);border-radius:6px;color:#e74c3c;cursor:pointer;font-size:12px;padding:3px 8px;font-family:Barlow Condensed,sans-serif;';
@@ -2078,7 +2100,7 @@ function renderTargheManager(){
         .then(function(){ renderTargheManager(); toast('✅ Targa '+targa+' rimossa'); })
         .catch(function(){ toast('Errore di connessione', true); });
     };})(t);
-    div.appendChild(sp);div.appendChild(btn);list.appendChild(div);
+    div.appendChild(sp);div.appendChild(bm);div.appendChild(btn);list.appendChild(div);
   });
 }
 
@@ -2089,10 +2111,11 @@ function aggiungiTarga(){
   errEl.textContent='';
   if(!val){ errEl.textContent='⚠️ Inserisci una targa'; return; }
   if(TARGHE_CORRENTI.indexOf(val)>=0){ errEl.textContent='⚠️ Targa già presente'; return; }
-  fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'TARGA_ADD', targa:val, idToken:idTokenCorrente})})
+  fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'TARGA_ADD', targa:val, marca:(document.getElementById('nuovaMarca')||{}).value||'', modello:(document.getElementById('nuovoModello')||{}).value||'', idToken:idTokenCorrente})})
     .then(function(){ return caricaTargheDalFoglio(); })
     .then(function(){
       input.value='';
+      ['nuovaMarca','nuovoModello'].forEach(function(id){var e=document.getElementById(id); if(e) e.value='';});
       renderTargheManager();
       toast('✅ Targa '+val+' aggiunta!');
     })
