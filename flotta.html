@@ -10,7 +10,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://script.google.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{--blu:#0D1B2E;--oro:#f5a623;--oro2:#ffc84a;--crema:#ffeb3b;--verde:#27ae60;--rosso:#e74c3c;--grigio:rgba(255,255,255,0.07);--bordo:rgba(255,255,255,0.12);}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -856,6 +857,7 @@ window.onload = function(){
         if (cIni.targhe) applicaTarghe(cIni.targhe, cIni.veicoli);
       }
     } catch(e) {}
+    loadScadenze();   // parte subito, in parallelo ai dati iniziali
     fetchConTimeout(URL_GS + '?action=datiIniziali&idToken=' + encodeURIComponent(tokenCondiviso), null, 30000)
       .then(function(r){ return r.json(); })
       .then(function(d){
@@ -878,7 +880,6 @@ window.onload = function(){
           if (d.pinMap) applicaPinMap(d.pinMap);
           try { localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify({stats:d.stats||(JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}').stats), targhe:d.targhe, veicoli:d.veicoli})); } catch(e) {}
           sincronizzaCodaOffline();
-          loadScadenze();
         } else {
           idTokenCorrente = null;
           try { mostraLoginGoogle(); } catch(e2) { document.getElementById('modalLoginGoogle').style.display = 'flex'; }
@@ -2319,12 +2320,11 @@ Promise.all([syncPinMapDaSheet(), syncAgentiDaSheet()]).then(function(){
   if (typeof renderKm === 'function') { try{ renderKm(); }catch(e){} }
   if (typeof renderRif === 'function') { try{ renderRif(); }catch(e){} }
 });
-loadStats();
-try { loadScadenze(); } catch(e) {}
+// (statistiche, scadenze e targhe arrivano gia' con 'datiIniziali' dopo il login: niente richieste doppie all'avvio)
 // Popola select con default poi aggiorna dal foglio
 ['kmTarga','rifTarga','kmStampaTarga','rifStampaTarga'].forEach(function(id){ renderSelectTarghe(id, false); });
 renderSelectTarghe('filtraTarga', true);
-caricaTargheDalFoglio();
+try { var cT = JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache') || 'null'); if (cT && cT.targhe) applicaTarghe(cT.targhe, cT.veicoli); } catch(e) {}
 
 // ============================================================
 // TENDINE PERSONALIZZATE — sostituisce visivamente ogni <select>
