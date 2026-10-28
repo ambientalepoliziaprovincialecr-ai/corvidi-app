@@ -179,8 +179,25 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 .capi-badge,.badge-cornacchia,.badge-gazza,.badge-piccione,.badge-ibis{color:#ffeb3b;font-weight:700;}
 .istr-title{color:#ffeb3b;border-bottom-color:rgba(200,146,42,0.4);}
 .modal-istr-box h2,.modal-istr-box h3,.istr-text strong{color:#ffeb3b;}
+
+@keyframes pulsa{0%,100%{opacity:.25}50%{opacity:.7}}
+.stat-card .num.loading{animation:pulsa 1.2s ease-in-out infinite;letter-spacing:4px;}
+/* ===== MIGLIORIE LEGGIBILITA' E ACCESSIBILITA' ===== */
+.header p,.stat-card .label,.section-title,.form-header-title span,.agenti-manager-title,.record-data{font-size:12px;}
+.btn-main-text span{font-size:13px;}
+.record-detail{font-size:13px;}
+.install-banner span,.btn-adesso,.btn-add-ag,.btn-turno,.tab-btn,.btn-report,.btn-sheet,.btn-report-home{font-size:14px;}
+.btn-report,.btn-sheet,.btn-report-home,.btn-turno,.agente-btn,.tab-btn,.btn-adesso,.btn-add-ag,.btn-submit,.install-banner button,#btnModalitaProva{min-height:48px;}
+.btn-back{width:48px;height:48px;}
+.btn-del-ag{min-width:44px;min-height:44px;font-size:18px;}
+button:focus-visible,[role="button"]:focus-visible,.custom-select-trigger:focus-visible,.custom-select-option:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #ffffff;outline-offset:2px;}
+.form-input:focus,.form-select:focus,.custom-select-trigger:focus{border-color:#f5a623;box-shadow:0 0 0 3px rgba(255,235,59,0.7);}
+.toast{background:#1e8449;color:#ffffff;}
+.toast.error{background:#c0392b;color:#ffffff;}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -197,10 +214,10 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 
 
 <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div class="loading-text">Salvataggio...</div></div>
-<div class="toast" id="toast">👤 Benvenuto, BORRINI</div>
+<div class="toast" id="toast" role="status" aria-live="polite">👤 Benvenuto, BORRINI</div>
 
 <!-- MODAL GOOGLE SHEET -->
-<div class="modal-overlay" id="modalSheet">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalSheet">
   <div class="modal-box">
     <div class="modal-title">🔒 Accesso protetto</div>
     <div class="modal-text">Inserisci la password per accedere al Google Sheet</div>
@@ -216,7 +233,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 
 <!-- MODAL LOGIN OPERATORE -->
 <!-- MODAL STATISTICHE SPECIE -->
-<div class="modal-overlay" id="modalStatSpecie" style="display:none;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalStatSpecie" style="display:none;">
   <div class="modal-box">
     <div class="modal-title">🦅 Statistiche per Specie</div>
     <div id="statSpecieContenuto" style="font-family:var(--sans);font-size:13px;">
@@ -229,7 +246,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 </div>
 
 <!-- MODAL CAMBIA PIN -->
-<div class="modal-overlay" id="modalCambiaPin" style="display:none;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalCambiaPin" style="display:none;">
   <div class="modal-box">
     <div class="modal-title">🔑 Cambia PIN</div>
     <div class="modal-text">Scegli un PIN personale salvato solo su questo dispositivo.</div>
@@ -247,7 +264,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </div>
 </div>
 
-<div class="modal-overlay" id="modalLogin" style="z-index:10000;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalLogin" style="z-index:10000;">
   <div class="modal-box">
     <div class="modal-title">👤 Identificazione</div>
     <div class="modal-text">Inserisci il tuo codice operatore (4 cifre) per identificarti. Verrà richiesto solo questa volta su questo dispositivo.</div>
@@ -262,7 +279,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 </div>
 
 <!-- MODAL GESTIONE AGENTI -->
-<div class="modal-overlay" id="modalAgenti">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalAgenti">
   <div class="modal-box large">
     <div class="modal-title">🔒 Gestione Operatori</div>
     <div class="modal-text">Inserisci la password per modificare gli operatori</div>
@@ -302,7 +319,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <span>📲 Installa l'app sulla schermata home</span>
     <button onclick="installApp()">INSTALLA</button>
   </div>
-  <button onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.add(&#39;show&#39;)" style="width:100%;padding:11px;background:rgba(200,146,42,0.08);border:1px solid rgba(200,146,42,0.3);border-radius:10px;color:#ffeb3b;font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
+  <button onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.add(&#39;show&#39;)" style="min-height:48px;width:100%;padding:11px;background:rgba(200,146,42,0.08);border:1px solid rgba(200,146,42,0.3);border-radius:10px;color:#ffeb3b;font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
 <div id="avvisoDati" style="display:none;background:rgba(192,57,43,0.12);border:1px solid rgba(192,57,43,0.5);border-radius:10px;padding:10px;margin-bottom:10px;color:#ff8a8f;font-size:13px;text-align:center;"></div>
 <div class="stats-row">
     <div class="stat-card"><div class="num" id="statMese">0</div><div class="label">Mese</div></div>
@@ -350,7 +367,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <!-- FORM -->
 <div class="screen" id="screenForm">
   <div class="form-header">
-    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai(&#39;screenHome&#39;)">‹</button>
     <div class="form-header-title"><span>Registrazione</span>Nuovo Intervento</div>
   </div>
   <div class="form-divider">📋 Dati generali</div>
@@ -504,7 +521,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <!-- FORM IBIS SACRO -->
 <div class="screen" id="screenIbis">
   <div class="form-header">
-    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai(&#39;screenHome&#39;)">‹</button>
     <div class="form-header-title"><span>Registrazione</span>Ibis Sacro</div>
   </div>
 
@@ -755,7 +772,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <!-- FORM DAINO -->
 <div class="screen" id="screenDaino">
   <div class="form-header">
-    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai(&#39;screenHome&#39;)">‹</button>
     <div class="form-header-title"><span>Registrazione</span>Daino</div>
   </div>
 
@@ -815,7 +832,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <!-- FORM CORMORANO -->
 <div class="screen" id="screenCormorano">
   <div class="form-header">
-    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai(&#39;screenHome&#39;)">‹</button>
     <div class="form-header-title"><span>Registrazione</span>Cormorano</div>
   </div>
 
@@ -940,7 +957,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <!-- FORM MINILEPRE / CONIGLIO / VOLPE -->
 <div class="screen" id="screenMinilepre">
   <div class="form-header">
-    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai(&#39;screenHome&#39;)">‹</button>
     <div class="form-header-title"><span>Registrazione</span>Minilepre / Coniglio / Volpe</div>
   </div>
 
@@ -1000,7 +1017,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <!-- FORM SCOIATTOLO DI PALLAS -->
 <div class="screen" id="screenScoiattolo">
   <div class="form-header">
-    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai(&#39;screenHome&#39;)">‹</button>
     <div class="form-header-title"><span>Registrazione</span>Scoiattolo di Pallas</div>
   </div>
 
@@ -1185,7 +1202,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <!-- REPORT -->
 <div class="screen" id="screenReport">
   <div class="form-header">
-    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai(&#39;screenHome&#39;)">‹</button>
     <div class="form-header-title"><span>Statistiche</span>Report Interventi</div>
   </div>
   <div class="report-tabs">
@@ -1203,7 +1220,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <!-- SCREEN ESENZIONE TASSA CORVIDI -->
 <div class="screen" id="screenEsenzione">
   <div class="form-header">
-    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai(&#39;screenHome&#39;)">‹</button>
     <div class="form-header-title"><span>Report</span>Esenzione Tassa Caccia</div>
   </div>
   <div class="form-group" style="margin-top:16px;">
@@ -1220,7 +1237,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 
 
 <!-- MODAL ISTRUZIONI CORVIDI -->
-<div class="modal-istruzioni" id="modalIstruzioni">
+<div class="modal-istruzioni" id="modalIstruzioni" role="dialog" aria-modal="true">
   <div class="modal-istr-box">
     <h2>🐦‍⬛ Controllo Corvidi</h2>
     <h3>Istruzioni — Polizia Provinciale di Cremona</h3>
@@ -1733,14 +1750,7 @@ function checkLogin() {
   // Il login ora avviene solo tramite l'account Google (vedi
   // handleGoogleCredentialResponse) — il PIN/parola non serve più.
 }
-function mostraCambiaPin() {
-  if (!operatoreCorrente) { toast('Devi prima accedere', true); return; }
-  document.getElementById('cp-attuale').value = '';
-  document.getElementById('cp-nuovo').value = '';
-  document.getElementById('cp-conferma').value = '';
-  document.getElementById('cp-err').textContent = '';
-  document.getElementById('modalCambiaPin').style.display = 'flex';
-}
+
 
 function salvaNuovoPin() {
   var attuale = document.getElementById('cp-attuale').value.trim();
@@ -1857,13 +1867,7 @@ function renderAgenti(){
   });
 }
 
-function apriGestioneAgenti(){
-  document.getElementById('pwdAgenti').value='';
-  document.getElementById('errAgenti').textContent='';
-  document.getElementById('agentiPwdSection').style.display='block';
-  document.getElementById('agentiManagerSection').style.display='none';
-  document.getElementById('modalAgenti').classList.add('show');
-}
+
 
 function verificaAgenti(){
   if(document.getElementById('pwdAgenti').value===PWD){
@@ -2134,20 +2138,13 @@ function cercaOperatoreIbis(n,val){
   lista.classList.add('show');
 }
 
-function selezionaOperatoreIbis(n,cognome,nome,cf){
-  document.getElementById('iOp'+n+'Cognome').value=cognome;
-  document.getElementById('iOp'+n+'Nome').value=nome;
-  var cfEl=document.getElementById('iOp'+n+'CF');if(cfEl)cfEl.value=cf||'';
-  chiudiListaIbis(n);
-}
+
 
 function chiudiListaIbis(n){
   document.getElementById('autocompleteListIbis'+n).classList.remove('show');
 }
 
-function fmtOraIbis(val){
-  return val || '';
-}
+
 
 async function submitIbis(){
   var data=document.getElementById('iData').value;
@@ -2287,12 +2284,7 @@ function cercaOperatoreCormorano(n,val){
   lista.classList.add('show');
 }
 
-function selezionaOperatoreCormorano(n,cognome,nome,cf){
-  document.getElementById('cmAg'+n+'Cognome').value=cognome;
-  document.getElementById('cmAg'+n+'Nome').value=nome;
-  var cfEl=document.getElementById('cmAg'+n+'CF');if(cfEl)cfEl.value=cf||'';
-  chiudiListaCormorano(n);
-}
+
 function chiudiListaCormorano(n){
   document.getElementById('autocompleteListCorm'+n).classList.remove('show');
 }
@@ -2430,12 +2422,7 @@ function cercaOperatoreScoiattolo(n,val){
   lista.classList.add('show');
 }
 
-function selezionaOperatoreScoiattolo(n,cognome,nome,cf){
-  document.getElementById('scInc'+n+'Cognome').value=cognome;
-  document.getElementById('scInc'+n+'Nome').value=nome;
-  var cfEl=document.getElementById('scInc'+n+'CF');if(cfEl)cfEl.value=cf||'';
-  chiudiListaScoiattolo(n);
-}
+
 function chiudiListaScoiattolo(n){
   document.getElementById('autocompleteListSco'+n).classList.remove('show');
 }
@@ -2706,7 +2693,7 @@ function renderReport(){
 }
 
 // SHEET
-function apriModalSheet(){document.getElementById('pwdSheet').value='';document.getElementById('errSheet').textContent='';document.getElementById('modalSheet').classList.add('show');}
+
 function verificaSheet(){if(document.getElementById('pwdSheet').value===PWD){chiudiModal('modalSheet');window.open(SHEET_URL,'_blank');}else{document.getElementById('errSheet').textContent='❌ Password errata';document.getElementById('pwdSheet').value='';}}
 document.getElementById('pwdSheet').addEventListener('keydown',function(e){if(e.key==='Enter')verificaSheet();});
 document.getElementById('pwdAgenti').addEventListener('keydown',function(e){if(e.key==='Enter')verificaAgenti();});
@@ -2763,24 +2750,8 @@ function cercaCacciatore(val){
   lista.classList.add('show');
 }
 
-function selezionaCacciatoreDirectly(cognome, nome, cf, email){
-  document.getElementById('fCognome').value=cognome;
-  document.getElementById('fNome').value=nome;
-  document.getElementById('fCF').value=cf||'';
-  if(document.getElementById('fEmail')) document.getElementById('fEmail').value=email||'';
-  document.getElementById('autocompleteList').classList.remove('show');
-  document.getElementById('nuovoCacBox').classList.remove('show');
-  nuovoCacciatore=false;
-}
-function selezionaCacciatore(idx){
-  var c=cacciatori[idx];
-  document.getElementById('fCognome').value=c.cognome;
-  document.getElementById('fNome').value=c.nome;
-  document.getElementById('fCF').value=c.cf||'';
-  document.getElementById('autocompleteList').classList.remove('show');
-  document.getElementById('nuovoCacBox').classList.remove('show');
-  nuovoCacciatore=false;
-}
+
+
 
 function inserisciNuovo(cognome){
   document.getElementById('fCognome').value=cognome;

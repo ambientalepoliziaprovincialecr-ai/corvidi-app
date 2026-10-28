@@ -7,7 +7,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Selvatici">
 <title>Registro Selvatici</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;700&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -181,6 +182,22 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 .search-result-detail{font-size:12px;color:rgba(255,235,59,0.92);font-weight:700;line-height:1.6;}
 .search-nav-btn{display:inline-block;margin-top:8px;padding:8px 14px;background:#4285f4;color:#ffeb3b;border-radius:8px;text-decoration:none;font-size:12px;font-weight:600;}
 .search-empty{text-align:center;padding:20px;color:rgba(255,235,59,0.92);font-weight:700;font-size:13px;}
+
+@keyframes pulsa{0%,100%{opacity:.25}50%{opacity:.7}}
+.stat-card .num.loading{animation:pulsa 1.2s ease-in-out infinite;letter-spacing:4px;}
+/* ===== MIGLIORIE LEGGIBILITA' E ACCESSIBILITA' ===== */
+.header p,.stat-card .label,.section-title,.form-header-title span,.agenti-manager-title,.record-data{font-size:12px;}
+.btn-main-text span{font-size:13px;}
+.record-detail{font-size:13px;}
+.install-banner span,.btn-adesso,.btn-add-ag,.btn-turno,.tab-btn,.btn-report,.btn-sheet,.btn-report-home{font-size:14px;}
+.btn-report,.btn-sheet,.btn-report-home,.btn-turno,.agente-btn,.tab-btn,.btn-adesso,.btn-add-ag,.btn-submit,.install-banner button,#btnModalitaProva{min-height:48px;}
+.btn-back{width:48px;height:48px;}
+.btn-del-ag{min-width:44px;min-height:44px;font-size:18px;}
+button:focus-visible,[role="button"]:focus-visible,.custom-select-trigger:focus-visible,.custom-select-option:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #ffffff;outline-offset:2px;}
+.form-input:focus,.form-select:focus,.custom-select-trigger:focus{border-color:#f5a623;box-shadow:0 0 0 3px rgba(255,235,59,0.7);}
+.toast{background:#1e8449;color:#ffffff;}
+.toast.error{background:#c0392b;color:#ffffff;}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
 </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -202,7 +219,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 
 
 <!-- MODAL ISTRUZIONI SELVATICI -->
-<div class="modal-overlay" id="modalIstruzioni" style="display:none;z-index:8888;align-items:flex-start;overflow-y:auto;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalIstruzioni" style="display:none;z-index:8888;align-items:flex-start;overflow-y:auto;">
   <div class="modal-box" style="max-width:480px;margin:auto;background:#1a2e1a;border-color:rgba(39,174,96,0.4);max-height:90vh;overflow-y:auto;">
     <h2>🦌 Registro Selvatici</h2>
     <h3>Istruzioni — Polizia Provinciale di Cremona</h3>
@@ -299,7 +316,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 </div>
 
 <!-- MODAL STAMPA TUTTI RITIRI -->
-<div class="modal-overlay" id="modalStampaTutti" style="display: none; z-index: 8888;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalStampaTutti" style="display: none; z-index: 8888;">
   <div class="modal-box" style="background:#1a0a0a;border-color:rgba(192,57,43,0.4);max-width:320px;">
     <div class="modal-title" style="color:#e07060;">🖨️ Stampa Ritiri CRAS</div>
     <div class="modal-text">Seleziona il giorno da stampare</div>
@@ -313,10 +330,10 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 </div>
 
 <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div class="loading-text">Salvataggio...</div></div>
-<div class="toast" id="toast">☠️ Decesso registrato in IZP: IZP-2026-228</div>
+<div class="toast" id="toast" role="status" aria-live="polite">☠️ Decesso registrato in IZP: IZP-2026-228</div>
 
 <!-- MODAL GOOGLE SHEET -->
-<div class="modal-overlay" id="modalSheet">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalSheet">
   <div class="modal-box">
     <div class="modal-title">🔒 Accesso protetto</div>
     <div class="modal-text">Inserisci la password per accedere al Google Sheet</div>
@@ -330,7 +347,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 </div>
 
 <!-- MODAL GESTIONE AGENTI -->
-<div class="modal-overlay" id="modalAgenti">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalAgenti">
   <div class="modal-box">
     <div class="modal-title">🔒 Gestione Agenti</div>
     <div class="modal-text">Inserisci la password per modificare gli agenti</div>
@@ -359,7 +376,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 
 
 <!-- MODAL CAMBIA PIN -->
-<div class="modal-overlay" id="modalCambiaPin" style="display:none;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalCambiaPin" style="display:none;">
   <div class="modal-box">
     <div class="modal-title">🔑 Cambia PIN</div>
     <div class="modal-text">Scegli un PIN personale salvato solo su questo dispositivo.</div>
@@ -377,7 +394,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
 </div>
 
-<div class="modal-overlay" id="modalAnnullaPratica" style="display:none;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalAnnullaPratica" style="display:none;">
   <div class="modal-box">
     <div class="modal-title" id="annullaTitolo">🗑️ Annulla pratica</div>
 
@@ -402,7 +419,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
 </div>
 
-<div class="modal-overlay" id="modalLogin" style="z-index:10000;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalLogin" style="z-index:10000;">
   <div class="modal-box">
     <div class="modal-title">👤 Identificazione</div>
     <div class="modal-text">Inserisci il tuo codice operatore (4 cifre).</div>
@@ -428,7 +445,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <span>📲 Installa l'app sulla schermata home</span>
     <button onclick="installApp()">INSTALLA</button>
   </div>
-  <button onclick="var mi=document.getElementById('modalIstruzioni');mi.style.display='flex';mi.style.alignItems='flex-start';" style="width:100%;padding:11px;background:rgba(39,174,96,0.08);border:1px solid rgba(39,174,96,0.3);border-radius:10px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
+  <button onclick="var mi=document.getElementById('modalIstruzioni');mi.style.display='flex';mi.style.alignItems='flex-start';" style="min-height:48px;width:100%;padding:11px;background:rgba(39,174,96,0.08);border:1px solid rgba(39,174,96,0.3);border-radius:10px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
   <div class="stats-row" style="grid-template-columns:1fr 1fr 1fr;">
     <div class="stat-card"><div class="num" id="statZoo">—</div><div class="label">Zooprofilassi</div></div>
     <div class="stat-card" style="border-color:rgba(230,126,34,0.35);"><div class="num" id="statCarcasse" style="color:#e67e22;">—</div><div class="label">Carcasse IZP</div></div>
@@ -462,7 +479,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 <!-- ZOOPROFILASSI -->
 <div class="screen" id="screenZoo">
   <div class="form-header">
-    <button class="btn-back" onclick="vai('screenHome')">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai('screenHome')">‹</button>
     <div class="form-header-title"><span>Nuova registrazione</span>Istituto Zooprofilassi</div>
     <button class="btn-back" style="background:rgba(231,76,60,0.15);border-color:rgba(231,76,60,0.4);color:#f87171;margin-left:auto;" onclick="eliminaUltimoInserimento('ZOO')" title="Elimina ultimo inserimento">🗑️</button>
   </div>
@@ -551,7 +568,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 <!-- CRAS -->
 <div class="screen" id="screenCras">
   <div class="form-header">
-    <button class="btn-back" onclick="vai('screenHome')">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai('screenHome')">‹</button>
     <div class="form-header-title"><span>Nuova registrazione</span>CRAS</div>
     <button class="btn-back" style="background:rgba(231,76,60,0.15);border-color:rgba(231,76,60,0.4);color:#f87171;margin-left:auto;" onclick="eliminaUltimoInserimento('CRAS')" title="Elimina ultimo inserimento">🗑️</button>
   </div>
@@ -662,7 +679,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 <!-- STORICO -->
 <div class="screen" id="screenStorico">
   <div class="form-header">
-    <button class="btn-back" onclick="vai('screenHome')">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai('screenHome')">‹</button>
     <div class="form-header-title"><span>Archivio</span>Storico consegne</div>
   </div>
   <div class="tabs">
@@ -726,7 +743,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 </div>
 
 <!-- MODAL SEGNALA DECESSO -->
-<div class="modal-overlay" id="modalDecesso" style="display: none;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalDecesso" style="display: none;">
   <div class="modal-box" style="max-width:420px;">
     <h2>☠️ Segnala decesso</h2>
     <h3 id="decessoInfoAnimale" style="margin-bottom:14px;color:rgba(255,235,59,0.92);font-weight:700;font-size:13px;">Civetta — N. Pratica CRAS-2026-387 — 17/07/2026 10:00</h3>
@@ -746,7 +763,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 
 <!-- MODAL ELENCO CRAS DI OGGI -->
 <!-- MODAL SCELTA TIPO RISTAMPA -->
-<div class="modal-overlay" id="modalSceltaRistampa" style="display: none;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalSceltaRistampa" style="display: none;">
   <div class="modal-box" style="max-width:340px;">
     <h2>🖨️ Ristampa schede di oggi</h2>
     <p style="font-size:12px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:16px;">Quale tipo di pratica vuoi correggere e ristampare?</p>
@@ -756,7 +773,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
 </div>
 
-<div class="modal-overlay" id="modalCrasOggi" style="display:none;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalCrasOggi" style="display:none;">
   <div class="modal-box" style="max-width:460px;max-height:85vh;overflow-y:auto;">
     <h2>🖨️ Ristampa schede CRAS di oggi</h2>
     <p id="ristampaCrasOggiSottotitolo" style="font-size:12px;line-height:1.5;margin-bottom:14px;color:rgba(255,235,59,0.92);font-weight:700;">Seleziona una pratica per confermare il centro CRAS corretto e ristampare il verbale con il registro aggiornato.</p>
@@ -766,7 +783,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 </div>
 
 <!-- MODAL CONFERMA CENTRO CRAS -->
-<div class="modal-overlay" id="modalConfermaCentro" style="display:none;align-items:flex-start;overflow-y:auto;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalConfermaCentro" style="display:none;align-items:flex-start;overflow-y:auto;">
   <div class="modal-box" style="max-width:440px;max-height:90vh;overflow-y:auto;margin:20px auto;">
     <h2>✏️ Correggi e ristampa pratica</h2>
     <h3 id="confermaCentroInfo" style="margin-bottom:14px;color:rgba(255,235,59,0.92);font-weight:700;font-size:13px;"></h3>
@@ -840,7 +857,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 </div>
 
 <!-- MODAL ELENCO IZP DI OGGI -->
-<div class="modal-overlay" id="modalIzpOggi" style="display: none;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalIzpOggi" style="display: none;">
   <div class="modal-box" style="max-width:460px;max-height:85vh;overflow-y:auto;">
     <h2>🔬 Ristampa schede IZP di oggi</h2>
     <p style="font-size:12px;line-height:1.5;margin-bottom:14px;color:rgba(93,173,226,0.8);">Seleziona una pratica per correggerla e ristampare il modulo con il registro aggiornato.</p>
@@ -850,7 +867,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 </div>
 
 <!-- MODAL EDITOR IZP -->
-<div class="modal-overlay" id="modalEditorIzp" style="display: none; align-items: flex-start; overflow-y: auto;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalEditorIzp" style="display: none; align-items: flex-start; overflow-y: auto;">
   <div class="modal-box" style="max-width:440px;max-height:90vh;overflow-y:auto;margin:20px auto;">
     <h2>✏️ Correggi e ristampa IZP</h2>
     <h3 id="editorIzpInfo" style="margin-bottom:14px;color:rgba(93,173,226,0.8);font-size:13px;">CORNACCHIA GRIGIA — N. IZP-2026-239 — 23/07/2026 15:23</h3>
@@ -1179,14 +1196,7 @@ function mostraPinPopup(nome, pin) {
   alert('✅ Agente "' + nome + '" aggiunto!\n\nIl suo PIN è: ' + pin + '\n\nComunicaglielo: lo inserirà al prossimo accesso.\n\n📋 PIN salvato sul foglio Google "PIN Agenti".');
 }
 
-function mostraCambiaPin() {
-  if (!utenteLoggato) { toast('Devi prima accedere', true); return; }
-  document.getElementById('cp-attuale').value = '';
-  document.getElementById('cp-nuovo').value = '';
-  document.getElementById('cp-conferma').value = '';
-  document.getElementById('cp-err').textContent = '';
-  document.getElementById('modalCambiaPin').style.display='flex';
-}
+
 
 function salvaNuovoPin() {
   var attuale = document.getElementById('cp-attuale').value.trim();
@@ -1216,7 +1226,6 @@ function cambiUtente() {
   localStorage.removeItem('selvatici_utente');
   utenteLoggato = '';
   pinCurrent = '';
-  aggiornaDisplay();
   idTokenCorrente = null;
   try { google.accounts.id.disableAutoSelect(); } catch(e) {}
   mostraLoginGoogle();
@@ -1360,7 +1369,7 @@ function cambiaMolt(tipo,delta){
   else{crasMolt=Math.min(10,Math.max(1,crasMolt+delta));document.getElementById('crasMoltVal').textContent=crasMolt;}
 }
 
-function fmtDT(val){if(!val)return'';var d=new Date(val);return d.toLocaleDateString('it-IT');}
+
 function fmtDTOra(val){if(!val)return'';var d=new Date(val);return d.toLocaleDateString('it-IT')+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
 
 // SUBMIT ZOO
@@ -1735,7 +1744,7 @@ function renderRecords(tab){
 }
 
 // SHEET
-function apriModalSheet(){document.getElementById('pwdSheet').value='';document.getElementById('errSheet').textContent='';document.getElementById('modalSheet').classList.add('show');}
+
 function verificaSheet(){if(document.getElementById('pwdSheet').value===PWD){chiudiModal('modalSheet');window.open(SHEET_URL,'_blank');}else{document.getElementById('errSheet').textContent='❌ Password errata';document.getElementById('pwdSheet').value='';}}
 document.getElementById('pwdSheet').addEventListener('keydown',function(e){if(e.key==='Enter')verificaSheet();});
 document.getElementById('pwdAgenti').addEventListener('keydown',function(e){if(e.key==='Enter')verificaAgenti();});
@@ -1743,7 +1752,7 @@ document.getElementById('pinLogin').addEventListener('keydown',function(e){if(e.
 document.getElementById('nuovoPin').addEventListener('keydown',function(e){if(e.key==='Enter')aggiungiAgente();});
 
 
-loadStats();
+// (statistiche e PIN arrivano dopo il login: niente richieste doppie all'avvio)
 
 // ============================================================
 //  STAMPA VERBALE UFFICIALE
@@ -2218,14 +2227,7 @@ function stampaVerbale(r) {
 // ============================================================
 //  STAMPA TUTTI I RITIRI CRAS DI UN GIORNO
 // ============================================================
-function apriStampaTutti() {
-  var oggi = new Date();
-  var y = oggi.getFullYear();
-  var m = String(oggi.getMonth()+1).padStart(2,'0');
-  var d = String(oggi.getDate()).padStart(2,'0');
-  document.getElementById('dataStampaTutti').value = y+'-'+m+'-'+d;
-  document.getElementById('modalStampaTutti').style.display = 'flex';
-}
+
 
 async function eseguiStampaTutti() {
   var dataVal = document.getElementById('dataStampaTutti').value;
@@ -2774,25 +2776,7 @@ async function stampaERegistraCras() {
   } catch(e){ loading(false); sblocca(); toast('Errore connessione',true); }
 }
 
-async function stampaERegistraZoo() {
-  var dati = raccogliDatiZoo();
-  if(!dati) return;
-  loading(true);
-  try {
-    var res = await fetch(URL_GS, {method:'POST', body:JSON.stringify({tipo:'GET_NUM_PRATICA', categoria:'ZOO', idToken:idTokenCorrente})});
-    var d = await res.json();
-    loading(false);
-    if (d.status !== 'ok' || !d.numeroPratica) {
-      toast('Errore: numero pratica non assegnato ('+(d.message||'riprova')+')', true);
-      return;
-    }
-    var numPratica = d.numeroPratica;
-    dati.numeroPratica = numPratica;
-    stampaModuloRegioneRecord(dati, function() {
-      registraDeidZoo(dati, numPratica);
-    });
-  } catch(e){ loading(false); toast('Errore connessione',true); }
-}
+
 
 async function registraDeidCras(dati, numPratica, silenziosa) {
   var isProva = (numPratica === 'PROVA');
@@ -2852,20 +2836,10 @@ async function registraDeidZoo(dati, numPratica, silenziosa) {
   return ok;
 }
 
-function estraiIniziali(nomeCompleto) {
-  if(!nomeCompleto) return '';
-  var parti = nomeCompleto.trim().split(/\s+/);
-  if(parti.length === 1) return parti[0].charAt(0).toUpperCase()+'.';
-  return parti.map(function(p){ return p.charAt(0).toUpperCase()+'.'; }).join('');
-}
+
 
 // Maschera le ultime 3 cifre del numero di telefono (es. 3337579010 -> 3337579***)
-function mascheraTelefono(tel){
-  if(!tel) return '';
-  var pulito = tel.toString().trim();
-  if(pulito.length <= 3) return '***';
-  return pulito.slice(0, -3) + '***';
-}
+
 
 // ============================================================
 // CACHE DATI COMPLETI PER RISTAMPA — vive solo sul dispositivo,
@@ -3285,26 +3259,7 @@ async function ritentaRimozioneBozzeGiaRegistrate() {
 }
 setInterval(ritentaRimozioneBozzeGiaRegistrate, 60000);
 
-async function stampaBozzaERegistra(b) {
-  var numPratica = b.numeroPratica;
-  if(b.tipo==='CRAS_BOZZA') {
-    stampaVerbaleCompleto(b, numPratica, async function(){
-      await registraDeidCras(b, numPratica);
-      segnaBozzaGiaRegistrata(b.rowId);
-      var rimossa = await eliminaBozzaSilente(b.rowId, b.tipo);
-      if(!rimossa) toast('Registrato, ma non ancora rimosso dalla lista bozze — verrà ritentato automaticamente', true);
-      caricaBozze(); aggiornaBadgeBozze();
-    });
-  } else {
-    stampaModuloRegioneRecord(b, async function(){
-      await registraDeidZoo(b, numPratica);
-      segnaBozzaGiaRegistrata(b.rowId);
-      var rimossa = await eliminaBozzaSilente(b.rowId, b.tipo);
-      if(!rimossa) toast('Registrato, ma non ancora rimosso dalla lista bozze — verrà ritentato automaticamente', true);
-      caricaBozze(); aggiornaBadgeBozze();
-    });
-  }
-}
+
 
 async function eliminaBozza(rowId, tipo) {
   try {
@@ -3382,39 +3337,7 @@ function stampaVerbaleCompleto(r, numPratica, dopoStampa) {
   if(dopoStampa) setTimeout(dopoStampa, 500);
 }
 
-function stampaVerbaleZoo(r, numPratica, dopoStampa) {
-  // Verbale IZP semplificato
-  var CSS = '@page{margin:8mm;}body{font-family:Arial,sans-serif;font-size:12px;}.doc{border:1px solid #ccc;padding:8mm;position:relative;}.num-pratica{position:absolute;top:4mm;right:4mm;font-weight:bold;border:1px solid #000;padding:2px 6px;font-size:11px;}';
-  var agente=(r.agente||'').trim(); var agenteFirma=(r.agente||'').split(',')[0].trim();
-  var dataOra=r.dataOra||'';
-  var dataStr='',oraStr='';
-  if(dataOra.indexOf(' ')>=0){var p=dataOra.split(' ');dataStr=p[0];oraStr=p[1]||'';}else{dataStr=dataOra;}
 
-  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Verbale IZP '+numPratica+'</title><style>'+CSS+'</style></head><body>'+
-    '<div class="doc" id="areaStampa">'+
-    '<div class="num-pratica">N. Pratica: '+numPratica+'</div>'+
-    '<div style="text-align:center;margin-bottom:8px;"><div style="font-size:9px;">Provincia di Cremona</div><div style="font-size:13px;font-weight:bold;">POLIZIA LOCALE</div><div style="font-size:9px;">Corso Vittorio Emanuele II, 17 - 26100 CREMONA</div></div>'+
-    '<div style="font-size:12px;font-weight:bold;text-align:center;text-decoration:underline;margin:8px 0;">VERBALE CONSEGNA FAUNA SELVATICA — IZP</div>'+
-    '<p>Il/I sottoscritto/i <strong>'+agente+'</strong> in data <strong>'+dataStr+'</strong> alle ore <strong>'+oraStr+'</strong></p>'+
-    '<p>ha/hanno ricevuto da: <strong>'+(r.consegnante||'_________________________')+'</strong></p>'+
-    '<p>Localit&agrave;: <strong>'+(r.localita||'_________________________')+'</strong></p>'+
-    '<p>Specie: <strong>'+(r.animale||'_________________________')+'</strong> &nbsp;&nbsp; Causa: <strong>'+(r.causa||'_______')+'</strong></p>'+
-    '<p>Tipo consegna IZP: <strong>'+(r.tipoIzp||'_______')+'</strong> &nbsp;&nbsp; Ore impiegate: <strong>'+(r.ore||'_')+'</strong></p>'+
-    (r.note?'<p>Note: <strong>'+r.note+'</strong></p>':'')+
-    '<div style="display:flex;justify-content:space-between;margin-top:30px;">'+
-    '<div style="text-align:center;"><div style="border-bottom:1px solid #000;width:130px;height:28px;margin-bottom:3px;"></div>Firma consegnante</div>'+
-    '<div style="text-align:center;"><div style="border-bottom:1px solid #000;width:130px;height:28px;margin-bottom:3px;"></div>La Polizia Locale<br><strong>'+agenteFirma+'</strong></div>'+
-    '</div></div>'+
-    '<div style="margin:16px;text-align:center;" class="no-print">'+
-    '<button onclick="window.print()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#1a3a15;color:#ffeb3b;border:none;border-radius:8px;">🖨️ Stampa / Salva PDF</button> '+
-    '<button onclick="scaricaPDF()" style="padding:12px 30px;font-size:16px;cursor:pointer;background:#0d47a1;color:#fff;border:none;border-radius:8px;margin-left:8px;">⬇️ Scarica PDF</button> '+
-    '<button onclick="window.close()" style="padding:12px 20px;font-size:14px;cursor:pointer;">✕ Chiudi</button></div>'+
-    '<style>@media print{.no-print{display:none;}}</style>'+
-    '</body></html>';
-
-  apriFinestraStampabile(html, 'verbale-izp-'+numPratica+'.pdf');
-  if(dopoStampa) setTimeout(dopoStampa, 500);
-}
 
 // ============================================================
 // STAMPA MODULO REGIONE LOMBARDIA — CONFERIMENTI ANIMALI SELVATICI
@@ -3545,7 +3468,7 @@ function stampaModuloRegione(idx){
 
 function numeroPraticaSafe(r){ return r && r.numeroPratica ? r.numeroPratica : ''; }
 
-syncPinMapDaSheet().then(function(){ checkLogin(); aggiornaBadgeBozze(); });
+checkLogin();
 
 
 </script>
@@ -3553,7 +3476,7 @@ syncPinMapDaSheet().then(function(){ checkLogin(); aggiornaBadgeBozze(); });
 <!-- SCREEN BOZZE -->
 <div class="screen" id="screenBozze">
   <div class="form-header">
-    <button class="btn-back" onclick="vai('screenHome')">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai('screenHome')">‹</button>
     <div class="form-header-title"><span>Archivio</span>Bozze da stampare</div>
   </div>
   <div id="bozzeLista" style="padding:0 16px 20px;"><div class="empty-state"><div>✅</div>Nessuna bozza in attesa</div></div>

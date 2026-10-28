@@ -8,7 +8,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Servizio">
 <title>Report Servizio</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet"></noscript>
 <style>
 :root{--blu:#0D1B2E;--blu2:#1a3a5c;--oro:#f5a623;--oro2:#ffc84a;--crema:#ffeb3b;--verde:#27ae60;--rosso:#e74c3c;--viola:#6c3483;--grigio:rgba(255,255,255,0.07);--bordo:rgba(255,255,255,0.12);}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -17,7 +18,7 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
 .header-icon{font-size:22px;}
 .header h1{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;color:var(--crema);line-height:1;}
 .header h1 span{color:#ffeb3b;}
-.header p{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,235,59,0.4);text-transform:uppercase;}
+.header p{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;color:rgba(255,235,59,0.85);text-transform:uppercase;}
 .screen{display:none;padding:16px;}
 .screen.active{display:block;}
 
@@ -25,14 +26,14 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;margin-top:12px;}
 .stat-card{background:var(--grigio);border:1px solid var(--bordo);border-radius:10px;padding:12px 8px;text-align:center;}
 .stat-card .num{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;color:#ffeb3b;}
-.stat-card .label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,235,59,0.45);margin-top:2px;font-family:'Barlow Condensed',sans-serif;}
+.stat-card .label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,235,59,0.85);margin-top:2px;font-family:'Barlow Condensed',sans-serif;}
 .stat-card.highlight{border-color:#ffeb3b;background:rgba(245,166,35,0.08);}
-.section-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,235,59,0.35);margin-bottom:10px;}
+.section-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,235,59,0.85);margin-bottom:10px;}
 .btn-main{display:flex;align-items:center;gap:14px;padding:18px 16px;border:none;border-radius:14px;cursor:pointer;text-align:left;width:100%;background:linear-gradient(135deg,#1a3a5c,#0d1b2e);border:1px solid rgba(245,166,35,0.4);margin-bottom:12px;transition:opacity 0.15s;}
 .btn-main:hover{opacity:0.85;}
 .btn-main-icon{font-size:32px;flex-shrink:0;}
 .btn-main-text strong{display:block;font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;line-height:1;color:var(--crema);}
-.btn-main-text span{font-size:11px;color:rgba(255,235,59,0.45);font-family:'Barlow Condensed',sans-serif;}
+.btn-main-text span{font-size:11px;color:rgba(255,235,59,0.85);font-family:'Barlow Condensed',sans-serif;}
 .btn-main-arrow{margin-left:auto;font-size:20px;opacity:0.3;}
 .btn-report-home{width:100%;padding:13px;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.3);border-radius:10px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;display:block;}
 .btn-report-home:hover{background:rgba(245,166,35,0.18);}
@@ -45,9 +46,9 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
 .form-header{display:flex;align-items:center;gap:12px;margin-bottom:18px;padding-top:12px;}
 .btn-back{background:var(--grigio);border:1px solid var(--bordo);border-radius:8px;color:var(--crema);width:38px;height:38px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .form-header-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;line-height:1.1;}
-.form-header-title span{display:block;font-family:'Barlow',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.35);font-weight:300;}
+.form-header-title span{display:block;font-family:'Barlow',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.85);font-weight:300;}
 .form-group{margin-bottom:14px;}
-.form-label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.75);margin-bottom:5px;}
+.form-label{display:block;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.85);margin-bottom:5px;}
 .form-label .req{color:#ffeb3b;}
 .form-input,.form-select,.form-textarea{width:100%;background:var(--grigio);border:1px solid var(--bordo);border-radius:8px;color:var(--crema);font-family:'Barlow',sans-serif;font-size:15px;padding:10px 12px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
 .form-input:focus,.form-select:focus,.form-textarea:focus{border-color:#ffeb3b;}
@@ -72,7 +73,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 
 /* GESTIONE AGENTI */
 .agenti-manager{background:rgba(255,255,255,0.04);border:1px solid var(--bordo);border-radius:8px;padding:12px;margin-top:8px;}
-.agenti-manager-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.4);margin-bottom:8px;}
+.agenti-manager-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,235,59,0.85);margin-bottom:8px;}
 .agenti-add-row{display:flex;gap:8px;}
 .agenti-add-row input{flex:1;}
 .btn-add-agente{padding:10px 14px;background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.4);border-radius:8px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;}
@@ -83,7 +84,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 /* NUMERI */
 .num-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .num-item{background:var(--grigio);border:1px solid var(--bordo);border-radius:8px;padding:10px 12px;}
-.num-item-label{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,235,59,0.75);margin-bottom:6px;}
+.num-item-label{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,235,59,0.85);margin-bottom:6px;}
 .num-item input{width:100%;background:transparent;border:none;color:#ffeb3b;font-family:'Bebas Neue',sans-serif;font-size:28px;outline:none;text-align:center;}
 .num-item input::placeholder{color:#ffeb3b;opacity:1;}
 
@@ -93,14 +94,14 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 .conf-btn{padding:9px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:12px;cursor:pointer;text-align:center;}
 .conf-btn.active{background:rgba(39,174,96,0.2);border-color:var(--verde);color:#ffeb3b;}
 
-.form-divider{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,235,59,0.3);margin:16px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--bordo);}
+.form-divider{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,235,59,0.85);margin:16px 0 10px;padding-bottom:5px;border-bottom:1px solid var(--bordo);}
 
 .btn-submit{width:100%;padding:15px;border:none;border-radius:12px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;margin-top:18px;margin-bottom:30px;background:linear-gradient(135deg,#1a3a5c,var(--oro));color:#0d1b2e;font-weight:bold;}
 .btn-submit:hover{opacity:0.85;}
 
 /* REPORT */
 .report-tabs{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:16px;}
-.tab-btn{padding:9px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.7);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
+.tab-btn{padding:9px;border-radius:8px;border:1px solid var(--bordo);background:transparent;color:rgba(255,235,59,0.85);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
 .tab-btn.active{background:rgba(245,166,35,0.15);border-color:#ffeb3b;color:#ffeb3b;}
 .report-card{background:var(--grigio);border:1px solid var(--bordo);border-radius:10px;padding:14px;margin-bottom:10px;}
 .report-card-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#ffeb3b;margin-bottom:10px;}
@@ -110,14 +111,14 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 .servizio-card{background:var(--grigio);border:1px solid var(--bordo);border-radius:10px;padding:12px;margin-bottom:8px;}
 .servizio-top{display:flex;justify-content:space-between;margin-bottom:6px;}
 .servizio-data{font-family:'Bebas Neue',sans-serif;font-size:16px;color:#ffeb3b;}
-.servizio-turno{font-size:10px;color:rgba(255,235,59,0.7);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;}
-.servizio-detail{font-size:12px;color:rgba(255,235,59,0.55);line-height:1.7;}
+.servizio-turno{font-size:10px;color:rgba(255,235,59,0.85);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase;}
+.servizio-detail{font-size:12px;color:rgba(255,235,59,0.85);line-height:1.7;}
 .badge-tipo{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;margin-top:5px;background:rgba(245,166,35,0.2);color:#ffeb3b;}
 .empty-state{text-align:center;padding:40px 20px;color:rgba(255,235,59,0.25);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;}
 .empty-state div{font-size:38px;margin-bottom:10px;}
 .bar-container{margin-top:6px;}
 .bar-row{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
-.bar-label{font-size:11px;color:rgba(255,235,59,0.55);width:80px;flex-shrink:0;font-family:'Barlow Condensed',sans-serif;}
+.bar-label{font-size:11px;color:rgba(255,235,59,0.85);width:80px;flex-shrink:0;font-family:'Barlow Condensed',sans-serif;}
 .bar-track{flex:1;background:rgba(255,255,255,0.08);border-radius:4px;height:8px;}
 .bar-fill{height:8px;border-radius:4px;background:var(--oro2);}
 .bar-val{font-family:'Bebas Neue',sans-serif;font-size:16px;color:#ffeb3b;width:30px;text-align:right;}
@@ -129,13 +130,13 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 .loading-overlay.show{display:flex;}
 .spinner{width:42px;height:42px;border:3px solid rgba(255,255,255,0.1);border-top-color:#ffeb3b;border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.loading-text{font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:12px;color:rgba(255,235,59,0.6);text-transform:uppercase;}
+.loading-text{font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:12px;color:rgba(255,235,59,0.85);text-transform:uppercase;}
 
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.show{display:flex;}
 .modal-box{background:#0D1B2E;border:1px solid var(--oro2);border-radius:16px;padding:24px;max-width:300px;width:100%;}
 .modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#ffeb3b;margin-bottom:12px;}
-.modal-text{font-size:13px;color:rgba(255,235,59,0.6);margin-bottom:14px;}
+.modal-text{font-size:13px;color:rgba(255,235,59,0.85);margin-bottom:14px;}
 .modal-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
 .modal-btn{padding:11px;border:none;border-radius:8px;font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;}
 .modal-btn.cancel{background:var(--grigio);border:1px solid var(--bordo);color:var(--crema);}
@@ -150,7 +151,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 .btn-del-agm{background:rgba(231,76,60,0.2);border:1px solid rgba(231,76,60,0.4);border-radius:6px;color:#e74c3c;cursor:pointer;font-size:12px;padding:3px 8px;font-family:'Barlow Condensed',sans-serif;}
 .agenti-add-rowm{display:flex;gap:8px;margin-top:10px;}
 .btn-add-agm{padding:9px 12px;background:rgba(39,174,96,0.2);border:1px solid rgba(39,174,96,0.5);border-radius:8px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;}
-.btn-gestisci-s{padding:9px 14px;background:rgba(245,166,35,0.06);border:1px dashed rgba(245,166,35,0.25);border-radius:8px;color:rgba(255,235,59,0.4);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:6px;display:block;width:100%;}
+.btn-gestisci-s{padding:9px 14px;background:rgba(245,166,35,0.06);border:1px dashed rgba(245,166,35,0.25);border-radius:8px;color:rgba(255,235,59,0.85);font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-top:6px;display:block;width:100%;}
 .btn-gestisci-s:hover{background:rgba(245,166,35,0.12);color:#ffeb3b;}
 
 @media print {
@@ -177,13 +178,29 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 .modal-istruzioni.show{display:flex;}
 .modal-istr-box{background:#0D1B2E;border:1px solid rgba(245,166,35,0.4);border-radius:16px;padding:24px 20px;max-width:480px;width:100%;margin:auto;}
 .modal-istr-box h2{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:3px;color:#ffeb3b;margin-bottom:2px;}
-.modal-istr-box h3{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,235,59,0.6);margin-bottom:16px;text-transform:uppercase;}
+.modal-istr-box h3{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;color:rgba(255,235,59,0.85);margin-bottom:16px;text-transform:uppercase;}
 .istr-section{margin-bottom:16px;}
 .istr-title{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;color:#ffeb3b;margin-bottom:5px;padding-bottom:3px;border-bottom:1px solid rgba(125,207,170,0.2);}
-.istr-text{font-size:16px;color:rgba(255,235,59,0.7);line-height:1.7;}
+.istr-text{font-size:16px;color:rgba(255,235,59,0.85);line-height:1.7;}
 .istr-text strong{color:#ffeb3b;}
-.istr-firma{font-size:13px;color:rgba(255,235,59,0.4);margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);line-height:1.7;}
+.istr-firma{font-size:13px;color:rgba(255,235,59,0.85);margin-top:16px;padding-top:12px;border-top:1px solid rgba(255,255,255,0.1);line-height:1.7;}
 .btn-istr-close{width:100%;padding:12px;border:none;border-radius:10px;background:#f5a623;color:#1a1a2e;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:12px;}
+
+@keyframes pulsa{0%,100%{opacity:.25}50%{opacity:.7}}
+.stat-card .num.loading{animation:pulsa 1.2s ease-in-out infinite;letter-spacing:4px;}
+/* ===== MIGLIORIE LEGGIBILITA' E ACCESSIBILITA' ===== */
+.header p,.stat-card .label,.section-title,.form-header-title span,.agenti-manager-title,.record-data{font-size:12px;}
+.btn-main-text span{font-size:13px;}
+.record-detail{font-size:13px;}
+.install-banner span,.btn-adesso,.btn-add-ag,.btn-turno,.tab-btn,.btn-report,.btn-sheet,.btn-report-home{font-size:14px;}
+.btn-report,.btn-sheet,.btn-report-home,.btn-turno,.agente-btn,.tab-btn,.btn-adesso,.btn-add-ag,.btn-submit,.install-banner button,#btnModalitaProva{min-height:48px;}
+.btn-back{width:48px;height:48px;}
+.btn-del-ag{min-width:44px;min-height:44px;font-size:18px;}
+button:focus-visible,[role="button"]:focus-visible,.custom-select-trigger:focus-visible,.custom-select-option:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #ffffff;outline-offset:2px;}
+.form-input:focus,.form-select:focus,.custom-select-trigger:focus{border-color:#f5a623;box-shadow:0 0 0 3px rgba(255,235,59,0.7);}
+.toast{background:#1e8449;color:#ffffff;}
+.toast.error{background:#c0392b;color:#ffffff;}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
 </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -200,9 +217,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 
 
 <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div><div class="loading-text">Salvataggio...</div></div>
-<div class="toast" id="toast">👤 Benvenuto, BORRINI</div>
+<div class="toast" id="toast" role="status" aria-live="polite">👤 Benvenuto, BORRINI</div>
 
-<div class="modal-overlay" id="modalSheet">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalSheet">
   <div class="modal-box">
     <div class="modal-title">🔒 Accesso protetto</div>
     <div class="modal-text">Inserisci la password per accedere al Google Sheet</div>
@@ -218,7 +235,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 
 
 <!-- MODAL CAMBIA PIN -->
-<div class="modal-overlay" id="modalCambiaPin" style="display:none;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalCambiaPin" style="display:none;">
   <div class="modal-box">
     <div class="modal-title">🔑 Cambia PIN</div>
     <div class="modal-text">Scegli un PIN personale salvato solo su questo dispositivo.</div>
@@ -236,7 +253,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </div>
 </div>
 
-<div class="modal-overlay" id="modalLogin" style="z-index:10000;">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalLogin" style="z-index:10000;">
   <div class="modal-box">
     <div class="modal-title">👤 Identificazione</div>
     <div class="modal-text">Inserisci il tuo codice operatore (4 cifre) per identificarti. Verrà richiesto solo questa volta su questo dispositivo.</div>
@@ -250,7 +267,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </div>
 </div>
 
-<div class="modal-overlay" id="modalAgentiServizio">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalAgentiServizio">
   <div class="modal-box large">
     <div class="modal-title">🔒 Gestione Agenti</div>
     <div class="modal-text">Inserisci la password per modificare gli agenti</div>
@@ -289,7 +306,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <span>📲 Installa l'app sulla schermata home</span>
     <button onclick="installApp()">INSTALLA</button>
   </div>
-  <button onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.add(&#39;show&#39;)" style="width:100%;padding:11px;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.3);border-radius:10px;color:#ffeb3b;font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
+  <button onclick="document.getElementById(&#39;modalIstruzioni&#39;).classList.add(&#39;show&#39;)" style="min-height:48px;width:100%;padding:11px;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.3);border-radius:10px;color:#ffeb3b;font-family:&#39;Barlow Condensed&#39;,sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
 <div class="stats-grid">
     <div class="stat-card highlight"><div class="num" id="statMese">0</div><div class="label">Servizi mese</div></div>
     <div class="stat-card highlight"><div class="num" id="statAnno">0</div><div class="label">Servizi anno</div></div>
@@ -310,7 +327,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <!-- FORM -->
 <div class="screen" id="screenForm">
   <div class="form-header">
-    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai(&#39;screenHome&#39;)">‹</button>
     <div class="form-header-title"><span>Inserimento</span>Nuovo Servizio</div>
   </div>
 
@@ -427,7 +444,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <!-- REPORT -->
 <div class="screen" id="screenReport">
   <div class="form-header">
-    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai(&#39;screenHome&#39;)">‹</button>
     <div class="form-header-title"><span>Statistiche</span>Report Servizio</div>
   </div>
   <div class="report-tabs">
@@ -443,7 +460,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 <!-- SCREEN STAMPA -->
 <div class="screen" id="screenStampa">
   <div class="form-header">
-    <button class="btn-back" onclick="vai(&#39;screenHome&#39;)">‹</button>
+    <button class="btn-back" aria-label="Indietro" onclick="vai(&#39;screenHome&#39;)">‹</button>
     <div class="form-header-title"><span>Report</span>Stampa Giornaliera</div>
   </div>
   <div class="form-group" style="margin-top:16px;">
@@ -459,7 +476,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 
 
 <!-- MODAL ISTRUZIONI SERVIZIO -->
-<div class="modal-istruzioni" id="modalIstruzioni">
+<div class="modal-istruzioni" id="modalIstruzioni" role="dialog" aria-modal="true">
   <div class="modal-istr-box">
     <h2>📋 Report Servizio</h2>
     <h3>Istruzioni — Polizia Provinciale di Cremona</h3>
@@ -668,14 +685,7 @@ window.onload = function(){
   }
 };
 
-function mostraCambiaPin() {
-  if (!operatoreCorrente) { toast('Devi prima accedere', true); return; }
-  document.getElementById('cp-attuale').value = '';
-  document.getElementById('cp-nuovo').value = '';
-  document.getElementById('cp-conferma').value = '';
-  document.getElementById('cp-err').textContent = '';
-  document.getElementById('modalCambiaPin').style.display = 'flex';
-}
+
 
 function salvaNuovoPin() {
   var attuale = document.getElementById('cp-attuale').value.trim();
@@ -909,18 +919,7 @@ function toggleAgente(nome){
   renderAgentiGrid();
 }
 
-function aggiungiAgente(){
-  var input=document.getElementById('nuovoAgente');
-  var nome=input.value.trim().toUpperCase();
-  if(!nome) return;
-  if(agenti.indexOf(nome)>=0){toast('Agente già presente',true);return;}
-  agenti.push(nome);
-  agenti.sort();
-  salvaAgentiServizio();
-  input.value='';
-  renderAgentiGrid();
-  if(document.getElementById('agentiManagerList')) renderAgentiManager();
-}
+
 
 function rimuoviAgente(nome){
   var idx=agenti.indexOf(nome);
@@ -1519,15 +1518,14 @@ async function generaStampa(){
   }
 }
 
-function apriModalSheet(){document.getElementById('inputPassword').value='';document.getElementById('errPassword').textContent='';document.getElementById('modalSheet').classList.add('show');}
+
 function chiudiModalSheet(){document.getElementById('modalSheet').classList.remove('show');}
 function verificaPassword(){var pwd=document.getElementById('inputPassword').value;if(pwd==='12345611'){chiudiModalSheet();window.open(SHEET_URL,'_blank');}else{document.getElementById('errPassword').textContent='❌ Password errata';document.getElementById('inputPassword').value='';}}
 document.getElementById('inputPassword').addEventListener('keydown',function(e){if(e.key==='Enter')verificaPassword();});
 
 var SHEET_URL='https://docs.google.com/spreadsheets/d/1_SaJq2dvGEP-wNsKtSsD_4kULywLDItyaea6v1DQ2A0/edit';
 
-syncPinMapDaSheet().then(checkLogin);
-loadStats();
+checkLogin();   // statistiche e PIN arrivano dopo il login: niente richieste doppie all'avvio
 </script>
 
 

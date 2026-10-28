@@ -12,7 +12,7 @@
 :root{
   --bg:#f5f6f8;--surface:#ffffff;--card:#ffffff;--border:#e2e5ea;
   --accent:#3b82f6;--danger:#ef4444;--success:#16a34a;--warn:#d97706;
-  --text:#1a1d24;--muted:#8a92a3;
+  --text:#1a1d24;--muted:#5b6475;
   --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;--display:'Bebas Neue',cursive;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -185,6 +185,13 @@ select.modal-input{-webkit-appearance:none;appearance:none}
 .nav-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin:0 0 0 0;}
 .nav-tab{flex:1;padding:10px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer;border:none;background:transparent;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-2px;}
 .nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600;}
+
+/* ===== MIGLIORIE LEGGIBILITA' E ACCESSIBILITA' ===== */
+.nav-tab,.nav-mese-btn{min-height:44px;}
+.nav-tab.active{color:#1d4ed8;}
+.logo-sub{font-size:11px;}.hright{font-size:12px;}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #1d4ed8;outline-offset:2px;}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
 </style>
 <link rel="manifest" href="https://palvareto.github.io/manifest-turni.json">
 <meta name="theme-color" content="#1a73e8">
@@ -210,7 +217,7 @@ select.modal-input{-webkit-appearance:none;appearance:none}
     <div class="badge">🛡️</div>
     <div><div class="logo-text">TURNI</div><div class="logo-sub">PP CREMONA</div></div>
   </div>
-  <button onclick="document.getElementById('modalIstruzioni').classList.add('show')" style="background:transparent;border:1px solid rgba(26,115,232,0.4);border-radius:8px;color:#1a73e8;font-size:11px;padding:4px 8px;cursor:pointer;margin-right:8px;">ℹ️</button>
+  <button onclick="document.getElementById('modalIstruzioni').classList.add('show')" style="min-height:44px;min-width:44px;color:#1558b0;background:transparent;border:1px solid rgba(26,115,232,0.4);border-radius:8px;color:#1558b0;font-size:11px;padding:4px 8px;cursor:pointer;margin-right:8px;">ℹ️</button>
 <div class="hright" style="display:flex;align-items:center;gap:8px;">
   <div style="cursor:pointer" onclick="showPinScreen()" title="Cambia operatore">
     <span id="operatoreBadge" style="font-size:11px">👤 AMMINISTRATORE</span>
@@ -219,8 +226,8 @@ select.modal-input{-webkit-appearance:none;appearance:none}
 </div>
 </header>
 <div style="padding:12px 16px 6px;display:flex;gap:8px;">
-  <button onclick="document.getElementById('modalIstruzioni').classList.add('show')" style="flex:1;padding:10px;background:rgba(26,115,232,0.08);border:1px solid rgba(26,115,232,0.3);border-radius:10px;color:#1a73e8;font-family:sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">ℹ️ Istruzioni</button>
-  <button onclick="showArchivio()" style="flex:1;padding:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;color:#d97706;font-family:sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">📅 Archivio</button>
+  <button onclick="document.getElementById('modalIstruzioni').classList.add('show')" style="min-height:44px;min-width:44px;color:#1558b0;flex:1;padding:10px;background:rgba(26,115,232,0.08);border:1px solid rgba(26,115,232,0.3);border-radius:10px;color:#1558b0;font-family:sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">ℹ️ Istruzioni</button>
+  <button onclick="showArchivio()" style="min-height:44px;flex:1;padding:10px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;color:#b45309;font-family:sans-serif;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;">📅 Archivio</button>
 </div>
 <!-- BANNER MODIFICA TURNI -->
 <div class="banner-modifica" id="bannerModifica">
@@ -280,7 +287,7 @@ select.modal-input{-webkit-appearance:none;appearance:none}
 <footer id="footer-txt">TURNI PP CREMONA · TOCCA UNA CARD PER MODIFICARE</footer>
 
 <!-- MODAL -->
-<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+<div class="modal-overlay" role="dialog" aria-modal="true" id="modalOverlay" onclick="if(event.target===this)closeModal()">
   <div class="modal">
     <div class="modal-title" id="modalTitle">MODIFICA TURNO</div>
     <div class="modal-label">Turno</div>
@@ -295,9 +302,9 @@ select.modal-input{-webkit-appearance:none;appearance:none}
       <option value="DISP.">DISP.</option>
       <option value="custom">Altro (scrivi sotto)</option>
     </select>
-    <input class="modal-input" id="m-turno-custom" placeholder="es. R07/06" style="margin-top:8px;display:none">
+    <input class="modal-input" id="m-turno-custom" style="margin-top:8px;display:none">
     <div class="modal-label">Nota</div>
-    <input class="modal-input" id="m-nota" placeholder="es. S1, COORDINA, PO...">
+    <input class="modal-input" id="m-nota">
     <div class="modal-row">
       <label><input type="checkbox" id="m-rep" style="width:18px;height:18px"> 🔔 Reperibile</label>
     </div>
@@ -316,9 +323,9 @@ select.modal-input{-webkit-appearance:none;appearance:none}
   <div class="modal" style="border-radius:16px;max-width:340px">
     <div class="modal-title">ACCESSO</div>
     <div style="font-family:var(--sans);font-size:12px;color:var(--muted);margin-bottom:10px">Inserisci il tuo PIN per accedere</div>
-    <input class="modal-input" id="pin-input" type="tel" inputmode="numeric" placeholder="PIN" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:4px;color:var(--text)">
+    <input class="modal-input" id="pin-input" type="tel" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:4px;color:var(--text)">
     <div style="font-family:var(--sans);font-size:11px;color:var(--muted);margin:8px 0 4px;">Parola segreta</div>
-    <input class="modal-input" id="parola-input" type="text" placeholder="PAROLA" maxlength="5" style="text-align:center;font-size:18px;letter-spacing:4px;color:var(--text);text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
+    <input class="modal-input" id="parola-input" type="text" maxlength="5" style="text-align:center;font-size:18px;letter-spacing:4px;color:var(--text);text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
     <div class="modal-err" id="pin-err" style="display: none;">PIN o parola non validi</div>
     <div class="modal-actions">
       <button class="btn btn-primary" id="pin-confirm" onclick="confirmPin()">Conferma</button>
@@ -332,11 +339,11 @@ select.modal-input{-webkit-appearance:none;appearance:none}
     <div class="modal-title">CAMBIA PIN</div>
     <div style="font-family:var(--sans);font-size:12px;color:var(--muted);margin-bottom:14px">Scegli un PIN personale a 4 cifre. Verrà salvato solo su questo dispositivo.</div>
     <div style="font-family:var(--sans);font-size:11px;color:var(--muted);margin-bottom:6px">PIN attuale</div>
-    <input class="modal-input" id="cp-attuale" type="tel" inputmode="numeric" placeholder="PIN attuale" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:4px;color:var(--text);margin-bottom:10px;">
+    <input class="modal-input" id="cp-attuale" type="tel" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:4px;color:var(--text);margin-bottom:10px;">
     <div style="font-family:var(--sans);font-size:11px;color:var(--muted);margin-bottom:6px">Nuovo PIN</div>
-    <input class="modal-input" id="cp-nuovo" type="tel" inputmode="numeric" placeholder="Nuovo PIN (4 cifre)" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:4px;color:var(--text);margin-bottom:10px;">
+    <input class="modal-input" id="cp-nuovo" type="tel" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:4px;color:var(--text);margin-bottom:10px;">
     <div style="font-family:var(--sans);font-size:11px;color:var(--muted);margin-bottom:6px">Conferma nuovo PIN</div>
-    <input class="modal-input" id="cp-conferma" type="tel" inputmode="numeric" placeholder="Ripeti nuovo PIN" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:4px;color:var(--text);margin-bottom:6px;">
+    <input class="modal-input" id="cp-conferma" type="tel" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:4px;color:var(--text);margin-bottom:6px;">
     <div class="modal-err" id="cp-err" style="display:none;"></div>
     <div class="modal-actions">
       <button class="btn" onclick="document.getElementById('cambiaPinOverlay').style.display='none'">Annulla</button>
@@ -869,14 +876,7 @@ function saveTurno(){
 }
 
 // ── CAMBIA PIN ───────────────────────────────────────────
-function mostraCambiaPin(){
-  if(!operatoreCorrente){ alert('Devi prima accedere con il tuo PIN.'); return; }
-  document.getElementById('cp-attuale').value='';
-  document.getElementById('cp-nuovo').value='';
-  document.getElementById('cp-conferma').value='';
-  document.getElementById('cp-err').style.display='none';
-  document.getElementById('cambiaPinOverlay').style.display='flex';
-}
+
 
 function salvaNuovoPin(){
   var attuale = document.getElementById('cp-attuale').value.trim();
