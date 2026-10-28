@@ -206,7 +206,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="modal-box">
     <div class="modal-title">🔒 Accesso protetto</div>
     <div class="modal-text">Inserisci la password per accedere al Google Sheet</div>
-    <input type="password" class="form-input" id="inputPassword" placeholder="Password..." style="margin-bottom:6px;">
+    <input type="password" class="form-input" id="inputPassword" style="margin-bottom:6px;">
     <div id="errPassword" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
     <div class="modal-btns">
       <button class="modal-btn cancel" onclick="chiudiModalSheet()">Annulla</button>
@@ -223,11 +223,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <div class="modal-title">🔑 Cambia PIN</div>
     <div class="modal-text">Scegli un PIN personale salvato solo su questo dispositivo.</div>
     <div style="font-size:11px;color:rgba(245,240,232,0.5);margin-bottom:6px;">PIN attuale</div>
-    <input type="text" class="form-input" id="cp-attuale" placeholder="PIN attuale" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
+    <input type="text" class="form-input" id="cp-attuale" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
     <div style="font-size:11px;color:rgba(245,240,232,0.5);margin-bottom:6px;">Nuovo PIN</div>
-    <input type="text" class="form-input" id="cp-nuovo" placeholder="Nuovo PIN (4 cifre)" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
+    <input type="text" class="form-input" id="cp-nuovo" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
     <div style="font-size:11px;color:rgba(245,240,232,0.5);margin-bottom:6px;">Conferma nuovo PIN</div>
-    <input type="text" class="form-input" id="cp-conferma" placeholder="Ripeti nuovo PIN" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:8px;">
+    <input type="text" class="form-input" id="cp-conferma" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:8px;">
     <div id="cp-err" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:8px;"></div>
     <div class="modal-btns">
       <button class="modal-btn cancel" onclick="document.getElementById(&#39;modalCambiaPin&#39;).style.display=&#39;none&#39;">Annulla</button>
@@ -240,9 +240,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="modal-box">
     <div class="modal-title">👤 Identificazione</div>
     <div class="modal-text">Inserisci il tuo codice operatore (4 cifre) per identificarti. Verrà richiesto solo questa volta su questo dispositivo.</div>
-    <input type="text" class="form-input" id="pinLogin" placeholder="es. 1234" inputmode="numeric" maxlength="4" style="margin-bottom:6px;text-align:center;font-size:22px;letter-spacing:8px;font-family:&#39;Bebas Neue&#39;,sans-serif;">
+    <input type="text" class="form-input" id="pinLogin" inputmode="numeric" maxlength="4" style="margin-bottom:6px;text-align:center;font-size:22px;letter-spacing:8px;font-family:&#39;Bebas Neue&#39;,sans-serif;">
     <div style="font-size:11px;color:rgba(245,240,232,0.5);margin:6px 0 4px;">Parola segreta</div>
-    <input type="text" class="form-input" id="parolaLogin" placeholder="PAROLA" maxlength="5" style="margin-bottom:6px;text-align:center;font-size:20px;letter-spacing:6px;text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
+    <input type="text" class="form-input" id="parolaLogin" maxlength="5" style="margin-bottom:6px;text-align:center;font-size:20px;letter-spacing:6px;text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
     <div id="errLogin" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
     <div class="modal-btns" style="grid-template-columns:1fr;">
       <button class="modal-btn confirm" onclick="verificaPinLogin()">Conferma</button>
@@ -255,7 +255,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <div class="modal-title">🔒 Gestione Agenti</div>
     <div class="modal-text">Inserisci la password per modificare gli agenti</div>
     <div id="agentiPwdSectionS">
-      <input type="password" class="form-input" id="pwdAgentiS" placeholder="Password..." style="margin-bottom:6px;">
+      <input type="password" class="form-input" id="pwdAgentiS" style="margin-bottom:6px;">
       <div id="errAgentiS" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
       <div class="modal-btns">
         <button class="modal-btn cancel" onclick="chiudiModalAgentiS()">Annulla</button>
@@ -266,8 +266,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
       <div class="agenti-manager-list" id="agentiManagerListS"></div>
       <div class="agenti-add-rowm" style="flex-direction:column;gap:8px;">
         <div style="display:flex;gap:8px;">
-          <input type="text" class="form-input" id="nuovoAgenteS" placeholder="Nome agente..." style="font-size:13px;padding:8px 10px;flex:2;">
-          <input type="text" class="form-input" id="nuovoAgentePinS" placeholder="PIN (vuoto se già noto)" inputmode="numeric" maxlength="4" style="font-size:13px;padding:8px 10px;flex:1;">
+          <input type="text" class="form-input" id="nuovoAgenteS" style="font-size:13px;padding:8px 10px;flex:2;">
+          <input type="text" class="form-input" id="nuovoAgentePinS" inputmode="numeric" maxlength="4" style="font-size:13px;padding:8px 10px;flex:1;">
         </div>
         <div id="errPinAgenteS" style="font-size:11px;color:#e74c3c;min-height:14px;"></div>
         <button class="btn-add-agm" onclick="aggiungiAgenteS()" style="width:100%;">+ Aggiungi agente con PIN</button>
@@ -361,12 +361,12 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
       <button class="sel-btn" id="zonCremasco" onclick="setZona(&#39;Cremasco&#39;)">📍 Cremasco</button>
       <button class="sel-btn" id="zonCasalasco" onclick="setZona(&#39;Casalasco&#39;)">📍 Casalasco</button>
     </div>
-    <input type="text" class="form-input" id="zonaLibera" placeholder="Oppure digita zona libera...">
+    <input type="text" class="form-input" id="zonaLibera">
   </div>
 
   <div class="form-group">
     <label class="form-label">Attività svolta</label>
-    <textarea class="form-textarea" id="fAttivita" placeholder="Descrizione attività svolta durante il servizio..."></textarea>
+    <textarea class="form-textarea" id="fAttivita"></textarea>
   </div>
 
   <div class="form-divider">🔢 Dati quantitativi</div>
@@ -374,26 +374,26 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-group">
     <label class="form-label">Sopralluoghi e interventi</label>
     <div class="num-grid">
-      <div class="num-item"><div class="num-item-label">Su iniziativa</div><input type="number" id="nIniziativa" placeholder="0" min="0"></div>
-      <div class="num-item"><div class="num-item-label">Su segnalazione</div><input type="number" id="nSegnalazione" placeholder="0" min="0"></div>
-      <div class="num-item"><div class="num-item-label">Richieste interv.</div><input type="number" id="nInterventi" placeholder="0" min="0"></div>
+      <div class="num-item"><div class="num-item-label">Su iniziativa</div><input type="number" id="nIniziativa" min="0"></div>
+      <div class="num-item"><div class="num-item-label">Su segnalazione</div><input type="number" id="nSegnalazione" min="0"></div>
+      <div class="num-item"><div class="num-item-label">Richieste interv.</div><input type="number" id="nInterventi" min="0"></div>
     </div>
   </div>
 
   <div class="form-group">
     <label class="form-label">Verbali</label>
     <div class="num-grid">
-      <div class="num-item"><div class="num-item-label">Verbali caccia</div><input type="number" id="nCaccia" placeholder="0" min="0"></div>
-      <div class="num-item"><div class="num-item-label">Verbali pesca</div><input type="number" id="nPesca" placeholder="0" min="0"></div>
-      <div class="num-item"><div class="num-item-label">Verbali CdS</div><input type="number" id="nCds" placeholder="0" min="0"></div>
+      <div class="num-item"><div class="num-item-label">Verbali caccia</div><input type="number" id="nCaccia" min="0"></div>
+      <div class="num-item"><div class="num-item-label">Verbali pesca</div><input type="number" id="nPesca" min="0"></div>
+      <div class="num-item"><div class="num-item-label">Verbali CdS</div><input type="number" id="nCds" min="0"></div>
     </div>
   </div>
 
   <div class="form-group">
     <label class="form-label">Denunce P.G.</label>
     <div class="num-grid">
-      <div class="num-item"><div class="num-item-label">N° denunce</div><input type="number" id="nDenunce" placeholder="0" min="0"></div>
-      <div class="num-item" style="grid-column:span 1;"><div class="num-item-label">Descrizione</div><input type="text" id="fDenunce" placeholder="es. art. 727 cp..." style="background:transparent;border:none;color:var(--crema);font-family:Barlow,sans-serif;font-size:13px;outline:none;width:100%;"></div>
+      <div class="num-item"><div class="num-item-label">N° denunce</div><input type="number" id="nDenunce" min="0"></div>
+      <div class="num-item" style="grid-column:span 1;"><div class="num-item-label">Descrizione</div><input type="text" id="fDenunce" style="background:transparent;border:none;color:var(--crema);font-family:Barlow,sans-serif;font-size:13px;outline:none;width:100%;"></div>
     </div>
   </div>
 
@@ -402,8 +402,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-group">
     <div class="animali-box">
       <div class="num-grid" style="margin-bottom:10px;">
-        <div class="num-item"><div class="num-item-label">N° animali</div><input type="number" id="nAnimali" placeholder="0" min="0"></div>
-        <div class="num-item"><div class="num-item-label">Specie</div><input type="text" id="fSpecie" placeholder="es. Capriolo" style="background:transparent;border:none;color:var(--crema);font-family:Barlow,sans-serif;font-size:14px;outline:none;width:100%;"></div>
+        <div class="num-item"><div class="num-item-label">N° animali</div><input type="number" id="nAnimali" min="0"></div>
+        <div class="num-item"><div class="num-item-label">Specie</div><input type="text" id="fSpecie" style="background:transparent;border:none;color:var(--crema);font-family:Barlow,sans-serif;font-size:14px;outline:none;width:100%;"></div>
       </div>
       <label class="form-label">Conferiti presso</label>
       <div class="conferiti-grid" style="grid-template-columns:1fr 1fr 1fr;">
@@ -418,7 +418,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 
   <div class="form-group">
     <label class="form-label">Note di servizio</label>
-    <textarea class="form-textarea" id="fNote" placeholder="Annotazioni, osservazioni particolari..."></textarea>
+    <textarea class="form-textarea" id="fNote"></textarea>
   </div>
 
   <button class="btn-submit" onclick="submitForm()">📋 Salva Report Servizio</button>

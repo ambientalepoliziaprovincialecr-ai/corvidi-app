@@ -204,7 +204,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="modal-box">
     <div class="modal-title">🔒 Accesso protetto</div>
     <div class="modal-text">Inserisci la password per accedere al Google Sheet</div>
-    <input type="password" class="form-input" id="pwdSheet" placeholder="Password..." style="margin-bottom:6px;">
+    <input type="password" class="form-input" id="pwdSheet" style="margin-bottom:6px;">
     <div id="errSheet" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
     <div class="modal-btns">
       <button class="modal-btn cancel" onclick="chiudiModal(&#39;modalSheet&#39;)">Annulla</button>
@@ -234,11 +234,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <div class="modal-title">🔑 Cambia PIN</div>
     <div class="modal-text">Scegli un PIN personale salvato solo su questo dispositivo.</div>
     <div style="font-size:11px;color:rgba(245,240,232,0.5);margin-bottom:6px;">PIN attuale</div>
-    <input type="text" class="form-input" id="cp-attuale" placeholder="PIN attuale" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
+    <input type="text" class="form-input" id="cp-attuale" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
     <div style="font-size:11px;color:rgba(245,240,232,0.5);margin-bottom:6px;">Nuovo PIN</div>
-    <input type="text" class="form-input" id="cp-nuovo" placeholder="Nuovo PIN (4 cifre)" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
+    <input type="text" class="form-input" id="cp-nuovo" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
     <div style="font-size:11px;color:rgba(245,240,232,0.5);margin-bottom:6px;">Conferma nuovo PIN</div>
-    <input type="text" class="form-input" id="cp-conferma" placeholder="Ripeti nuovo PIN" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:8px;">
+    <input type="text" class="form-input" id="cp-conferma" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:8px;">
     <div id="cp-err" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:8px;"></div>
     <div class="modal-btns">
       <button class="modal-btn cancel" onclick="document.getElementById(&#39;modalCambiaPin&#39;).style.display=&#39;none&#39;">Annulla</button>
@@ -251,9 +251,9 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="modal-box">
     <div class="modal-title">👤 Identificazione</div>
     <div class="modal-text">Inserisci il tuo codice operatore (4 cifre) per identificarti. Verrà richiesto solo questa volta su questo dispositivo.</div>
-    <input type="text" class="form-input" id="pinLogin" placeholder="es. 1234" inputmode="numeric" maxlength="4" style="margin-bottom:6px;text-align:center;font-size:22px;letter-spacing:8px;font-family:&#39;Bebas Neue&#39;,sans-serif;">
+    <input type="text" class="form-input" id="pinLogin" inputmode="numeric" maxlength="4" style="margin-bottom:6px;text-align:center;font-size:22px;letter-spacing:8px;font-family:&#39;Bebas Neue&#39;,sans-serif;">
     <div style="font-size:11px;color:rgba(245,240,232,0.5);margin:6px 0 4px;">Parola segreta</div>
-    <input type="text" class="form-input" id="parolaLogin" placeholder="PAROLA" maxlength="5" style="margin-bottom:6px;text-align:center;font-size:20px;letter-spacing:6px;text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
+    <input type="text" class="form-input" id="parolaLogin" maxlength="5" style="margin-bottom:6px;text-align:center;font-size:20px;letter-spacing:6px;text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
     <div id="errLogin" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
     <div class="modal-btns" style="grid-template-columns:1fr;">
       <button class="modal-btn confirm" onclick="verificaPinLogin()">Conferma</button>
@@ -267,7 +267,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <div class="modal-title">🔒 Gestione Operatori</div>
     <div class="modal-text">Inserisci la password per modificare gli operatori</div>
     <div id="agentiPwdSection">
-      <input type="password" class="form-input" id="pwdAgenti" placeholder="Password..." style="margin-bottom:6px;">
+      <input type="password" class="form-input" id="pwdAgenti" style="margin-bottom:6px;">
       <div id="errAgenti" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
       <div class="modal-btns">
         <button class="modal-btn cancel" onclick="chiudiModal(&#39;modalAgenti&#39;)">Annulla</button>
@@ -278,8 +278,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
       <div class="agenti-manager-list" id="agentiManagerList"></div>
       <div class="agenti-add-row" style="flex-direction:column;gap:8px;">
         <div style="display:flex;gap:8px;">
-          <input type="text" class="form-input" id="nuovoAgente" placeholder="Nome operatore..." style="font-size:13px;padding:8px 10px;flex:2;">
-          <input type="text" class="form-input" id="nuovoAgentePin" placeholder="PIN (vuoto se già noto)" inputmode="numeric" maxlength="4" style="font-size:13px;padding:8px 10px;flex:1;">
+          <input type="text" class="form-input" id="nuovoAgente" style="font-size:13px;padding:8px 10px;flex:2;">
+          <input type="text" class="form-input" id="nuovoAgentePin" inputmode="numeric" maxlength="4" style="font-size:13px;padding:8px 10px;flex:1;">
         </div>
         <div id="errPinAgente" style="font-size:11px;color:#e74c3c;min-height:14px;"></div>
         <button class="btn-add" onclick="aggiungiAgente()" style="width:100%;">+ Aggiungi operatore con PIN</button>
@@ -365,35 +365,35 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-group">
     <label class="form-label">Cognome operatore <span class="req">*</span></label>
     <div class="autocomplete-wrap">
-      <input type="text" class="form-input" id="fCognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaCacciatore(this.value)" onblur="setTimeout(function(){chiudiLista();},200)">
+      <input type="text" class="form-input" id="fCognome" autocomplete="off" oninput="cercaCacciatore(this.value)" onblur="setTimeout(function(){chiudiLista();},200)">
       <div class="autocomplete-list" id="autocompleteList"></div>
     </div>
   </div>
   <div class="form-group">
     <label class="form-label">Nome</label>
-    <input type="text" class="form-input" id="fNome" placeholder="Nome operatore">
+    <input type="text" class="form-input" id="fNome">
   </div>
   <div class="form-group">
     <label class="form-label">Codice Fiscale</label>
-    <input type="text" class="form-input" id="fCF" placeholder="Codice fiscale">
+    <input type="text" class="form-input" id="fCF">
   </div>
   <div class="form-group">
     <label class="form-label">Email</label>
-    <input type="text" class="form-input" id="fEmail" placeholder="Email">
+    <input type="text" class="form-input" id="fEmail">
   </div>
   <div class="nuovo-cac-box" id="nuovoCacBox">
     <div class="nuovo-cac-label">✨ Nuovo operatore</div>
     <div class="form-group" style="margin-bottom:8px;">
       <label class="form-label">Nome <span class="req">*</span></label>
-      <input type="text" class="form-input" id="fNuovoNome" placeholder="Nome">
+      <input type="text" class="form-input" id="fNuovoNome">
     </div>
     <div class="form-group" style="margin-bottom:8px;">
       <label class="form-label">Codice Fiscale</label>
-      <input type="text" class="form-input" id="fNuovoCF" placeholder="Codice fiscale">
+      <input type="text" class="form-input" id="fNuovoCF">
     </div>
     <div class="form-group" style="margin-bottom:0;">
       <label class="form-label">Email</label>
-      <input type="text" class="form-input" id="fNuovaEmail" placeholder="Email">
+      <input type="text" class="form-input" id="fNuovaEmail">
     </div>
   </div>
   <div class="form-group">
@@ -407,11 +407,11 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-divider">📍 Luogo intervento</div>
   <div class="form-group">
     <label class="form-label">Comune <span class="req">*</span></label>
-    <input type="text" class="form-input" id="fComune" placeholder="Nome comune">
+    <input type="text" class="form-input" id="fComune">
   </div>
   <div class="form-group">
     <label class="form-label">Via / Località</label>
-    <input type="text" class="form-input" id="fViaLocalita" placeholder="Es. Via Bergamo, cascina Rossi...">
+    <input type="text" class="form-input" id="fViaLocalita">
   </div>
   <div class="form-group">
     <label class="form-label">Ubicazione terreno interessato</label>
@@ -430,8 +430,8 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-group">
     <label class="form-label">Coordinate GPS</label>
     <div class="gps-row">
-      <input type="text" class="form-input" id="fGpsLat" placeholder="Latitudine">
-      <input type="text" class="form-input" id="fGpsLon" placeholder="Longitudine">
+      <input type="text" class="form-input" id="fGpsLat">
+      <input type="text" class="form-input" id="fGpsLon">
       <button class="btn-gps" onclick="rilevaPosizione()">📍 Rileva</button>
     </div>
     <div class="gps-status" id="gpsStatus">Tocca "Rileva" per acquisire la posizione</div>
@@ -458,7 +458,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </div>
   <div class="form-group">
     <label class="form-label">Uso del suolo</label>
-    <input type="text" class="form-input" id="fUsoSuolo" placeholder="Es. Mais, Cereali, Prato...">
+    <input type="text" class="form-input" id="fUsoSuolo">
   </div>
   <div class="form-group">
     <label class="form-label">Mezzi di cattura / abbattimento <span class="req">*</span></label>
@@ -471,17 +471,17 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </div>
   <div class="form-group" id="codiceGabbiaGroup" style="display:none;">
     <label class="form-label">Codice rete / gabbia</label>
-    <input type="text" class="form-input" id="fCodiceGabbia" placeholder="Codice identificativo">
+    <input type="text" class="form-input" id="fCodiceGabbia">
   </div>
   <div class="form-group">
     <label class="form-label">N° soggetti rilevati a vista</label>
-    <input type="number" class="form-input" id="fVisti" placeholder="0" min="0">
+    <input type="number" class="form-input" id="fVisti" min="0">
   </div>
   <div class="form-group">
     <label class="form-label">N° soggetti abbattuti / catturati <span class="req">*</span></label>
     <div class="capi-row">
       <button class="capi-btn" onclick="cambiaCapi(-1)">−</button>
-      <input type="number" class="form-input" id="fCapi" placeholder="0" min="0">
+      <input type="number" class="form-input" id="fCapi" min="0">
       <button class="capi-btn" onclick="cambiaCapi(1)">+</button>
     </div>
   </div>
@@ -496,7 +496,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </div>
   <div class="form-group">
     <label class="form-label">Note</label>
-    <textarea class="form-textarea" id="fNote" placeholder="Osservazioni..."></textarea>
+    <textarea class="form-textarea" id="fNote"></textarea>
   </div>
   <button class="btn-submit" onclick="submitForm()">🐦‍⬛ Invia Intervento</button>
 </div>
@@ -521,17 +521,17 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-divider">📍 Luogo</div>
   <div class="form-group">
     <label class="form-label">Comune <span class="req">*</span></label>
-    <input type="text" class="form-input" id="iComune" placeholder="Nome comune">
+    <input type="text" class="form-input" id="iComune">
   </div>
   <div class="form-group">
     <label class="form-label">Località</label>
-    <input type="text" class="form-input" id="iLocalita" placeholder="Es. via Bergamo, S.P. 86...">
+    <input type="text" class="form-input" id="iLocalita">
   </div>
   <div class="form-group">
     <label class="form-label">Coordinate GPS</label>
     <div class="gps-row">
-      <input type="text" class="form-input" id="iGpsLat" placeholder="Latitudine">
-      <input type="text" class="form-input" id="iGpsLon" placeholder="Longitudine">
+      <input type="text" class="form-input" id="iGpsLat">
+      <input type="text" class="form-input" id="iGpsLon">
       <button class="btn-gps" onclick="rilevaPosizioneIbis()">📍 Rileva</button>
     </div>
     <div class="gps-status" id="iGpsStatus">Tocca "Rileva" per acquisire la posizione</div>
@@ -549,7 +549,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </div>
   <div class="form-group" id="iArmaGroup">
     <label class="form-label">Tipo di arma da fuoco</label>
-    <input type="text" class="form-input" id="iTipoArma" placeholder="Es. Fucile cal. 12">
+    <input type="text" class="form-input" id="iTipoArma">
   </div>
   <div class="form-group">
     <label class="form-label">Munizionamento <span class="req">*</span></label>
@@ -561,13 +561,13 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </div>
   <div class="form-group">
     <label class="form-label">N° individui osservati</label>
-    <input type="text" class="form-input" id="iOsservati" placeholder="Es. 50 CIRCA">
+    <input type="text" class="form-input" id="iOsservati">
   </div>
   <div class="form-group">
     <label class="form-label">N° individui abbattuti <span class="req">*</span></label>
     <div class="capi-row">
       <button class="capi-btn" onclick="cambiaCapiIbis(-1)">−</button>
-      <input type="number" class="form-input" id="iAbbattuti" placeholder="0" min="0">
+      <input type="number" class="form-input" id="iAbbattuti" min="0">
       <button class="capi-btn" onclick="cambiaCapiIbis(1)">+</button>
     </div>
   </div>
@@ -610,15 +610,15 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </div>
   <div class="form-group">
     <label class="form-label">Codice anello metallo</label>
-    <input type="text" class="form-input" id="iAnelloMetallo" placeholder="Se individuo inanellato">
+    <input type="text" class="form-input" id="iAnelloMetallo">
   </div>
   <div class="form-group">
     <label class="form-label">Codice anello colorato</label>
-    <input type="text" class="form-input" id="iAnelloColorato" placeholder="Se individuo inanellato">
+    <input type="text" class="form-input" id="iAnelloColorato">
   </div>
   <div class="form-group">
     <label class="form-label">Note</label>
-    <textarea class="form-textarea" id="iNote" placeholder="Osservazioni..."></textarea>
+    <textarea class="form-textarea" id="iNote"></textarea>
   </div>
 
   <div class="form-divider">👤 Operatore 1 <span class="req">*</span></div>
@@ -636,21 +636,21 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-group">
     <label class="form-label">Cognome</label>
     <div class="autocomplete-wrap">
-      <input type="text" class="form-input" id="iOp1Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreIbis(1,this.value)" onblur="setTimeout(function(){chiudiListaIbis(1);},200)">
+      <input type="text" class="form-input" id="iOp1Cognome" autocomplete="off" oninput="cercaOperatoreIbis(1,this.value)" onblur="setTimeout(function(){chiudiListaIbis(1);},200)">
       <div class="autocomplete-list" id="autocompleteListIbis1"></div>
     </div>
   </div>
   <div class="form-group">
     <label class="form-label">Nome</label>
-    <input type="text" class="form-input" id="iOp1Nome" placeholder="Nome operatore">
+    <input type="text" class="form-input" id="iOp1Nome">
   </div>
   <div class="form-group">
     <label class="form-label">Codice Fiscale</label>
-    <input type="text" class="form-input" id="iOp1CF" placeholder="Codice fiscale">
+    <input type="text" class="form-input" id="iOp1CF">
   </div>
   <div class="form-group">
     <label class="form-label">Email</label>
-    <input type="text" class="form-input" id="iOp1Email" placeholder="Email">
+    <input type="text" class="form-input" id="iOp1Email">
   </div>
 
   <div class="form-divider">👤 Operatore 2</div>
@@ -668,21 +668,21 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-group">
     <label class="form-label">Cognome</label>
     <div class="autocomplete-wrap">
-      <input type="text" class="form-input" id="iOp2Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreIbis(2,this.value)" onblur="setTimeout(function(){chiudiListaIbis(2);},200)">
+      <input type="text" class="form-input" id="iOp2Cognome" autocomplete="off" oninput="cercaOperatoreIbis(2,this.value)" onblur="setTimeout(function(){chiudiListaIbis(2);},200)">
       <div class="autocomplete-list" id="autocompleteListIbis2"></div>
     </div>
   </div>
   <div class="form-group">
     <label class="form-label">Nome</label>
-    <input type="text" class="form-input" id="iOp2Nome" placeholder="Nome operatore">
+    <input type="text" class="form-input" id="iOp2Nome">
   </div>
   <div class="form-group">
     <label class="form-label">Codice Fiscale</label>
-    <input type="text" class="form-input" id="iOp2CF" placeholder="Codice fiscale">
+    <input type="text" class="form-input" id="iOp2CF">
   </div>
   <div class="form-group">
     <label class="form-label">Email</label>
-    <input type="text" class="form-input" id="iOp2Email" placeholder="Email">
+    <input type="text" class="form-input" id="iOp2Email">
   </div>
 
   <div class="form-divider">👤 Operatore 3</div>
@@ -700,21 +700,21 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-group">
     <label class="form-label">Cognome</label>
     <div class="autocomplete-wrap">
-      <input type="text" class="form-input" id="iOp3Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreIbis(3,this.value)" onblur="setTimeout(function(){chiudiListaIbis(3);},200)">
+      <input type="text" class="form-input" id="iOp3Cognome" autocomplete="off" oninput="cercaOperatoreIbis(3,this.value)" onblur="setTimeout(function(){chiudiListaIbis(3);},200)">
       <div class="autocomplete-list" id="autocompleteListIbis3"></div>
     </div>
   </div>
   <div class="form-group">
     <label class="form-label">Nome</label>
-    <input type="text" class="form-input" id="iOp3Nome" placeholder="Nome operatore">
+    <input type="text" class="form-input" id="iOp3Nome">
   </div>
   <div class="form-group">
     <label class="form-label">Codice Fiscale</label>
-    <input type="text" class="form-input" id="iOp3CF" placeholder="Codice fiscale">
+    <input type="text" class="form-input" id="iOp3CF">
   </div>
   <div class="form-group">
     <label class="form-label">Email</label>
-    <input type="text" class="form-input" id="iOp3Email" placeholder="Email">
+    <input type="text" class="form-input" id="iOp3Email">
   </div>
 
   <div class="form-divider">👤 Operatore 4</div>
@@ -732,21 +732,21 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-group">
     <label class="form-label">Cognome</label>
     <div class="autocomplete-wrap">
-      <input type="text" class="form-input" id="iOp4Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreIbis(4,this.value)" onblur="setTimeout(function(){chiudiListaIbis(4);},200)">
+      <input type="text" class="form-input" id="iOp4Cognome" autocomplete="off" oninput="cercaOperatoreIbis(4,this.value)" onblur="setTimeout(function(){chiudiListaIbis(4);},200)">
       <div class="autocomplete-list" id="autocompleteListIbis4"></div>
     </div>
   </div>
   <div class="form-group">
     <label class="form-label">Nome</label>
-    <input type="text" class="form-input" id="iOp4Nome" placeholder="Nome operatore">
+    <input type="text" class="form-input" id="iOp4Nome">
   </div>
   <div class="form-group">
     <label class="form-label">Codice Fiscale</label>
-    <input type="text" class="form-input" id="iOp4CF" placeholder="Codice fiscale">
+    <input type="text" class="form-input" id="iOp4CF">
   </div>
   <div class="form-group">
     <label class="form-label">Email</label>
-    <input type="text" class="form-input" id="iOp4Email" placeholder="Email">
+    <input type="text" class="form-input" id="iOp4Email">
   </div>
 
   <button class="btn-submit" onclick="submitIbis()">🦢 Invia Scheda Ibis</button>
@@ -768,45 +768,45 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-divider">📍 Luogo</div>
   <div class="form-group">
     <label class="form-label">Comune <span class="req">*</span></label>
-    <input type="text" class="form-input" id="dComune" placeholder="Nome comune">
+    <input type="text" class="form-input" id="dComune">
   </div>
   <div class="form-group">
     <label class="form-label">Località</label>
-    <input type="text" class="form-input" id="dLocalita" placeholder="Es. Cascina Rossi...">
+    <input type="text" class="form-input" id="dLocalita">
   </div>
   <div class="form-group">
     <label class="form-label">Zona (ATC/ZRC)</label>
-    <input type="text" class="form-input" id="dZona" placeholder="Es. ATC CR1, ZRC...">
+    <input type="text" class="form-input" id="dZona">
   </div>
 
   <div class="form-divider">🎯 Dati abbattimento</div>
   <div class="form-group">
     <label class="form-label">Animali stimati</label>
-    <input type="text" class="form-input" id="dStimati" placeholder="Numero stimato">
+    <input type="text" class="form-input" id="dStimati">
   </div>
   <div class="form-group">
     <label class="form-label">Animali abbattuti <span class="req">*</span></label>
     <div class="capi-row">
       <button class="capi-btn" onclick="cambiaCapiDaino(-1)">−</button>
-      <input type="number" class="form-input" id="dAbbattuti" placeholder="0" min="0">
+      <input type="number" class="form-input" id="dAbbattuti" min="0">
       <button class="capi-btn" onclick="cambiaCapiDaino(1)">+</button>
     </div>
   </div>
   <div class="form-group">
     <label class="form-label">Sesso</label>
-    <input type="text" class="form-input" id="dSesso" placeholder="Es. Maschio, Femmina...">
+    <input type="text" class="form-input" id="dSesso">
   </div>
   <div class="form-group">
     <label class="form-label">Classe d'età</label>
-    <input type="text" class="form-input" id="dClasseEta" placeholder="Es. Adulto, Giovane, Piccolo...">
+    <input type="text" class="form-input" id="dClasseEta">
   </div>
   <div class="form-group">
     <label class="form-label">Metodo</label>
-    <input type="text" class="form-input" id="dMetodo" placeholder="Es. Tiro selettivo, Girata, Braccata...">
+    <input type="text" class="form-input" id="dMetodo">
   </div>
   <div class="form-group">
     <label class="form-label">Note</label>
-    <textarea class="form-textarea" id="dNote" placeholder="Osservazioni..."></textarea>
+    <textarea class="form-textarea" id="dNote"></textarea>
   </div>
 
   <button class="btn-submit" onclick="submitDaino()">🦌 Invia Scheda Daino</button>
@@ -832,25 +832,25 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-divider">📍 Luogo</div>
   <div class="form-group">
     <label class="form-label">Comune <span class="req">*</span></label>
-    <input type="text" class="form-input" id="cmComune" placeholder="Nome comune">
+    <input type="text" class="form-input" id="cmComune">
   </div>
   <div class="form-group">
     <label class="form-label">Località</label>
-    <input type="text" class="form-input" id="cmLocalita" placeholder="Es. argine sinistro...">
+    <input type="text" class="form-input" id="cmLocalita">
   </div>
   <div class="form-group">
     <label class="form-label">Corpo idrico</label>
-    <input type="text" class="form-input" id="cmCorpoIdrico" placeholder="Es. Fiume, Canale, Lago...">
+    <input type="text" class="form-input" id="cmCorpoIdrico">
   </div>
   <div class="form-group">
     <label class="form-label">Nome corpo idrico</label>
-    <input type="text" class="form-input" id="cmNomeCorpoIdrico" placeholder="Es. Po, Adda, Oglio...">
+    <input type="text" class="form-input" id="cmNomeCorpoIdrico">
   </div>
 
   <div class="form-divider">🎯 Dati intervento</div>
   <div class="form-group">
     <label class="form-label">Meteo</label>
-    <input type="text" class="form-input" id="cmMeteo" placeholder="Es. Sereno, Nuvoloso, Pioggia...">
+    <input type="text" class="form-input" id="cmMeteo">
   </div>
   <div class="form-group">
     <label class="form-label">Intervento da</label>
@@ -862,7 +862,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </div>
   <div class="form-group">
     <label class="form-label">N° individui</label>
-    <input type="text" class="form-input" id="cmNIndividui" placeholder="Numero individui">
+    <input type="text" class="form-input" id="cmNIndividui">
   </div>
   <div class="form-group">
     <label class="form-label">Posizione cormorano</label>
@@ -887,7 +887,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <label class="form-label">N° abbattuti</label>
     <div class="capi-row">
       <button class="capi-btn" onclick="cambiaCapiCormorano(-1)">−</button>
-      <input type="number" class="form-input" id="cmAbbattuti" placeholder="0" min="0">
+      <input type="number" class="form-input" id="cmAbbattuti" min="0">
       <button class="capi-btn" onclick="cambiaCapiCormorano(1)">+</button>
     </div>
   </div>
@@ -896,42 +896,42 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-group">
     <label class="form-label">Cognome</label>
     <div class="autocomplete-wrap">
-      <input type="text" class="form-input" id="cmAg1Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreCormorano(1,this.value)" onblur="setTimeout(function(){chiudiListaCormorano(1);},200)">
+      <input type="text" class="form-input" id="cmAg1Cognome" autocomplete="off" oninput="cercaOperatoreCormorano(1,this.value)" onblur="setTimeout(function(){chiudiListaCormorano(1);},200)">
       <div class="autocomplete-list" id="autocompleteListCorm1"></div>
     </div>
   </div>
   <div class="form-group">
     <label class="form-label">Nome</label>
-    <input type="text" class="form-input" id="cmAg1Nome" placeholder="Nome agente">
+    <input type="text" class="form-input" id="cmAg1Nome">
   </div>
   <div class="form-group">
     <label class="form-label">Codice Fiscale</label>
-    <input type="text" class="form-input" id="cmAg1CF" placeholder="Codice fiscale">
+    <input type="text" class="form-input" id="cmAg1CF">
   </div>
   <div class="form-group">
     <label class="form-label">Email</label>
-    <input type="text" class="form-input" id="cmAg1Email" placeholder="Email">
+    <input type="text" class="form-input" id="cmAg1Email">
   </div>
 
   <div class="form-divider">👤 Agente 2</div>
   <div class="form-group">
     <label class="form-label">Cognome</label>
     <div class="autocomplete-wrap">
-      <input type="text" class="form-input" id="cmAg2Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreCormorano(2,this.value)" onblur="setTimeout(function(){chiudiListaCormorano(2);},200)">
+      <input type="text" class="form-input" id="cmAg2Cognome" autocomplete="off" oninput="cercaOperatoreCormorano(2,this.value)" onblur="setTimeout(function(){chiudiListaCormorano(2);},200)">
       <div class="autocomplete-list" id="autocompleteListCorm2"></div>
     </div>
   </div>
   <div class="form-group">
     <label class="form-label">Nome</label>
-    <input type="text" class="form-input" id="cmAg2Nome" placeholder="Nome agente">
+    <input type="text" class="form-input" id="cmAg2Nome">
   </div>
   <div class="form-group">
     <label class="form-label">Codice Fiscale</label>
-    <input type="text" class="form-input" id="cmAg2CF" placeholder="Codice fiscale">
+    <input type="text" class="form-input" id="cmAg2CF">
   </div>
   <div class="form-group">
     <label class="form-label">Email</label>
-    <input type="text" class="form-input" id="cmAg2Email" placeholder="Email">
+    <input type="text" class="form-input" id="cmAg2Email">
   </div>
 
   <button class="btn-submit" onclick="submitCormorano()">🦅 Invia Scheda Cormorano</button>
@@ -953,15 +953,15 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-divider">📍 Luogo</div>
   <div class="form-group">
     <label class="form-label">Comune <span class="req">*</span></label>
-    <input type="text" class="form-input" id="mlComune" placeholder="Nome comune">
+    <input type="text" class="form-input" id="mlComune">
   </div>
   <div class="form-group">
     <label class="form-label">Località</label>
-    <input type="text" class="form-input" id="mlLocalita" placeholder="Es. Cascina Rossi...">
+    <input type="text" class="form-input" id="mlLocalita">
   </div>
   <div class="form-group">
     <label class="form-label">Zona (ATC/ZRC)</label>
-    <input type="text" class="form-input" id="mlZona" placeholder="Es. ATC CR1, ZRC...">
+    <input type="text" class="form-input" id="mlZona">
   </div>
 
   <div class="form-divider">🎯 Dati abbattimento</div>
@@ -977,21 +977,21 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
     <label class="form-label">Animali abbattuti <span class="req">*</span></label>
     <div class="capi-row">
       <button class="capi-btn" onclick="cambiaCapiMinilepre(-1)">−</button>
-      <input type="number" class="form-input" id="mlAbbattuti" placeholder="0" min="0">
+      <input type="number" class="form-input" id="mlAbbattuti" min="0">
       <button class="capi-btn" onclick="cambiaCapiMinilepre(1)">+</button>
     </div>
   </div>
   <div class="form-group">
     <label class="form-label">Animali stimati</label>
-    <input type="text" class="form-input" id="mlStimati" placeholder="Numero stimato">
+    <input type="text" class="form-input" id="mlStimati">
   </div>
   <div class="form-group">
     <label class="form-label">Metodo</label>
-    <input type="text" class="form-input" id="mlMetodo" placeholder="Es. Tiro, Girata, Braccata...">
+    <input type="text" class="form-input" id="mlMetodo">
   </div>
   <div class="form-group">
     <label class="form-label">Note</label>
-    <textarea class="form-textarea" id="mlNote" placeholder="Osservazioni..."></textarea>
+    <textarea class="form-textarea" id="mlNote"></textarea>
   </div>
 
   <button class="btn-submit" onclick="submitMinilepre()">🐇 Invia Scheda</button>
@@ -1007,7 +1007,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-divider">📋 Dati generali</div>
   <div class="form-group">
     <label class="form-label">Numero scheda abbattimento</label>
-    <input type="text" class="form-input" id="scNumeroScheda" placeholder="Numero scheda">
+    <input type="text" class="form-input" id="scNumeroScheda">
   </div>
   <div class="form-group">
     <label class="form-label">Data <span class="req">*</span></label>
@@ -1023,28 +1023,28 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </div>
   <div class="form-group">
     <label class="form-label">Ore</label>
-    <input type="text" class="form-input" id="scOre" placeholder="Ore impiegate">
+    <input type="text" class="form-input" id="scOre">
   </div>
 
   <div class="form-divider">👤 Incaricato del controllo 1 <span class="req">*</span></div>
   <div class="form-group">
     <label class="form-label">Cognome</label>
     <div class="autocomplete-wrap">
-      <input type="text" class="form-input" id="scInc1Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreScoiattolo(1,this.value)" onblur="setTimeout(function(){chiudiListaScoiattolo(1);},200)">
+      <input type="text" class="form-input" id="scInc1Cognome" autocomplete="off" oninput="cercaOperatoreScoiattolo(1,this.value)" onblur="setTimeout(function(){chiudiListaScoiattolo(1);},200)">
       <div class="autocomplete-list" id="autocompleteListSco1"></div>
     </div>
   </div>
   <div class="form-group">
     <label class="form-label">Nome</label>
-    <input type="text" class="form-input" id="scInc1Nome" placeholder="Nome incaricato">
+    <input type="text" class="form-input" id="scInc1Nome">
   </div>
   <div class="form-group">
     <label class="form-label">Codice Fiscale</label>
-    <input type="text" class="form-input" id="scInc1CF" placeholder="Codice fiscale">
+    <input type="text" class="form-input" id="scInc1CF">
   </div>
   <div class="form-group">
     <label class="form-label">Email</label>
-    <input type="text" class="form-input" id="scInc1Email" placeholder="Email">
+    <input type="text" class="form-input" id="scInc1Email">
   </div>
   <div class="form-group">
     <label class="form-label">Qualifica</label>
@@ -1061,21 +1061,21 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   <div class="form-group">
     <label class="form-label">Cognome</label>
     <div class="autocomplete-wrap">
-      <input type="text" class="form-input" id="scInc2Cognome" placeholder="Digita cognome..." autocomplete="off" oninput="cercaOperatoreScoiattolo(2,this.value)" onblur="setTimeout(function(){chiudiListaScoiattolo(2);},200)">
+      <input type="text" class="form-input" id="scInc2Cognome" autocomplete="off" oninput="cercaOperatoreScoiattolo(2,this.value)" onblur="setTimeout(function(){chiudiListaScoiattolo(2);},200)">
       <div class="autocomplete-list" id="autocompleteListSco2"></div>
     </div>
   </div>
   <div class="form-group">
     <label class="form-label">Nome</label>
-    <input type="text" class="form-input" id="scInc2Nome" placeholder="Nome incaricato">
+    <input type="text" class="form-input" id="scInc2Nome">
   </div>
   <div class="form-group">
     <label class="form-label">Codice Fiscale</label>
-    <input type="text" class="form-input" id="scInc2CF" placeholder="Codice fiscale">
+    <input type="text" class="form-input" id="scInc2CF">
   </div>
   <div class="form-group">
     <label class="form-label">Email</label>
-    <input type="text" class="form-input" id="scInc2Email" placeholder="Email">
+    <input type="text" class="form-input" id="scInc2Email">
   </div>
   <div class="form-group">
     <label class="form-label">Qualifica</label>
@@ -1089,38 +1089,38 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </div>
   <div class="form-group">
     <label class="form-label">Numero operatori</label>
-    <input type="text" class="form-input" id="scNumeroOperatori" placeholder="Numero totale operatori">
+    <input type="text" class="form-input" id="scNumeroOperatori">
   </div>
   <div class="form-group">
     <label class="form-label">Ore totali</label>
-    <input type="text" class="form-input" id="scOreTot" placeholder="Ore totali impiegate">
+    <input type="text" class="form-input" id="scOreTot">
   </div>
 
   <div class="form-divider">📍 Luogo / Meteo</div>
   <div class="form-group">
     <label class="form-label">Comune <span class="req">*</span></label>
-    <input type="text" class="form-input" id="scComune" placeholder="Nome comune">
+    <input type="text" class="form-input" id="scComune">
   </div>
   <div class="form-group">
     <label class="form-label">Località</label>
-    <input type="text" class="form-input" id="scLocalita" placeholder="Località">
+    <input type="text" class="form-input" id="scLocalita">
   </div>
   <div class="form-group">
     <label class="form-label">Coordinate GPS</label>
     <div class="gps-row">
-      <input type="text" class="form-input" id="scGpsN" placeholder="GPS N">
-      <input type="text" class="form-input" id="scGpsE" placeholder="GPS E">
+      <input type="text" class="form-input" id="scGpsN">
+      <input type="text" class="form-input" id="scGpsE">
       <button class="btn-gps" onclick="rilevaPosizioneScoiattolo()">📍 Rileva</button>
     </div>
     <div class="gps-status" id="scGpsStatus">Tocca "Rileva" per acquisire la posizione</div>
   </div>
   <div class="form-group">
     <label class="form-label">Meteo</label>
-    <input type="text" class="form-input" id="scMeteo" placeholder="Es. Sereno, Nuvoloso...">
+    <input type="text" class="form-input" id="scMeteo">
   </div>
   <div class="form-group">
     <label class="form-label">Vento</label>
-    <input type="text" class="form-input" id="scVento" placeholder="Es. Assente, Debole, Forte...">
+    <input type="text" class="form-input" id="scVento">
   </div>
 
   <div class="form-divider">🎯 Dati abbattimento</div>
@@ -1134,49 +1134,49 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
   </div>
   <div class="form-group">
     <label class="form-label">N° abbattuti con arma da fuoco</label>
-    <input type="number" class="form-input" id="scAbbattutiArma" placeholder="0" min="0">
+    <input type="number" class="form-input" id="scAbbattutiArma" min="0">
   </div>
   <div class="form-group">
     <label class="form-label">N° catturati con trappola</label>
-    <input type="number" class="form-input" id="scCatturatiTrappola" placeholder="0" min="0">
+    <input type="number" class="form-input" id="scCatturatiTrappola" min="0">
   </div>
   <div class="form-group">
     <label class="form-label">Totale individui abbattuti <span class="req">*</span></label>
     <div class="capi-row">
       <button class="capi-btn" onclick="cambiaCapiScoiattolo(-1)">−</button>
-      <input type="number" class="form-input" id="scTotaleAbbattuti" placeholder="0" min="0">
+      <input type="number" class="form-input" id="scTotaleAbbattuti" min="0">
       <button class="capi-btn" onclick="cambiaCapiScoiattolo(1)">+</button>
     </div>
   </div>
   <div class="form-group">
     <label class="form-label">N° smaltiti regolamento 1069</label>
-    <input type="number" class="form-input" id="scSmaltiti1069" placeholder="0" min="0">
+    <input type="number" class="form-input" id="scSmaltiti1069" min="0">
   </div>
   <div class="form-group">
     <label class="form-label">N° infossati</label>
-    <input type="number" class="form-input" id="scInfossati" placeholder="0" min="0">
+    <input type="number" class="form-input" id="scInfossati" min="0">
   </div>
   <div class="form-group">
     <label class="form-label">N° non recuperati</label>
-    <input type="number" class="form-input" id="scNonRecuperati" placeholder="0" min="0">
+    <input type="number" class="form-input" id="scNonRecuperati" min="0">
   </div>
 
   <div class="form-divider">👁️ Avvistamenti</div>
   <div class="form-group">
     <label class="form-label">Visti N° Callosciurus</label>
-    <input type="number" class="form-input" id="scVistiCallosciurus" placeholder="0" min="0">
+    <input type="number" class="form-input" id="scVistiCallosciurus" min="0">
   </div>
   <div class="form-group">
     <label class="form-label">Visti N° Carolinensis (grigio)</label>
-    <input type="number" class="form-input" id="scVistiCarolinensis" placeholder="0" min="0">
+    <input type="number" class="form-input" id="scVistiCarolinensis" min="0">
   </div>
   <div class="form-group">
     <label class="form-label">Visti scoiattoli rossi</label>
-    <input type="number" class="form-input" id="scVistiRossi" placeholder="0" min="0">
+    <input type="number" class="form-input" id="scVistiRossi" min="0">
   </div>
   <div class="form-group">
     <label class="form-label">Note</label>
-    <textarea class="form-textarea" id="scNote" placeholder="Osservazioni..."></textarea>
+    <textarea class="form-textarea" id="scNote"></textarea>
   </div>
 
   <button class="btn-submit" onclick="submitScoiattolo()">🐿️ Invia Scheda Scoiattolo</button>

@@ -320,7 +320,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   <div class="modal-box">
     <div class="modal-title">🔒 Accesso protetto</div>
     <div class="modal-text">Inserisci la password per accedere al Google Sheet</div>
-    <input type="password" class="form-input" id="pwdSheet" placeholder="Password..." style="margin-bottom:6px;">
+    <input type="password" class="form-input" id="pwdSheet" style="margin-bottom:6px;">
     <div id="errSheet" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
     <div class="modal-btns">
       <button class="modal-btn cancel" onclick="chiudiModal('modalSheet')">Annulla</button>
@@ -335,7 +335,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <div class="modal-title">🔒 Gestione Agenti</div>
     <div class="modal-text">Inserisci la password per modificare gli agenti</div>
     <div id="agentiPwdSection">
-      <input type="password" class="form-input" id="pwdAgenti" placeholder="Password..." style="margin-bottom:6px;">
+      <input type="password" class="form-input" id="pwdAgenti" style="margin-bottom:6px;">
       <div id="errAgenti" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
       <div class="modal-btns">
         <button class="modal-btn cancel" onclick="chiudiModal('modalAgenti')">Annulla</button>
@@ -345,9 +345,9 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <div id="agentiManagerSection" style="display:none;">
       <div class="agenti-manager-list" id="agentiManagerList"></div>
       <div class="agenti-add-row" style="flex-direction:column;gap:8px;">
-        <input type="text" class="form-input" id="nuovoAgente" placeholder="Nome agente (es. ROSSI)..." style="font-size:13px;padding:8px 10px;">
+        <input type="text" class="form-input" id="nuovoAgente" style="font-size:13px;padding:8px 10px;">
         <div style="display:flex;gap:8px;">
-          <input type="text" class="form-input" id="nuovoPin" placeholder="PIN 4 cifre..." maxlength="4" style="font-size:13px;padding:8px 10px;width:130px;" inputmode="numeric">
+          <input type="text" class="form-input" id="nuovoPin" maxlength="4" style="font-size:13px;padding:8px 10px;width:130px;" inputmode="numeric">
           <button class="btn-add" onclick="aggiungiAgente()" style="flex:1;">+ Aggiungi</button>
         </div>
       </div>
@@ -364,11 +364,11 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <div class="modal-title">🔑 Cambia PIN</div>
     <div class="modal-text">Scegli un PIN personale salvato solo su questo dispositivo.</div>
     <div style="font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:6px;">PIN attuale</div>
-    <input type="text" class="form-input" id="cp-attuale" placeholder="PIN attuale" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
+    <input type="text" class="form-input" id="cp-attuale" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
     <div style="font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:6px;">Nuovo PIN</div>
-    <input type="text" class="form-input" id="cp-nuovo" placeholder="Nuovo PIN (4 cifre)" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
+    <input type="text" class="form-input" id="cp-nuovo" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:10px;">
     <div style="font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;margin-bottom:6px;">Conferma nuovo PIN</div>
-    <input type="text" class="form-input" id="cp-conferma" placeholder="Ripeti nuovo PIN" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:8px;">
+    <input type="text" class="form-input" id="cp-conferma" inputmode="numeric" maxlength="4" style="text-align:center;font-size:20px;letter-spacing:8px;margin-bottom:8px;">
     <div id="cp-err" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:8px;"></div>
     <div class="modal-btns">
       <button class="modal-btn cancel" onclick="document.getElementById('modalCambiaPin').style.display='none'">Annulla</button>
@@ -392,7 +392,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <div id="annullaStep2" style="display:none;">
       <div class="modal-text" id="annullaRiepilogo" style="font-size:12.5px;line-height:1.5;"></div>
       <div style="font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;margin:10px 0 6px;">Motivo dell'annullamento <span class="req">*</span></div>
-      <textarea class="form-textarea" id="annullaMotivo" placeholder="Spiega perché stai annullando questa pratica..." style="min-height:80px;"></textarea>
+      <textarea class="form-textarea" id="annullaMotivo" style="min-height:80px;"></textarea>
       <div id="annulla-err" style="font-size:11px;color:#e74c3c;min-height:16px;margin-top:4px;"></div>
       <div class="modal-btns">
         <button class="modal-btn cancel" onclick="tornaAnnullaStep1()">‹ Indietro</button>
@@ -406,9 +406,9 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   <div class="modal-box">
     <div class="modal-title">👤 Identificazione</div>
     <div class="modal-text">Inserisci il tuo codice operatore (4 cifre).</div>
-    <input type="text" class="form-input" id="pinLogin" placeholder="es. 1234" inputmode="numeric" maxlength="4" style="margin-bottom:6px;text-align:center;font-size:22px;letter-spacing:8px;font-family:'Bebas Neue',sans-serif;">
+    <input type="text" class="form-input" id="pinLogin" inputmode="numeric" maxlength="4" style="margin-bottom:6px;text-align:center;font-size:22px;letter-spacing:8px;font-family:'Bebas Neue',sans-serif;">
     <div style="font-size:11px;color:rgba(255,235,59,0.92);font-weight:700;margin:6px 0 4px;">Parola segreta</div>
-    <input type="text" class="form-input" id="parolaLogin" placeholder="PAROLA" maxlength="5" style="margin-bottom:6px;text-align:center;font-size:20px;letter-spacing:6px;text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
+    <input type="text" class="form-input" id="parolaLogin" maxlength="5" style="margin-bottom:6px;text-align:center;font-size:20px;letter-spacing:6px;text-transform:uppercase;" oninput="this.value=this.value.toUpperCase()">
     <div id="errLogin" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
     <div style="margin-top:10px;">
       <button class="modal-btn confirm" onclick="verificaPinLogin()" style="width:100%;padding:12px;border:none;border-radius:8px;background:var(--ocra2);color:#0d2010;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">Conferma</button>
@@ -477,11 +477,11 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="form-group">
     <label class="form-label">Tipo di animale <span class="req">*</span></label>
-    <input type="text" class="form-input" id="zooAnimale" placeholder="Es. Capriolo, Cinghiale, Volpe...">
+    <input type="text" class="form-input" id="zooAnimale">
   </div>
   <div class="form-group">
     <label class="form-label">Numero identificativo <span style="color:rgba(255,235,59,0.92);font-weight:700;font-size:11px;">(obbligatorio SOLO per cinghiale — sorveglianza peste suina)</span></label>
-    <input type="text" class="form-input" id="zooNumIdentificativo" placeholder="Es. numero targhetta / crotto">
+    <input type="text" class="form-input" id="zooNumIdentificativo">
   </div>
   <div class="form-group">
     <label class="form-label">Causa morte <span class="req">*</span></label>
@@ -499,23 +499,23 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="form-group" id="zooNCampioniGroup" style="display:none;">
     <label class="form-label" id="zooNCampioniLabel">N° campioni</label>
-    <input type="number" class="form-input" id="zooNCampioni" placeholder="Es. 5" min="1" step="1" value="1">
+    <input type="number" class="form-input" id="zooNCampioni" min="1" step="1" value="1">
   </div>
   <div class="form-group">
     <label class="form-label">Via / Località di recupero <span class="req">*</span></label>
-    <input type="text" class="form-input" id="zooLocalita" placeholder="Via / Frazione">
+    <input type="text" class="form-input" id="zooLocalita">
   </div>
   <div class="form-group">
     <label class="form-label">Comune <span class="req">*</span></label>
-    <input type="text" class="form-input" id="zooComune" placeholder="Es. Cremona">
+    <input type="text" class="form-input" id="zooComune">
   </div>
   <div class="form-group">
     <label class="form-label">Chi ha consegnato il capo <span class="req">*</span></label>
-    <input type="text" class="form-input" id="zooConsegnante" placeholder="Nome, cognome o ente">
+    <input type="text" class="form-input" id="zooConsegnante">
   </div>
   <div class="form-group">
     <label class="form-label">Ore impiegate <span class="req">*</span></label>
-    <input type="number" class="form-input" id="zooOre" placeholder="Es. 1.5" step="0.25" min="0">
+    <input type="number" class="form-input" id="zooOre" step="0.25" min="0">
   </div>
   <div class="form-group">
     <label class="form-label">N° animali (crea N righe nel foglio)</label>
@@ -530,7 +530,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <label class="form-label">📍 Punto di prelievo GPS (non obbligatorio)</label>
     <div class="gps-box">
       <div class="gps-row">
-        <input type="text" class="form-input" id="zooGps" placeholder="lat, long" style="margin-bottom:0;" oninput="aggiornaLinkMaps('zoo')">
+        <input type="text" class="form-input" id="zooGps" style="margin-bottom:0;" oninput="aggiornaLinkMaps('zoo')">
         <button type="button" class="gps-btn primary" onclick="usaPosizioneAttuale('zoo')">📍 Usa GPS</button>
       </div>
       <button type="button" class="gps-btn" style="width:100%;" onclick="apriMappa('zoo')">🛰️ Seleziona sulla mappa satellitare</button>
@@ -540,7 +540,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="form-group">
     <label class="form-label">Note</label>
-    <textarea class="form-textarea" id="zooNote" placeholder="Tipo campioni, osservazioni..."></textarea>
+    <textarea class="form-textarea" id="zooNote"></textarea>
   </div>
   <div style="display:flex;gap:10px;margin-top:18px;margin-bottom:30px;">
     <button class="btn-submit zoo" id="btnSalvaBozzaZoo" style="flex:1;margin:0;" onclick="salvaBozzaZoo()">💾 Salva bozza</button>
@@ -569,19 +569,19 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <div class="tipo-grid">
       <button class="tipo-btn" id="btnCrasGenerico" onclick="setCentroCras('CRAS')">🏥 CRAS</button>
     </div>
-    <input type="text" class="form-input" id="crasAltro" placeholder="Oppure scrivi altro centro CRAS..." style="margin-top:8px;" oninput="setCentroCrasLibero(this.value)">
+    <input type="text" class="form-input" id="crasAltro" style="margin-top:8px;" oninput="setCentroCrasLibero(this.value)">
   </div>
   <div class="form-group">
     <label class="form-label">Tipo di animale <span class="req">*</span></label>
-    <input type="text" class="form-input" id="crasAnimale" placeholder="Es. Capriolo, Rapace...">
+    <input type="text" class="form-input" id="crasAnimale">
   </div>
   <div class="form-group">
     <label class="form-label">Via residenza consegnante <span class="req">*</span></label>
-    <input type="text" class="form-input" id="crasLocalita" placeholder="Es. Via Roma 10">
+    <input type="text" class="form-input" id="crasLocalita">
   </div>
   <div class="form-group">
     <label class="form-label">Comune residenza <span class="req">*</span></label>
-    <input type="text" class="form-input" id="crasComuneRitrovamento" placeholder="Es. Cremona">
+    <input type="text" class="form-input" id="crasComuneRitrovamento">
   </div>
   <div class="form-group" style="display:flex;align-items:center;gap:8px;background:rgba(255,235,59,0.06);border:1px solid rgba(255,235,59,0.25);border-radius:8px;padding:10px 12px;">
     <input type="checkbox" id="crasCoincideResidenza" onchange="toggleCoincideResidenza()" style="width:18px;height:18px;flex-shrink:0;">
@@ -589,7 +589,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="form-group">
     <label class="form-label">Luogo del ritrovamento <span class="req">*</span></label>
-    <input type="text" class="form-input" id="crasDoveTrovato" placeholder="Es. Via Milano 5, Loc. Bosco Grande...">
+    <input type="text" class="form-input" id="crasDoveTrovato">
   </div>
   <div class="form-group" style="display:flex;align-items:center;gap:8px;background:rgba(41,128,185,0.08);border:1px solid rgba(41,128,185,0.3);border-radius:8px;padding:10px 12px;">
     <input type="checkbox" id="crasConsegnatoComando" onchange="toggleConsegnatoComando()" style="width:18px;height:18px;flex-shrink:0;">
@@ -597,15 +597,15 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="form-group">
     <label class="form-label">Chi ha consegnato il selvatico <span class="req">*</span></label>
-    <input type="text" class="form-input" id="crasConsegnante" placeholder="Nome, cognome o ente">
+    <input type="text" class="form-input" id="crasConsegnante">
   </div>
   <div class="form-group">
     <label class="form-label">Cellulare del consegnante <span class="req">*</span></label>
-    <input type="tel" class="form-input" id="crasCellulare" placeholder="Es. 333 1234567">
+    <input type="tel" class="form-input" id="crasCellulare">
   </div>
   <div class="form-group">
     <label class="form-label">Ore impiegate <span class="req">*</span></label>
-    <input type="number" class="form-input" id="crasOre" placeholder="Es. 1.5" step="0.25" min="0">
+    <input type="number" class="form-input" id="crasOre" step="0.25" min="0">
   </div>
   <div class="form-group">
     <label class="form-label">Esito <span class="req">*</span></label>
@@ -624,7 +624,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
       </div>
       <div id="liberazioneAltroDiv" style="display:none;">
         <label class="form-label">Specifica luogo</label>
-        <input type="text" class="form-input" id="liberazioneAltro" placeholder="Via / Zona / Comune">
+        <input type="text" class="form-input" id="liberazioneAltro">
       </div>
     </div>
   </div>
@@ -641,7 +641,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     <label class="form-label">📍 Punto di prelievo GPS (non obbligatorio)</label>
     <div class="gps-box">
       <div class="gps-row">
-        <input type="text" class="form-input" id="crasGps" placeholder="lat, long" style="margin-bottom:0;" oninput="aggiornaLinkMaps('cras')">
+        <input type="text" class="form-input" id="crasGps" style="margin-bottom:0;" oninput="aggiornaLinkMaps('cras')">
         <button type="button" class="gps-btn primary" onclick="usaPosizioneAttuale('cras')">📍 Usa GPS</button>
       </div>
       <button type="button" class="gps-btn" style="width:100%;" onclick="apriMappa('cras')">🛰️ Seleziona sulla mappa satellitare</button>
@@ -651,7 +651,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   </div>
   <div class="form-group">
     <label class="form-label">Note</label>
-    <textarea class="form-textarea" id="crasNote" placeholder="Condizioni animale, osservazioni..."></textarea>
+    <textarea class="form-textarea" id="crasNote"></textarea>
   </div>
   <div style="display:flex;gap:10px;margin-top:18px;margin-bottom:30px;">
     <button class="btn-submit cras" id="btnSalvaBozzaCras" style="flex:1;margin:0;" onclick="salvaBozzaCras()">💾 Salva bozza</button>
@@ -674,13 +674,13 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   <div class="search-box" id="searchBoxZoo" style="display:none;">
     <div style="font-size:12px;font-weight:700;margin-bottom:8px;">🔎 Cerca nei recuperi IZP</div>
     <div class="search-row">
-      <input type="text" id="searchIzpNumPratica" placeholder="N. Pratica (es. 045 o IZP-2026-045)" onkeydown="if(event.key==='Enter')cercaIzp()">
+      <input type="text" id="searchIzpNumPratica" onkeydown="if(event.key==='Enter')cercaIzp()">
     </div>
     <div class="search-row">
-      <input type="text" id="searchIzpComune" placeholder="Comune (opzionale)" onkeydown="if(event.key==='Enter')cercaIzp()">
+      <input type="text" id="searchIzpComune" onkeydown="if(event.key==='Enter')cercaIzp()">
     </div>
     <div class="search-row">
-      <input type="text" id="searchIzpAnimale" placeholder="Tipo animale (opzionale)" onkeydown="if(event.key==='Enter')cercaIzp()">
+      <input type="text" id="searchIzpAnimale" onkeydown="if(event.key==='Enter')cercaIzp()">
     </div>
     <div class="search-row">
       <input type="date" id="searchIzpData" style="flex:1;" onkeydown="if(event.key==='Enter')cercaIzp()">
@@ -693,13 +693,13 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
   <div class="search-box" id="searchBoxCras">
     <div style="font-size:12px;font-weight:700;margin-bottom:8px;">🔎 Cerca intervento</div>
     <div class="search-row">
-      <input type="text" id="searchPersonaNumPratica" placeholder="N. Pratica (es. 045 o CRAS-2026-045)" onkeydown="if(event.key==='Enter')cercaPersonaCras()">
+      <input type="text" id="searchPersonaNumPratica" onkeydown="if(event.key==='Enter')cercaPersonaCras()">
     </div>
     <div class="search-row">
-      <input type="text" id="searchPersonaComune" placeholder="Comune (opzionale)" onkeydown="if(event.key==='Enter')cercaPersonaCras()">
+      <input type="text" id="searchPersonaComune" onkeydown="if(event.key==='Enter')cercaPersonaCras()">
     </div>
     <div class="search-row">
-      <input type="text" id="searchPersonaNome" placeholder="Tipo animale (opzionale)" onkeydown="if(event.key==='Enter')cercaPersonaCras()">
+      <input type="text" id="searchPersonaNome" onkeydown="if(event.key==='Enter')cercaPersonaCras()">
     </div>
     <div class="search-row">
       <input type="date" id="searchPersonaData" style="flex:1;" onkeydown="if(event.key==='Enter')cercaPersonaCras()">
@@ -735,7 +735,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     </p>
     <div class="form-group">
       <label class="form-label">Note aggiuntive (opzionale)</label>
-      <textarea class="form-textarea" id="decessoNoteExtra" placeholder="Dettagli aggiuntivi sul decesso..."></textarea>
+      <textarea class="form-textarea" id="decessoNoteExtra"></textarea>
     </div>
     <div style="display:flex;gap:10px;margin-top:16px;">
       <button onclick="chiudiModalDecesso()" style="flex:1;padding:12px;background:rgba(255,235,59,0.08);border:1px solid rgba(255,235,59,0.2);border-radius:8px;color:#ffeb3b;cursor:pointer;">Annulla</button>
@@ -774,7 +774,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 
     <div class="form-group">
       <label class="form-label">Data e ora intervento</label>
-      <input type="text" class="form-input" id="editDataOra" placeholder="gg/mm/aaaa hh:mm">
+      <input type="text" class="form-input" id="editDataOra">
     </div>
     <div class="form-group">
       <label class="form-label">Agente/i</label>
@@ -821,7 +821,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
     </div>
     <div class="form-group" id="editCentroDiv">
       <label class="form-label">Centro CRAS</label>
-      <input type="text" class="form-input" id="editCentro" placeholder="Es. Loghino Bosco, Parcobaleno, CRAS...">
+      <input type="text" class="form-input" id="editCentro">
     </div>
     <div class="form-group" id="editLuogoLibDiv" style="display:none;">
       <label class="form-label">Luogo di liberazione</label>
@@ -858,7 +858,7 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 
     <div class="form-group">
       <label class="form-label">Data e ora intervento</label>
-      <input type="text" class="form-input" id="editIzpDataOra" placeholder="gg/mm/aaaa hh:mm">
+      <input type="text" class="form-input" id="editIzpDataOra">
     </div>
     <div class="form-group">
       <label class="form-label">Agente/i</label>
