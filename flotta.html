@@ -605,9 +605,12 @@ var TARGHE_CORRENTI = [];
 var targhe = TARGHE_DEFAULT.slice();
 var VEICOLI = {'YA365AM':{marca:'DACIA',modello:'DUSTER'},'YA772AL':{marca:'SUBARU',modello:'FORESTER'},'YA773AL':{marca:'SUBARU',modello:'FORESTER'},'YA743AB':{marca:'FIAT',modello:'PANDA'},'YA295AP':{marca:'FIAT',modello:'PANDA'},'YA754AP':{marca:'MITSUBISHI',modello:'L200'},'YA438AR':{marca:'SUZUKI',modello:'JIMNY'},'YA632AS':{marca:'SUBARU',modello:'XV'},'YA358AV':{marca:'SUBARU',modello:'XV'},'YA250AT':{marca:'FIAT',modello:'PANDA'},'YA256AX':{marca:'SUZUKI',modello:'SCROSS'},'YA564AX':{marca:'DACIA',modello:'DUSTER'},'GB443ZX':{marca:'FIAT',modello:"DOBLO'"},'YA148AY':{marca:'TOYOTA',modello:'RAV4'}};
 function descVeicolo(t){ var v=VEICOLI[t]; return v ? ((v.marca||'')+' '+(v.modello||'')).trim() : ''; }
-function etichettaVeicolo(t,i){ var d=descVeicolo(t); return t + (d ? ' · '+d : '') + ' (AUTO '+(i+1)+')'; }
-function applicaTarghe(listaTarghe, veicoli){
+var NUMERI_AUTO = {}; var TARGHE_VENDUTE = [];
+function etichettaVeicolo(t,i){ var d=descVeicolo(t); return t + (d ? ' · '+d : '') + ' (AUTO '+(NUMERI_AUTO[t]||(i+1))+')'; }
+function applicaTarghe(listaTarghe, veicoli, extra){
   if (veicoli && Object.keys(veicoli).length) { VEICOLI = veicoli; }
+  if (extra && extra.numeri) NUMERI_AUTO = extra.numeri;
+  if (extra && extra.nascoste) TARGHE_VENDUTE = extra.nascoste;
   targhe = listaTarghe || TARGHE_DEFAULT;
   TARGHE_CORRENTI = targhe;
   var selects = ['kmTarga','rifTarga','filtraTarga','kmStampaTarga','rifStampaTarga'];
@@ -624,6 +627,13 @@ function applicaTarghe(listaTarghe, veicoli){
       opt.textContent = etichettaVeicolo(t,i);
       sel.appendChild(opt);
     });
+    if (['filtraTarga','kmStampaTarga','rifStampaTarga'].indexOf(id) >= 0) {
+      TARGHE_VENDUTE.forEach(function(t){
+        var o = document.createElement('option'); o.value = t;
+        o.textContent = t + (descVeicolo(t) ? ' · '+descVeicolo(t) : '') + ' (AUTO '+(NUMERI_AUTO[t]||'?')+') — venduto';
+        sel.appendChild(o);
+      });
+    }
     if(val) sel.value = val;
   });
 }
@@ -632,7 +642,7 @@ async function caricaTargheDalFoglio(){
   try {
     var res = await fetchConTimeout(URL_GS + '?action=targhe&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000);
     var d = await res.json();
-    applicaTarghe(d.targhe, d.veicoli);
+    applicaTarghe(d.targhe, d.veicoli, d);
   } catch(e) {
     // Fallback: usa targhe default
     TARGHE_CORRENTI = TARGHE_DEFAULT;
@@ -855,7 +865,7 @@ window.onload = function(){
         if (opS && hU0) hU0.textContent = opS;
         document.getElementById('modalLoginGoogle').style.display = 'none';
         if (cIni.stats) applicaStats(cIni.stats);
-        if (cIni.targhe) applicaTarghe(cIni.targhe, cIni.veicoli);
+        if (cIni.targhe) applicaTarghe(cIni.targhe, cIni.veicoli, cIni);
       }
     } catch(e) {}
     loadScadenze();   // parte subito, in parallelo ai dati iniziali
@@ -877,9 +887,9 @@ window.onload = function(){
               .then(function(st){ if (st && st.status !== 'error') { applicaStats(st); try { var c0 = JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}'); c0.stats = st; localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify(c0)); } catch(e3) {} } })
               .catch(function(){});
           }
-          if (d.targhe) applicaTarghe(d.targhe, d.veicoli);
+          if (d.targhe) applicaTarghe(d.targhe, d.veicoli, d);
           if (d.pinMap) applicaPinMap(d.pinMap);
-          try { localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify({stats:d.stats||(JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}').stats), targhe:d.targhe, veicoli:d.veicoli})); } catch(e) {}
+          try { localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify({stats:d.stats||(JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}').stats), targhe:d.targhe, veicoli:d.veicoli, numeri:d.numeri, nascoste:d.nascoste})); } catch(e) {}
           sincronizzaCodaOffline();
         } else {
           idTokenCorrente = null;
@@ -2325,7 +2335,7 @@ Promise.all([syncPinMapDaSheet(), syncAgentiDaSheet()]).then(function(){
 // Popola select con default poi aggiorna dal foglio
 ['kmTarga','rifTarga','kmStampaTarga','rifStampaTarga'].forEach(function(id){ renderSelectTarghe(id, false); });
 renderSelectTarghe('filtraTarga', true);
-try { var cT = JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache') || 'null'); if (cT && cT.targhe) applicaTarghe(cT.targhe, cT.veicoli); } catch(e) {}
+try { var cT = JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache') || 'null'); if (cT && cT.targhe) applicaTarghe(cT.targhe, cT.veicoli, cT); } catch(e) {}
 
 // ============================================================
 // TENDINE PERSONALIZZATE — sostituisce visivamente ogni <select>
