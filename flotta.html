@@ -1819,6 +1819,7 @@ async function loadConsumi() {
     var list = d.consumi || [];
     if (!list.length) { document.getElementById('consumiList').innerHTML = '<div class="empty-state"><div>📂</div>Nessun dato</div>'; return; }
     document.getElementById('consumiList').innerHTML = list.map(function(c) {
+      if (!c.rifornimenti) return '<div class="consumi-card"><div class="record-top"><div class="record-targa">' + c.targa + '</div><div class="record-data">0 rif.</div></div><div style="margin-top:8px;font-size:12px;color:rgba(255,235,59,0.7);font-family:Barlow Condensed,sans-serif;">Nessun rifornimento dopo il reset dei consumi. Compare al prossimo pieno.</div></div>';
       return '<div class="consumi-card"><div class="record-top"><div class="record-targa">' + c.targa + '</div><div class="record-data">' + c.rifornimenti + ' rif.</div></div><div class="consumi-grid"><div><div class="consumi-num" style="color:#ffeb3b;">' + c.mediaKmL + '</div><div class="consumi-lbl">KM/LITRO</div></div><div><div class="consumi-num" style="color:#ffeb3b;">' + c.totLitri + '</div><div class="consumi-lbl">LITRI TOT.</div></div><div><div class="consumi-num" style="color:#f07080;">€' + c.costoPKm + '</div><div class="consumi-lbl">€/KM</div></div></div><div style="margin-top:8px;font-size:11px;color:rgba(255,235,59,0.45);font-family:Barlow Condensed,sans-serif;">KM: ' + c.totKm + ' · Spesa: €' + c.totImporto + '</div></div>';
     }).join('');
   } catch(e) {
