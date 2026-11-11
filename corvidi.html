@@ -105,6 +105,18 @@ input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(0.7);}
 .loading-text{font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:12px;color:rgba(255,255,255,0.6);text-transform:uppercase;}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:20px;}
 .modal-overlay.show{display:flex;}
+.btn-mappa{width:100%;margin-top:8px;padding:11px 14px;background:rgba(74,140,63,0.15);border:1px solid rgba(74,140,63,0.4);border-radius:8px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.gps-link{font-size:12px;color:#ffeb3b;margin-top:6px;display:none;}
+#mapModal{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:10000;display:none;flex-direction:column;}
+.map-header{padding:12px 16px;background:#0f1f0d;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--oro);}
+.map-header span{font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:16px;color:var(--crema);}
+.map-close{background:none;border:none;color:var(--crema);font-size:26px;cursor:pointer;padding:0 8px;}
+.map-hint{padding:6px 12px;background:#0f1f0d;font-family:'Barlow Condensed',sans-serif;font-size:12px;color:rgba(255,235,59,0.92);text-align:center;}
+#leafletMap{flex:1;width:100%;}
+.map-footer{padding:10px 12px;background:#0f1f0d;display:flex;gap:8px;}
+.map-footer button{flex:1;padding:13px 8px;border:none;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:1.5px;cursor:pointer;}
+.map-mia{background:rgba(255,255,255,0.12);color:#ffeb3b;}
+.map-confirm{background:var(--verde);color:#fff;}
 .modal-box{background:#1c2b1a;border:1px solid var(--oro2);border-radius:16px;padding:24px;max-width:300px;width:100%;}
 .modal-box.large{max-width:340px;}
 .modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:var(--oro2);margin-bottom:12px;}
@@ -198,6 +210,8 @@ button:focus-visible,[role="button"]:focus-visible,.custom-select-trigger:focus-
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -447,11 +461,13 @@ button:focus-visible,[role="button"]:focus-visible,.custom-select-trigger:focus-
   <div class="form-group">
     <label class="form-label">Coordinate GPS</label>
     <div class="gps-row">
-      <input type="text" class="form-input" id="fGpsLat">
-      <input type="text" class="form-input" id="fGpsLon">
-      <button class="btn-gps" onclick="rilevaPosizione()">📍 Rileva</button>
+      <input type="text" class="form-input" id="fGpsLat" oninput="aggiornaLinkMaps('fGpsLat','fGpsLon','gpsStatus')">
+      <input type="text" class="form-input" id="fGpsLon" oninput="aggiornaLinkMaps('fGpsLat','fGpsLon','gpsStatus')">
+      <button type="button" class="btn-gps" onclick="rilevaPosizione()">📍 Rileva</button>
     </div>
+    <button type="button" class="btn-mappa" onclick="apriMappa('fGpsLat','fGpsLon','gpsStatus')">🛰️ Controlla / correggi il punto sulla mappa</button>
     <div class="gps-status" id="gpsStatus">Tocca "Rileva" per acquisire la posizione</div>
+    <a href="#" target="_blank" rel="noopener" class="gps-link" id="gpsStatusLink">🗺️ Apri in Google Maps</a>
   </div>
   <div class="form-divider">🎯 Dati intervento</div>
   <div class="form-group">
@@ -547,11 +563,13 @@ button:focus-visible,[role="button"]:focus-visible,.custom-select-trigger:focus-
   <div class="form-group">
     <label class="form-label">Coordinate GPS</label>
     <div class="gps-row">
-      <input type="text" class="form-input" id="iGpsLat">
-      <input type="text" class="form-input" id="iGpsLon">
-      <button class="btn-gps" onclick="rilevaPosizioneIbis()">📍 Rileva</button>
+      <input type="text" class="form-input" id="iGpsLat" oninput="aggiornaLinkMaps('iGpsLat','iGpsLon','iGpsStatus')">
+      <input type="text" class="form-input" id="iGpsLon" oninput="aggiornaLinkMaps('iGpsLat','iGpsLon','iGpsStatus')">
+      <button type="button" class="btn-gps" onclick="rilevaPosizioneIbis()">📍 Rileva</button>
     </div>
+    <button type="button" class="btn-mappa" onclick="apriMappa('iGpsLat','iGpsLon','iGpsStatus')">🛰️ Controlla / correggi il punto sulla mappa</button>
     <div class="gps-status" id="iGpsStatus">Tocca "Rileva" per acquisire la posizione</div>
+    <a href="#" target="_blank" rel="noopener" class="gps-link" id="iGpsStatusLink">🗺️ Apri in Google Maps</a>
   </div>
 
   <div class="form-divider">🎯 Dati abbattimento</div>
@@ -1125,11 +1143,13 @@ button:focus-visible,[role="button"]:focus-visible,.custom-select-trigger:focus-
   <div class="form-group">
     <label class="form-label">Coordinate GPS</label>
     <div class="gps-row">
-      <input type="text" class="form-input" id="scGpsN">
-      <input type="text" class="form-input" id="scGpsE">
-      <button class="btn-gps" onclick="rilevaPosizioneScoiattolo()">📍 Rileva</button>
+      <input type="text" class="form-input" id="scGpsN" oninput="aggiornaLinkMaps('scGpsN','scGpsE','scGpsStatus')">
+      <input type="text" class="form-input" id="scGpsE" oninput="aggiornaLinkMaps('scGpsN','scGpsE','scGpsStatus')">
+      <button type="button" class="btn-gps" onclick="rilevaPosizioneScoiattolo()">📍 Rileva</button>
     </div>
+    <button type="button" class="btn-mappa" onclick="apriMappa('scGpsN','scGpsE','scGpsStatus')">🛰️ Controlla / correggi il punto sulla mappa</button>
     <div class="gps-status" id="scGpsStatus">Tocca "Rileva" per acquisire la posizione</div>
+    <a href="#" target="_blank" rel="noopener" class="gps-link" id="scGpsStatusLink">🗺️ Apri in Google Maps</a>
   </div>
   <div class="form-group">
     <label class="form-label">Meteo</label>
@@ -1276,7 +1296,7 @@ button:focus-visible,[role="button"]:focus-visible,.custom-select-trigger:focus-
 
     <div class="istr-section">
       <div class="istr-title">Coordinate GPS</div>
-      <div class="istr-text">Tocca <strong>📍 Rileva</strong> per acquisire automaticamente la posizione nel punto esatto dell'intervento. Se le scrivi a mano usa i <strong>gradi decimali con il punto</strong>: latitudine <strong>45.143729</strong>, longitudine <strong>9.886424</strong> (la virgola, le lettere N/E e i gradi° vengono convertiti da soli). L'app salva sempre il formato corretto per Regione Lombardia e ti avvisa se le coordinate sono incomplete o fuori Lombardia.</div>
+      <div class="istr-text">Tocca <strong>📍 Rileva</strong> per acquisire automaticamente la posizione, poi <strong>🛰️ Controlla / correggi il punto sulla mappa</strong> per vedere il punto sulla foto satellitare e spostarlo su quello esatto dell'intervento (tocca la mappa o trascina il segnaposto, poi conferma). Se le scrivi a mano usa i <strong>gradi decimali con il punto</strong>: latitudine <strong>45.143729</strong>, longitudine <strong>9.886424</strong> (la virgola, le lettere N/E e i gradi° vengono convertiti da soli). L'app salva sempre il formato corretto per Regione Lombardia e ti avvisa se le coordinate sono incomplete o fuori Lombardia.</div>
     </div>
 
     <div class="istr-section">
@@ -1973,7 +1993,8 @@ function rilevaPosizione(){
   navigator.geolocation.getCurrentPosition(function(pos){
     document.getElementById('fGpsLat').value=pos.coords.latitude.toFixed(6);
     document.getElementById('fGpsLon').value=pos.coords.longitude.toFixed(6);
-    st.textContent='✅ Posizione acquisita (±'+Math.round(pos.coords.accuracy)+'m)';
+    st.textContent='✅ Posizione acquisita (±'+Math.round(pos.coords.accuracy)+'m) — controllala sulla mappa';
+    aggiornaLinkMaps('fGpsLat','fGpsLon','gpsStatus');
   },function(){st.textContent='⚠️ Impossibile rilevare la posizione';},{enableHighAccuracy:true,timeout:10000});
 }
 
@@ -2059,7 +2080,7 @@ function resetForm(){
   document.getElementById('nuovoCacBox').classList.remove('show');
   nuovoCacciatore=false;
   document.getElementById('fCapi').value='';document.getElementById('fScopo').value='';document.getElementById('fMezzi').value='';document.getElementById('fDestinazione').value='';
-  document.getElementById('gpsStatus').textContent='Tocca "Rileva" per acquisire la posizione';document.getElementById('codiceGabbiaGroup').style.display='none';
+  document.getElementById('gpsStatus').textContent='Tocca "Rileva" per acquisire la posizione';document.getElementById('gpsStatusLink').style.display='none';document.getElementById('codiceGabbiaGroup').style.display='none';
   ['sCorn','sGazz','sPicc','qCacc','qGuar','qProv'].forEach(function(id){document.getElementById(id).classList.remove('active');});
   specie='';qualifica='';corvidiSel=[];renderAgenti();
 }
@@ -2106,7 +2127,8 @@ function rilevaPosizioneIbis(){
   navigator.geolocation.getCurrentPosition(function(pos){
     document.getElementById('iGpsLat').value=pos.coords.latitude.toFixed(6);
     document.getElementById('iGpsLon').value=pos.coords.longitude.toFixed(6);
-    st.textContent='✅ Posizione acquisita (±'+Math.round(pos.coords.accuracy)+'m)';
+    st.textContent='✅ Posizione acquisita (±'+Math.round(pos.coords.accuracy)+'m) — controllala sulla mappa';
+    aggiornaLinkMaps('iGpsLat','iGpsLon','iGpsStatus');
   },function(){st.textContent='⚠️ Impossibile rilevare la posizione';},{enableHighAccuracy:true,timeout:10000});
 }
 
@@ -2205,7 +2227,7 @@ function resetFormIbis(){
   ['iMetodo','iMunizionamento','iAmbiente','iDestinazione','iOp1Qual','iOp2Qual','iOp3Qual','iOp4Qual'].forEach(function(id){document.getElementById(id).value='';});
   ['eGiov','eAdul','eIndet','stSi','stNo'].forEach(function(id){document.getElementById(id).classList.remove('active');});
   document.getElementById('iArmaGroup').style.display='none';
-  document.getElementById('iGpsStatus').textContent='Tocca "Rileva" per acquisire la posizione';
+  document.getElementById('iGpsStatus').textContent='Tocca "Rileva" per acquisire la posizione';document.getElementById('iGpsStatusLink').style.display='none';
   etaIbis='';stampiIbis='';
 }
 
@@ -2392,7 +2414,8 @@ function rilevaPosizioneScoiattolo(){
   navigator.geolocation.getCurrentPosition(function(pos){
     document.getElementById('scGpsN').value=pos.coords.latitude.toFixed(6);
     document.getElementById('scGpsE').value=pos.coords.longitude.toFixed(6);
-    st.textContent='✅ Posizione acquisita (±'+Math.round(pos.coords.accuracy)+'m)';
+    st.textContent='✅ Posizione acquisita (±'+Math.round(pos.coords.accuracy)+'m) — controllala sulla mappa';
+    aggiornaLinkMaps('scGpsN','scGpsE','scGpsStatus');
   },function(){st.textContent='⚠️ Impossibile rilevare la posizione';},{enableHighAccuracy:true,timeout:10000});
 }
 function cercaOperatoreScoiattolo(n,val){
@@ -2482,7 +2505,7 @@ function resetFormScoiattolo(){
   document.getElementById('scQual1').value='';
   document.getElementById('scQual2').value='';
   document.getElementById('scSpecie').value='';
-  document.getElementById('scGpsStatus').textContent='Tocca "Rileva" per acquisire la posizione';
+  document.getElementById('scGpsStatus').textContent='Tocca "Rileva" per acquisire la posizione';document.getElementById('scGpsStatusLink').style.display='none';
 }
 
 // STATISTICHE PER SPECIE
@@ -2807,10 +2830,79 @@ async function generaStampaEsenzioneCorvidi(){
   }
 }
 
+// ============================================================
+// MAPPA SATELLITARE — controllo/correzione del punto GPS (come in Selvatici)
+// ============================================================
+var leafletMapInstance=null, leafletMarker=null, mapTarget=null;
+function leggiCoordCampi(latId,lonId){
+  function n(v){v=String(v||'').trim().replace(',','.').replace(/[^0-9.\-]/g,'');return v===''?NaN:parseFloat(v);}
+  var lat=n(document.getElementById(latId).value), lon=n(document.getElementById(lonId).value);
+  if(isNaN(lat)||isNaN(lon)) return null;
+  if(lat<20&&lon>20){var t=lat;lat=lon;lon=t;}
+  if(lat<-90||lat>90||lon<-180||lon>180) return null;
+  return [lat,lon];
+}
+function aggiornaLinkMaps(latId,lonId,stId){
+  var a=document.getElementById(stId+'Link'); if(!a) return;
+  var c=leggiCoordCampi(latId,lonId);
+  if(c){a.href='https://www.google.com/maps/search/?api=1&query='+c[0]+','+c[1];a.style.display='inline-block';}
+  else a.style.display='none';
+}
+function apriMappa(latId,lonId,stId){
+  if(typeof L==='undefined'){toast('Mappa non disponibile: controlla la connessione',true);return;}
+  mapTarget={lat:latId,lon:lonId,st:stId};
+  document.getElementById('mapModal').style.display='flex';
+  var c=leggiCoordCampi(latId,lonId);
+  setTimeout(function(){
+    var start=c||[45.1333,10.0333];
+    if(!leafletMapInstance){
+      leafletMapInstance=L.map('leafletMap').setView(start,c?18:12);
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles &copy; Esri',maxZoom:19}).addTo(leafletMapInstance);
+      leafletMarker=L.marker(start,{draggable:true}).addTo(leafletMapInstance);
+      leafletMapInstance.on('click',function(e){leafletMarker.setLatLng(e.latlng);});
+    } else {
+      leafletMapInstance.invalidateSize();
+      leafletMapInstance.setView(start,c?18:12);
+      leafletMarker.setLatLng(start);
+    }
+    if(!c) mappaMiaPosizione();   // nessuna coordinata: parte dalla posizione del telefono
+  },150);
+}
+function mappaMiaPosizione(){
+  if(!navigator.geolocation||!leafletMapInstance) return;
+  navigator.geolocation.getCurrentPosition(function(pos){
+    var p=[pos.coords.latitude,pos.coords.longitude];
+    leafletMapInstance.setView(p,18);leafletMarker.setLatLng(p);
+  },function(){toast('Impossibile rilevare la posizione',true);},{enableHighAccuracy:true,timeout:10000});
+}
+function chiudiMappa(){document.getElementById('mapModal').style.display='none';}
+function confermaPosizioneMappa(){
+  if(!leafletMarker||!mapTarget){chiudiMappa();return;}
+  var pos=leafletMarker.getLatLng();
+  document.getElementById(mapTarget.lat).value=pos.lat.toFixed(6);
+  document.getElementById(mapTarget.lon).value=pos.lng.toFixed(6);
+  document.getElementById(mapTarget.st).textContent='✅ Punto confermato sulla mappa';
+  aggiornaLinkMaps(mapTarget.lat,mapTarget.lon,mapTarget.st);
+  chiudiMappa();
+}
+
 syncPinMapDaSheet().then(checkLogin);
 loadStats();
 caricaCacciatoriDalFoglio();
 </script>
 
+<!-- MODAL MAPPA GPS -->
+<div id="mapModal">
+  <div class="map-header">
+    <span>🛰️ Punto dell'intervento</span>
+    <button type="button" class="map-close" onclick="chiudiMappa()">×</button>
+  </div>
+  <div class="map-hint">Tocca la mappa o trascina il segnaposto sul punto esatto, poi conferma</div>
+  <div id="leafletMap"></div>
+  <div class="map-footer">
+    <button type="button" class="map-mia" onclick="mappaMiaPosizione()">📍 La mia posizione</button>
+    <button type="button" class="map-confirm" onclick="confermaPosizioneMappa()">✅ Conferma punto</button>
+  </div>
+</div>
 
 </body></html>
