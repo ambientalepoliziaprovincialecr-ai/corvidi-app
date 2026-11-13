@@ -178,7 +178,132 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator{filter:invert(0.
 button:focus-visible,[role="button"]:focus-visible,.custom-select-trigger:focus-visible,.custom-select-option:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #ffffff;outline-offset:2px;}
 .form-input:focus,.form-select:focus,.custom-select-trigger:focus{border-color:#f5a623;box-shadow:0 0 0 3px rgba(255,235,59,0.7);}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+/* ===== TEMA 2026 (13/11) — solo grafica: colori, forme, spazi. Nessuna funzione cambiata. ===== */
+:root{--fondo:#0B1726;--card:#12233A;--card2:#173050;--linea:rgba(255,255,255,0.09);--testo:#F4F1E8;--testo2:#FFE680;--oro:#F5B83D;--oro-scuro:#C98A12;--verde-ok:#3DD68C;}
+html{background:var(--fondo);}
+body{background:var(--fondo) radial-gradient(120% 700px at 50% 0%,#132B47 0%,var(--fondo) 100%) no-repeat;color:var(--testo);}
+/* intestazione */
+.header{background:rgba(11,23,38,0.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid rgba(245,184,61,0.55);box-shadow:0 6px 20px rgba(0,0,0,0.35);padding:10px 16px 9px;}
+.auto-pl{width:96px;}
+.header h1{color:var(--testo);font-size:25px;letter-spacing:5px;}
+.header h1 span{color:var(--oro);}
+.header p{color:var(--testo2);letter-spacing:2.5px;}
+.screen{padding:16px 16px 28px;}
+/* titoli di sezione con linea */
+.section-title{display:flex;align-items:center;gap:10px;color:var(--oro);font-weight:700;margin:22px 0 10px;}
+.section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(245,184,61,0.45),transparent);}
+/* pulsante istruzioni: piccolo e discreto */
+#screenHome > button[onclick*="modalIstruzioni"]{width:auto!important;min-height:40px!important;padding:8px 16px!important;border-radius:999px!important;background:rgba(255,255,255,0.05)!important;border:1px solid var(--linea)!important;color:var(--testo2)!important;font-size:13px!important;display:block;margin:0 0 14px auto!important;}
+/* scadenze */
+#boxScadenze > div{background:linear-gradient(135deg,rgba(231,76,60,0.16),rgba(231,76,60,0.06))!important;border:1px solid rgba(255,107,107,0.45)!important;border-left:5px solid #ff6b6b!important;border-radius:16px!important;padding:14px 16px!important;box-shadow:0 6px 18px rgba(0,0,0,0.25);}
+#boxScadenze button{min-height:40px;border-radius:999px!important;padding:8px 14px!important;font-weight:600;}
+/* oggi hai inserito */
+.miei-oggi{background:linear-gradient(135deg,rgba(61,214,140,0.14),rgba(61,214,140,0.04));border:1px solid rgba(61,214,140,0.4);border-left:5px solid var(--verde-ok);border-radius:16px;padding:14px 16px;margin-bottom:14px;box-shadow:0 6px 18px rgba(0,0,0,0.25);}
+.miei-oggi .mo-tit{color:var(--verde-ok);font-weight:700;}
+.miei-oggi .mo-km{color:var(--testo);}
+.miei-oggi .mo-km small{color:var(--testo2);}
+.miei-oggi .mo-det{color:var(--testo2);}
+/* numeri */
+.stats-row{gap:10px;margin:4px 0 6px;}
+.stat-card{background:var(--card);border:1px solid var(--linea);border-radius:16px;padding:14px 10px 12px;box-shadow:0 4px 14px rgba(0,0,0,0.22);}
+.stat-card .num{color:var(--testo);font-size:34px;}
+.stat-card .label{color:var(--testo2);font-weight:600;}
+.stat-card.highlight{background:linear-gradient(135deg,rgba(245,184,61,0.2),rgba(245,184,61,0.06));border-color:rgba(245,184,61,0.6);}
+.stat-card.highlight .num{color:var(--oro);}
+/* due pulsanti grandi */
+.main-buttons{gap:12px;}
+.btn-main{position:relative;padding:18px 16px;border-radius:18px;box-shadow:0 8px 22px rgba(0,0,0,0.3);overflow:hidden;}
+.btn-main.km{background:linear-gradient(135deg,#1D4572,#122B49);border:1px solid rgba(120,180,255,0.35);}
+.btn-main.rif{background:linear-gradient(135deg,#1F5A3A,#123222);border:1px solid rgba(61,214,140,0.35);}
+.btn-main::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;}
+.btn-main.km::before{background:#5FA8FF;}
+.btn-main.rif::before{background:var(--verde-ok);}
+.btn-main-icon{width:54px;height:54px;border-radius:14px;background:rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:30px;}
+.btn-main-text strong{color:#fff;font-size:23px;}
+.btn-main-text span{color:rgba(255,255,255,0.72);}
+.btn-main-arrow{opacity:0.7;font-size:30px;color:#fff;}
+.btn-main:active{transform:scale(0.98);}
+/* pulsanti elenco (consultazione, stampe) */
+.btn-report,.btn-sheet{display:flex;align-items:center;text-align:left;background:var(--card);border:1px solid var(--linea);border-radius:14px;color:var(--testo);letter-spacing:1px;font-weight:600;padding:12px 16px;}
+.btn-report::after,.btn-sheet::after{content:'›';margin-left:auto;font-size:24px;line-height:1;color:var(--oro);}
+.btn-report:hover,.btn-sheet:hover{background:var(--card2);}
+.btn-report:active{transform:scale(0.99);}
+/* moduli */
+.form-header{padding-top:4px;}
+.btn-back{background:var(--card);border:1px solid var(--linea);border-radius:14px;color:var(--oro);font-size:26px;}
+.form-header-title{color:var(--testo);font-size:24px;}
+.form-header-title span{color:var(--oro);font-weight:600;}
+.form-group{margin-bottom:16px;}
+.form-label{color:var(--testo2);}
+.form-label .req{color:var(--oro);}
+.form-input,.form-select,.form-textarea,.custom-select-trigger{border:2px solid #0A1422;border-radius:14px;box-shadow:0 3px 0 rgba(0,0,0,0.35);}
+.custom-select-trigger.placeholder{opacity:1;color:#6B7280;background:#fff;}
+.form-input:focus,.form-select:focus,.custom-select-trigger:focus{border-color:var(--oro);box-shadow:0 0 0 4px rgba(245,184,61,0.45);}
+.btn-turno,.agente-btn{background:var(--card);border:1px solid var(--linea);border-radius:12px;color:var(--testo);font-weight:600;}
+.btn-turno.active,.agente-btn.sel{background:var(--oro);border-color:var(--oro);color:#16202E;font-weight:700;box-shadow:0 4px 12px rgba(245,184,61,0.35);}
+.btn-gestisci-f{border-radius:12px;color:var(--testo2);border-color:rgba(255,255,255,0.15);}
+.btn-adesso{background:var(--card);border:1px solid rgba(245,184,61,0.5);border-radius:12px;color:var(--oro);font-weight:600;}
+#calcBox{background:var(--card)!important;border:1px solid rgba(245,184,61,0.45)!important;border-radius:14px!important;}
+.btn-submit{min-height:58px;border-radius:16px;font-size:21px;box-shadow:0 8px 22px rgba(0,0,0,0.35);}
+.btn-submit.km,.btn-submit.rif{background:linear-gradient(180deg,#FFCB5C,var(--oro-scuro));color:#16202E;}
+.btn-submit:active{transform:scale(0.98);}
+/* storico, schede, finestre */
+.tab-btn{border-radius:12px;color:var(--testo2);}
+.tab-btn.active{background:var(--oro);border-color:var(--oro);color:#16202E;}
+.record-card,.consumi-card{background:var(--card);border-radius:14px;}
+.record-targa{color:var(--oro);}
+.record-detail,.record-data{color:var(--testo2);}
+.modal-box{background:var(--card);border-color:rgba(245,184,61,0.5);border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,0.5);}
+.modal-title{color:var(--oro);}
+.modal-text{color:var(--testo2);}
+.modal-btn{border-radius:12px;min-height:46px;}
+.modal-btn.confirm{background:var(--oro);}
+.toast{border-radius:14px;box-shadow:0 10px 26px rgba(0,0,0,0.4);font-weight:600;}
+.data-row{grid-template-columns:minmax(0,1fr) auto;}
+.data-row .form-input{min-width:0;font-size:18px;padding:16px 12px;}
+.data-row .btn-adesso{padding:10px 12px;}
+/* leggibilita' al sole anche in modalita' scura: niente scritte sottili */
+.form-label,.stat-card .label,.miei-oggi .mo-det,.btn-main-text span,.record-detail,.record-data{font-weight:700;}
+.btn-main-text span{color:#fff;}
+/* pulsante SOLE */
+.btn-sole{position:absolute;right:10px;top:10px;min-height:40px;padding:6px 12px;border-radius:999px;border:2px solid var(--oro);background:rgba(0,0,0,0.35);color:var(--oro);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;cursor:pointer;z-index:11;}
+/* ===== MODALITA' SOLE: bianco, nero, bordi spessi ===== */
+html.sole,html.sole body{background:#FFFFFF!important;color:#000!important;}
+html.sole .header{background:#FFFFFF;border-bottom:4px solid #000;box-shadow:none;backdrop-filter:none;}
+html.sole .header h1{color:#000;}
+html.sole .header h1 span{color:#B00000;}
+html.sole .header p{color:#000;font-weight:700;}
+html.sole .btn-sole{background:#000;color:#FFE600;border-color:#000;}
+html.sole .section-title{color:#000;font-weight:800;}
+html.sole .section-title::after{background:#000;height:2px;}
+html.sole .stat-card,html.sole .btn-report,html.sole .btn-sheet,html.sole .btn-back,html.sole .btn-turno,html.sole .agente-btn,html.sole .btn-gestisci-f,html.sole .btn-adesso,html.sole .tab-btn,html.sole .record-card,html.sole .consumi-card,html.sole #calcBox{background:#FFFFFF!important;border:3px solid #000!important;color:#000!important;box-shadow:none;}
+html.sole .stat-card .num,html.sole .stat-card .label,html.sole .stat-card.highlight .num{color:#000;}
+html.sole .stat-card.highlight{background:#FFE600!important;}
+html.sole .btn-report::after,html.sole .btn-sheet::after{color:#000;}
+html.sole .btn-main{box-shadow:none;border:3px solid #000;}
+html.sole .btn-main.km{background:#0B3D91;}
+html.sole .btn-main.rif{background:#0B6B2E;}
+html.sole .btn-main-text strong,html.sole .btn-main-text span,html.sole .btn-main-arrow{color:#FFFFFF;opacity:1;}
+html.sole .miei-oggi{background:#E6FFE9;border:3px solid #000;border-left:10px solid #0B6B2E;box-shadow:none;}
+html.sole .miei-oggi .mo-tit,html.sole .miei-oggi .mo-km,html.sole .miei-oggi .mo-km small,html.sole .miei-oggi .mo-auto,html.sole .miei-oggi .mo-det,html.sole .miei-oggi .mo-vuoto{color:#000;}
+html.sole #boxScadenze > div{background:#FFECEC!important;border:3px solid #000!important;border-left:10px solid #C00000!important;box-shadow:none;}
+html.sole #boxScadenze div,html.sole #boxScadenze strong{color:#000!important;}
+html.sole #boxScadenze button{background:#FFFFFF!important;border:2px solid #000!important;color:#000!important;}
+html.sole #screenHome > button[onclick*="modalIstruzioni"]{background:#FFFFFF!important;border:2px solid #000!important;color:#000!important;}
+html.sole .form-header-title,html.sole .form-header-title span,html.sole .form-label,html.sole .form-label .req{color:#000;}
+html.sole .form-input,html.sole .form-select,html.sole .form-textarea,html.sole .custom-select-trigger{border:3px solid #000;box-shadow:none;}
+html.sole .custom-select-trigger.placeholder{color:#444;}
+html.sole .btn-turno.active,html.sole .agente-btn.sel,html.sole .tab-btn.active{background:#FFE600!important;color:#000!important;border:4px solid #000!important;}
+html.sole .btn-submit.km,html.sole .btn-submit.rif{background:#FFE600;color:#000;border:3px solid #000;box-shadow:none;}
+html.sole .record-targa,html.sole .record-detail,html.sole .record-data,html.sole .consumi-lbl,html.sole .consumi-num{color:#000!important;}
+html.sole #calcBox div{color:#000!important;}
+html.sole [style*="color:#ffeb3b"],html.sole [style*="color: rgb(255, 235, 59)"]{color:#000!important;}
+html.sole .empty-state{color:#333;}
 </style>
+<script>try{if(localStorage.getItem('flotta_sole')==='1')document.documentElement.classList.add('sole');}catch(e){}
+function cambiaSole(){var s=document.documentElement.classList.toggle('sole');try{localStorage.setItem('flotta_sole',s?'1':'0');}catch(e){}var b=document.getElementById('btnSole');if(b)b.textContent=s?'🌙 NORMALE':'☀️ SOLE';}
+document.addEventListener('DOMContentLoaded',function(){var b=document.getElementById('btnSole');if(b&&document.documentElement.classList.contains('sole'))b.textContent='🌙 NORMALE';});</script>
+
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
@@ -302,6 +427,7 @@ button:focus-visible,[role="button"]:focus-visible,.custom-select-trigger:focus-
 </div>
 
 <div class="header">
+  <button type="button" class="btn-sole" id="btnSole" onclick="cambiaSole()" aria-label="Modalità sole: scritte nere su bianco">☀️ SOLE</button>
   <div class="header-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 90" class="auto-pl" role="img" aria-label="Auto Polizia Locale"><defs><pattern id="scacchi" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#fff"/><rect width="4" height="4" fill="#1f8a3b"/><rect x="4" y="4" width="4" height="4" fill="#1f8a3b"/></pattern></defs><ellipse cx="110" cy="80" rx="92" ry="5" fill="#000" opacity=".25"/><path d="M14 62 Q14 50 30 47 L62 44 Q76 26 106 24 L142 24 Q164 26 176 44 L200 49 Q208 51 208 60 L208 68 L14 68 Z" fill="#f7f8f5"/><path d="M14 56 L208 56 L208 62 L14 62 Z" fill="url(#scacchi)"/><path d="M20 52 Q70 48 120 40 Q150 36 176 43 L176 48 Q150 42 120 47 Q70 55 20 58 Z" fill="#1f8a3b"/><path d="M72 44 Q82 30 106 28 L124 28 L124 44 Z" fill="#9fc4e8"/><path d="M130 28 L142 28 Q158 30 168 44 L130 44 Z" fill="#9fc4e8"/><rect x="123" y="28" width="7" height="16" fill="#f7f8f5"/><rect x="92" y="16" width="38" height="8" rx="3" fill="#1c4ea3"/><rect x="96" y="17.5" width="14" height="5" rx="2" fill="#4da3ff"/><rect x="112" y="17.5" width="14" height="5" rx="2" fill="#4da3ff"/><rect x="198" y="52" width="9" height="5" rx="2" fill="#ffe27a"/><rect x="14" y="52" width="7" height="5" rx="2" fill="#e04b3a"/><circle cx="52" cy="68" r="12" fill="#14181f"/><circle cx="52" cy="68" r="6" fill="#aab2bf"/><circle cx="52" cy="68" r="2.2" fill="#14181f"/><circle cx="168" cy="68" r="12" fill="#14181f"/><circle cx="168" cy="68" r="6" fill="#aab2bf"/><circle cx="168" cy="68" r="2.2" fill="#14181f"/></svg></div>
   <h1>REGISTRO <span>FLOTTA</span></h1>
   <p>Polizia Provinciale di Cremona</p>
