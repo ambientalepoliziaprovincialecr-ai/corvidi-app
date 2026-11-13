@@ -29,6 +29,15 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
 .stat-card .num{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;color:#ffeb3b;}
 .stat-card .label{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,235,59,0.85);margin-top:3px;font-family:'Barlow Condensed',sans-serif;}
 .stat-card.highlight{border-color:#ffeb3b;background:rgba(245,166,35,0.08);}
+.miei-oggi{background:linear-gradient(135deg,rgba(39,174,96,0.16),rgba(39,174,96,0.05));border:1px solid rgba(39,174,96,0.45);border-radius:12px;padding:12px 14px;margin-bottom:12px;}
+.miei-oggi .mo-tit{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#7ee2a8;margin-bottom:6px;}
+.miei-oggi .mo-riga{display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid rgba(255,255,255,0.08);}
+.miei-oggi .mo-riga:first-of-type{border-top:none;}
+.miei-oggi .mo-km{font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1;color:#ffeb3b;min-width:70px;text-align:right;}
+.miei-oggi .mo-km small{font-size:14px;color:rgba(255,235,59,0.7);margin-left:2px;}
+.miei-oggi .mo-auto{font-size:14px;font-weight:600;color:#fff;line-height:1.25;}
+.miei-oggi .mo-det{font-size:12px;color:rgba(255,255,255,0.6);margin-top:2px;}
+.miei-oggi .mo-vuoto{font-size:13px;color:rgba(255,255,255,0.7);}
 .section-title{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,235,59,0.85);margin-bottom:10px;}
 .main-buttons{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
 .btn-main{display:flex;align-items:center;gap:14px;padding:18px 16px;border:none;border-radius:14px;cursor:pointer;text-align:left;width:100%;transition:opacity 0.15s;}
@@ -307,6 +316,7 @@ button:focus-visible,[role="button"]:focus-visible,.custom-select-trigger:focus-
   </div>
   <button onclick="document.getElementById('modalIstruzioni').classList.add('show')" style="width:100%;min-height:48px;padding:11px;background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.3);border-radius:10px;color:#ffeb3b;font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;margin-bottom:12px;">ℹ️ &nbsp;Istruzioni</button>
   <div id="boxScadenze" style="display:none;"></div>
+  <div id="boxMieiOggi" class="miei-oggi" style="display:none;"></div>
   <div class="stats-row">
     <div class="stat-card"><div class="num loading" id="statKmOggi">···</div><div class="label">KM oggi</div></div>
     <div class="stat-card"><div class="num loading" id="statKmMese">···</div><div class="label">KM mese</div></div>
@@ -798,33 +808,109 @@ function caricaDatiDopoLogin(){
 
 function handleGoogleCredentialResponse(response) {
   idTokenCorrente = response.credential;
-  fetch(URL_GS + '?action=verificaLogin&idToken=' + encodeURIComponent(idTokenCorrente), null, 10000)
+  // VELOCITA': una sola richiesta 'datiIniziali' (verifica login + statistiche +
+  // targhe + PIN insieme) al posto di 4 richieste separate dopo il login.
+  fetchConTimeout(URL_GS + '?action=datiIniziali&idToken=' + encodeURIComponent(idTokenCorrente), null, 30000)
     .then(function(r){ return r.json(); })
-    .then(function(verifica){
-      if (verifica.ok) {
-        nomeOperatoreGoogle = verifica.nome;
-        operatoreCorrente = verifica.nome;
-        try { localStorage.setItem('flotta_operatore_v1', verifica.nome); } catch(e) {}
+    .then(function(d){
+      if (d.ok) {
         salvaTokenCondiviso(idTokenCorrente);
-        var hU = document.getElementById('headerUtente');
-        if (hU) hU.textContent = verifica.nome;
-
-        document.getElementById('modalLoginGoogle').style.display = 'none';
-        document.getElementById('loginGoogleErrore').textContent = '';
-
-        caricaDatiDopoLogin();
+        var eL = document.getElementById('loginGoogleErrore'); if (eL) eL.textContent = '';
+        applicaDatiIniziali(d, idTokenCorrente);
+        loadScadenze();
       } else {
-        document.getElementById('loginGoogleErrore').textContent = '❌ ' + verifica.message;
+        // risposta non valida: chiedo l'accesso
+        document.getElementById('modalLoginGoogle').style.display = 'flex';
+        document.getElementById('loginGoogleErrore').textContent = '❌ ' + (d.message || 'Accesso non autorizzato');
         idTokenCorrente = null;
       }
     })
     .catch(function(){
+      document.getElementById('modalLoginGoogle').style.display = 'flex';
       document.getElementById('loginGoogleErrore').textContent = '❌ Errore di verifica, riprova.';
     });
 }
 
+// Applica la risposta 'datiIniziali' (usata sia all'apertura sia dopo il login Google)
+function applicaDatiIniziali(d, token){
+  nomeOperatoreGoogle = d.nome;
+  operatoreCorrente = d.nome;
+  try { localStorage.setItem('flotta_operatore_v1', d.nome); } catch(e) {}
+  var hU = document.getElementById('headerUtente');
+  if (hU) hU.textContent = d.nome;
+  document.getElementById('modalLoginGoogle').style.display = 'none';
+  if (d.stats) applicaStats(d.stats);
+  else {
+    // statistiche non pronte sul server: le chiedo a parte, senza bloccare l'apertura
+    fetchConTimeout(URL_GS + '?action=stats&idToken=' + encodeURIComponent(token), null, 40000)
+      .then(function(r){ return r.json(); })
+      .then(function(st){ if (st && st.status !== 'error') { applicaStats(st); try { var c0 = JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}'); c0.stats = st; localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify(c0)); } catch(e3) {} } })
+      .catch(function(){});
+  }
+  if (d.targhe) applicaTarghe(d.targhe, d.veicoli, d);
+  if (d.pinMap) applicaPinMap(d.pinMap);
+  if (Array.isArray(d.mieiOggi)) { _mieiOggi = d.mieiOggi; salvaMieiOggi(); }
+  renderMieiOggi();
+  try { localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify({stats:d.stats||(JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}').stats), targhe:d.targhe, veicoli:d.veicoli, numeri:d.numeri, nascoste:d.nascoste})); } catch(e) {}
+  sincronizzaCodaOffline();
+  // elenco agenti dal foglio Turni: al massimo una volta al giorno, dopo l'apertura
+  setTimeout(syncAgentiSeServe, 3000);
+}
+
+// ---- OGGI HAI INSERITO: solo i km di questo operatore, oggi ----
+// Arrivano con 'datiIniziali' (il server legge solo le ultime righe del foglio)
+// e si aggiornano subito sul telefono dopo ogni salvataggio km.
+var _mieiOggi = (function(){
+  try {
+    var c = JSON.parse(localStorage.getItem('flotta_miei_oggi') || 'null');
+    if (c && c.giorno === new Date().toDateString() && Array.isArray(c.righe)) return c.righe;
+  } catch(e) {}
+  return null; // null = non ancora saputo (server vecchio o primo avvio)
+})();
+function salvaMieiOggi(){
+  try { localStorage.setItem('flotta_miei_oggi', JSON.stringify({ giorno: new Date().toDateString(), righe: _mieiOggi })); } catch(e) {}
+}
+function escHtml(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function renderMieiOggi(){
+  var box = document.getElementById('boxMieiOggi');
+  if (!box) return;
+  if (!Array.isArray(_mieiOggi)) { box.style.display = 'none'; return; }
+  var h = '<div class="mo-tit">✅ Oggi hai inserito</div>';
+  if (!_mieiOggi.length) {
+    h += '<div class="mo-vuoto">Nessun km inserito oggi. Tocca <strong>Registra KM</strong> qui sotto.</div>';
+  } else {
+    _mieiOggi.forEach(function(r){
+      var desc = descVeicolo(r.targa);
+      h += '<div class="mo-riga">' +
+        '<div class="mo-km">' + (r.kmGiorno ? Number(r.kmGiorno).toLocaleString('it-IT') : '—') + '<small>km</small></div>' +
+        '<div><div class="mo-auto">' + escHtml(r.targa) + (desc ? ' · ' + escHtml(desc) : '') + '</div>' +
+        '<div class="mo-det">km finali ' + Number(r.kmFinali || 0).toLocaleString('it-IT') + (r.ora ? ' · ore ' + escHtml(r.ora) : '') + '</div></div>' +
+        '</div>';
+    });
+  }
+  box.innerHTML = h;
+  box.style.display = 'block';
+}
+// dopo un salvataggio km riuscito: aggiungo subito la riga (km del giorno calcolati dall'ultimo km noto)
+function aggiungiMioKmOggi(targa, kmFinali, kmPrec){
+  if (!Array.isArray(_mieiOggi)) _mieiOggi = [];
+  var adesso = new Date();
+  _mieiOggi.unshift({ targa: targa, kmFinali: kmFinali, kmGiorno: (kmPrec && kmFinali > kmPrec) ? (kmFinali - kmPrec) : 0, ora: ('0' + adesso.getHours()).slice(-2) + ':' + ('0' + adesso.getMinutes()).slice(-2) });
+  salvaMieiOggi();
+  renderMieiOggi();
+}
+
+// La libreria di Google arriva dopo la pagina: se non c'è ancora, riprovo
+// ogni 200 ms invece di aspettare che si carichi TUTTA la pagina (font compresi).
+var _attesaGoogle = 0;
 function inizializzaBottoneGoogle(){
-  if (window.google && google.accounts && google.accounts.id) {
+  if (!(window.google && google.accounts && google.accounts.id)) {
+    if (_attesaGoogle++ < 100) setTimeout(inizializzaBottoneGoogle, 200);
+    return;
+  }
+  if (inizializzaBottoneGoogle._fatto) return;
+  inizializzaBottoneGoogle._fatto = true;
+  {
     google.accounts.id.initialize({
       client_id: '226909521211-tk40j8dfcr6dr428uqb4sd4s2lt5qbi6.apps.googleusercontent.com',
       callback: handleGoogleCredentialResponse,
@@ -842,8 +928,12 @@ function inizializzaBottoneGoogle(){
   }
 }
 
-window.onload = function(){
+// VELOCITA': parte appena la pagina è pronta, senza aspettare font e
+// librerie esterne (prima 'window.onload' aspettava anche quelli).
+function avvioApp(){
+  if (avvioApp._fatto) return; avvioApp._fatto = true;
   aggiornaBadgeCodaOffline();
+  try { renderMieiOggi(); } catch(e) {}
   var kds = document.getElementById('kmDataSolo');
   if (kds && !kds.value) {
     var oggi = new Date();
@@ -873,24 +963,7 @@ window.onload = function(){
       .then(function(r){ return r.json(); })
       .then(function(d){
         if (d.ok) {
-          nomeOperatoreGoogle = d.nome;
-          operatoreCorrente = d.nome;
-          try { localStorage.setItem('flotta_operatore_v1', d.nome); } catch(e) {}
-          var hU = document.getElementById('headerUtente');
-          if (hU) hU.textContent = d.nome;
-          document.getElementById('modalLoginGoogle').style.display = 'none';
-          if (d.stats) applicaStats(d.stats);
-          else {
-            // statistiche non pronte sul server: le chiedo a parte, senza bloccare l'apertura
-            fetchConTimeout(URL_GS + '?action=stats&idToken=' + encodeURIComponent(tokenCondiviso), null, 40000)
-              .then(function(r){ return r.json(); })
-              .then(function(st){ if (st && st.status !== 'error') { applicaStats(st); try { var c0 = JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}'); c0.stats = st; localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify(c0)); } catch(e3) {} } })
-              .catch(function(){});
-          }
-          if (d.targhe) applicaTarghe(d.targhe, d.veicoli, d);
-          if (d.pinMap) applicaPinMap(d.pinMap);
-          try { localStorage.setItem('flotta_dati_iniziali_cache', JSON.stringify({stats:d.stats||(JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache')||'{}').stats), targhe:d.targhe, veicoli:d.veicoli, numeri:d.numeri, nascoste:d.nascoste})); } catch(e) {}
-          sincronizzaCodaOffline();
+          applicaDatiIniziali(d, tokenCondiviso);
         } else {
           idTokenCorrente = null;
           try { mostraLoginGoogle(); } catch(e2) { document.getElementById('modalLoginGoogle').style.display = 'flex'; }
@@ -907,9 +980,23 @@ window.onload = function(){
         inizializzaBottoneGoogle();
       });
   } else {
+    // Accesso scaduto: mostro subito gli ultimi dati salvati su questo telefono
+    // (solo numeri e targhe, nessun dato nuovo senza login) mentre Google
+    // rinnova l'accesso da solo; il riquadro di accesso compare solo se serve.
+    try {
+      var cIni2 = JSON.parse(localStorage.getItem('flotta_dati_iniziali_cache') || 'null');
+      var opS2 = localStorage.getItem('flotta_operatore_v1');
+      if (cIni2) {
+        var hU2 = document.getElementById('headerUtente'); if (hU2 && opS2) hU2.textContent = opS2;
+        if (cIni2.stats) applicaStats(cIni2.stats);
+        if (cIni2.targhe) applicaTarghe(cIni2.targhe, cIni2.veicoli, cIni2);
+      }
+    } catch(e) {}
     inizializzaBottoneGoogle();
   }
-};
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', avvioApp);
+else avvioApp();
 
 function mostraCambiaPin() {
   if (!operatoreCorrente) { toast('Devi prima accedere', true); return; }
@@ -1172,7 +1259,10 @@ async function submitKm() {
   var confermato = confirm(messaggioCtl + avvisoCtl + avvisoScad + 'Premi OK per confermare e salvare, Annulla per tornare indietro e correggere.');
   if (!confermato) { btnSalva.disabled = false; btnSalva.textContent = testoOriginale; return; }
 
-  await invia({tipo:'KM', dataOra:fmtDT(dataOra), targa, conducente, kmFinali:kmNum, note, inseritoDa:operatoreCorrente});
+  var kmPrecSalv = 0;
+  (registrazioniTarga || []).forEach(function(r){ var k = parseInt(r.kmFinali) || 0; if (k < kmNum && k > kmPrecSalv) kmPrecSalv = k; });
+  var okKm = await invia({tipo:'KM', dataOra:fmtDT(dataOra), targa, conducente, kmFinali:kmNum, note, inseritoDa:operatoreCorrente});
+  if (okKm) { try { aggiungiMioKmOggi(targaUp, kmNum, kmPrecSalv); } catch(eMo) {} }
   document.getElementById('kmTarga').value = '';
   document.getElementById('kmFinali').value = '';
   document.getElementById('kmNote').value = '';
@@ -2325,13 +2415,22 @@ async function generaStampaTutto(){
   }
 }
 
-Promise.all([syncPinMapDaSheet(), syncAgentiDaSheet()]).then(function(){
-  checkLogin();
-  // Re-render eventuali griglie agenti già visibili con la lista aggiornata
-  if (typeof renderAgentiManagerFlotta === 'function') { try{ renderAgentiManagerFlotta(); }catch(e){} }
-  if (typeof renderKm === 'function') { try{ renderKm(); }catch(e){} }
-  if (typeof renderRif === 'function') { try{ renderRif(); }catch(e){} }
-});
+// VELOCITA': prima, a OGNI apertura, partivano qui 2 richieste in più
+// (mappa PIN senza accesso, rifiutata dal server, e il mese di giugno intero
+// dal foglio Turni solo per leggere i nomi). Ora: la mappa PIN arriva già
+// con 'datiIniziali'; l'elenco agenti si aggiorna al massimo una volta al
+// giorno, dopo che l'app è aperta (vedi applicaDatiIniziali).
+function syncAgentiSeServe(){
+  var oggi = new Date().toISOString().slice(0,10);
+  try { if (localStorage.getItem('flotta_agenti_sync_giorno') === oggi) return; } catch(e) {}
+  syncAgentiDaSheet().then(function(){
+    try { localStorage.setItem('flotta_agenti_sync_giorno', oggi); } catch(e) {}
+    // Re-render eventuali griglie agenti già visibili con la lista aggiornata
+    if (typeof renderAgentiManagerFlotta === 'function') { try{ renderAgentiManagerFlotta(); }catch(e){} }
+    if (typeof renderKm === 'function') { try{ renderKm(); }catch(e){} }
+    if (typeof renderRif === 'function') { try{ renderRif(); }catch(e){} }
+  });
+}
 // (statistiche, scadenze e targhe arrivano gia' con 'datiIniziali' dopo il login: niente richieste doppie all'avvio)
 // Popola select con default poi aggiorna dal foglio
 ['kmTarga','rifTarga','kmStampaTarga','rifStampaTarga'].forEach(function(id){ renderSelectTarghe(id, false); });
