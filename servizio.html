@@ -222,8 +222,8 @@ button:focus-visible,[role="button"]:focus-visible,.custom-select-trigger:focus-
 <div class="modal-overlay" role="dialog" aria-modal="true" id="modalSheet">
   <div class="modal-box">
     <div class="modal-title">🔒 Accesso protetto</div>
-    <div class="modal-text">Inserisci la password per accedere al Google Sheet</div>
-    <input type="password" class="form-input" id="inputPassword" style="margin-bottom:6px;">
+    <div class="modal-text">Riservato all'account Google amministratore (ambientale): premi Conferma</div>
+    <input type="password" class="form-input" id="inputPassword" style="display:none;margin-bottom:6px;">
     <div id="errPassword" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
     <div class="modal-btns">
       <button class="modal-btn cancel" onclick="chiudiModalSheet()">Annulla</button>
@@ -270,9 +270,9 @@ button:focus-visible,[role="button"]:focus-visible,.custom-select-trigger:focus-
 <div class="modal-overlay" role="dialog" aria-modal="true" id="modalAgentiServizio">
   <div class="modal-box large">
     <div class="modal-title">🔒 Gestione Agenti</div>
-    <div class="modal-text">Inserisci la password per modificare gli agenti</div>
+    <div class="modal-text">Riservato all'account Google amministratore (ambientale): premi Conferma</div>
     <div id="agentiPwdSectionS">
-      <input type="password" class="form-input" id="pwdAgentiS" style="margin-bottom:6px;">
+      <input type="password" class="form-input" id="pwdAgentiS" style="display:none;margin-bottom:6px;">
       <div id="errAgentiS" style="font-size:11px;color:#e74c3c;min-height:16px;margin-bottom:4px;"></div>
       <div class="modal-btns">
         <button class="modal-btn cancel" onclick="chiudiModalAgentiS()">Annulla</button>
@@ -549,9 +549,7 @@ let agenti = (function(){
 })();
 function salvaAgentiServizio() { localStorage.setItem('servizio_agenti_v1', JSON.stringify(agenti)); }
 
-var DEFAULT_PIN_MAP = {
-  '7342': 'ARISI', '2916': 'BANDERA', '5483': 'BORRINI', '8751': 'CAMBIATI', '3629': 'COLLA', '3688': 'FUSARI', '4817': 'GUARNERI', '9364': 'PREANI', '6193': 'RIZZI', '2748': 'TRENTAROSSI', '2766': 'VIVIANI', '5522': 'CHIODA', '1013': 'TORTINI', '1014': 'MARIOTTI'
-};
+var DEFAULT_PIN_MAP = {}; // PIN tolti dal codice pubblico 15/11/2026: arrivano dal foglio dopo il login
 // Cancella sempre il PIN salvato localmente — usa sempre il foglio
 localStorage.removeItem('servizio_pinmap_v1');
 localStorage.removeItem('servizio_operatore_v1');
@@ -570,6 +568,53 @@ async function syncPinMapDaSheet() {
 }
 
 var operatoreCorrente = localStorage.getItem('servizio_operatore_v1') || '';
+// ============================================================
+// PANNELLI DI GESTIONE (15/11/2026): si aprono solo con l'account
+// Google amministratore. Nel codice c'e' solo l'impronta SHA-256
+// dell'email, non l'email e nessuna password.
+// (La sicurezza vera resta sul server: ogni scrittura vuole il login.)
+// ============================================================
+var ADMIN_IMPRONTE_PP = ['76ff49ad30e9b84d2cda8bb9985f9bf3cc5e0c0d40b8342e8199698f62366d47'];
+function emailDaTokenPP(t) {
+  try {
+    var p = String(t || '').split('.');
+    if (p.length !== 3) return '';
+    var b = p[1].replace(/-/g, '+').replace(/_/g, '/');
+    while (b.length % 4) b += '=';
+    var s = decodeURIComponent(escape(atob(b)));
+    if (p[0] === 'S1') return String(s.split('|')[0] || '').toLowerCase();
+    return String(JSON.parse(s).email || '').toLowerCase();
+  } catch (e) { return ''; }
+}
+function sha256PP(ascii) {
+  function rr(v, n) { return (v >>> n) | (v << (32 - n)); }
+  var K = [], H = [], primi = [], n = 2;
+  while (primi.length < 64) { var ok = true; for (var i = 0; i < primi.length && primi[i] * primi[i] <= n; i++) if (n % primi[i] === 0) { ok = false; break; } if (ok) primi.push(n); n++; }
+  for (var j = 0; j < 64; j++) { K[j] = (Math.pow(primi[j], 1 / 3) * 4294967296) | 0; if (j < 8) H[j] = (Math.pow(primi[j], 1 / 2) * 4294967296) | 0; }
+  var s = unescape(encodeURIComponent(ascii)), l = s.length * 8, w = [];
+  s += '\x80'; while (s.length % 64 - 56) s += '\x00';
+  for (var a = 0; a < s.length; a++) w[a >> 2] |= s.charCodeAt(a) << ((3 - a) % 4) * 8;
+  w[w.length] = (l / 4294967296) | 0; w[w.length] = l;
+  for (var c = 0; c < w.length; c += 16) {
+    var W = w.slice(c, c + 16), h = H.slice(0);
+    for (var t = 0; t < 64; t++) {
+      if (t >= 16) { var x = W[t - 15], y = W[t - 2]; W[t] = (W[t - 16] + (rr(x, 7) ^ rr(x, 18) ^ (x >>> 3)) + W[t - 7] + (rr(y, 17) ^ rr(y, 19) ^ (y >>> 10))) | 0; }
+      var e = h[4], t1 = h[7] + (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) + ((e & h[5]) ^ (~e & h[6])) + K[t] + (W[t] | 0);
+      var d = h[0], t2 = (rr(d, 2) ^ rr(d, 13) ^ rr(d, 22)) + ((d & h[1]) ^ (d & h[2]) ^ (h[1] & h[2]));
+      h = [(t1 + t2) | 0].concat(h); h[4] = (h[4] + t1) | 0; h.pop();
+    }
+    for (var q = 0; q < 8; q++) H[q] = (H[q] + h[q]) | 0;
+  }
+  var hex = '';
+  for (var z = 0; z < 8; z++) for (var k = 3; k + 1; k--) { var bb = (H[z] >> (k * 8)) & 255; hex += (bb < 16 ? '0' : '') + bb.toString(16); }
+  return hex;
+}
+function seiAdminPP() {
+  var tok = (typeof idTokenCorrente !== 'undefined' && idTokenCorrente) || '';
+  var em = emailDaTokenPP(tok);
+  return !!em && ADMIN_IMPRONTE_PP.indexOf(sha256PP('ppcr|' + em)) >= 0;
+}
+
 var idTokenCorrente = null;
 var nomeOperatoreGoogle = null;
 
@@ -787,12 +832,12 @@ function apriGestioneAgentiS(){
 }
 function chiudiModalAgentiS(){document.getElementById('modalAgentiServizio').classList.remove('show');}
 function verificaAgentiS(){
-  if(document.getElementById('pwdAgentiS').value==='12345611'){
+  if(seiAdminPP()){
     document.getElementById('agentiPwdSectionS').style.display='none';
     document.getElementById('agentiManagerSectionS').style.display='block';
     renderAgentiManagerS();
   } else {
-    document.getElementById('errAgentiS').textContent='❌ Password errata';
+    document.getElementById('errAgentiS').textContent='❌ Solo per l\'account amministratore (ambientale)';
     document.getElementById('pwdAgentiS').value='';
   }
 }
@@ -1520,7 +1565,7 @@ async function generaStampa(){
 
 
 function chiudiModalSheet(){document.getElementById('modalSheet').classList.remove('show');}
-function verificaPassword(){var pwd=document.getElementById('inputPassword').value;if(pwd==='12345611'){chiudiModalSheet();window.open(SHEET_URL,'_blank');}else{document.getElementById('errPassword').textContent='❌ Password errata';document.getElementById('inputPassword').value='';}}
+function verificaPassword(){var pwd=document.getElementById('inputPassword').value;if(seiAdminPP()){chiudiModalSheet();window.open(SHEET_URL,'_blank');}else{document.getElementById('errPassword').textContent='❌ Solo per l\'account amministratore (ambientale)';document.getElementById('inputPassword').value='';}}
 document.getElementById('inputPassword').addEventListener('keydown',function(e){if(e.key==='Enter')verificaPassword();});
 
 var SHEET_URL='https://docs.google.com/spreadsheets/d/1_SaJq2dvGEP-wNsKtSsD_4kULywLDItyaea6v1DQ2A0/edit';
