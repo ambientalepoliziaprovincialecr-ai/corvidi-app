@@ -37,6 +37,34 @@ select option{background:#1a1a2e;color:#e2e8f0;}
 .btn-close{width:100%;padding:12px;border:none;border-radius:10px;background:#f5a623;color:#1a1a2e;font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:12px;}
 </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<style id="tema2026">
+/* ===== TEMA 2026 (15/11) - solo grafica: colori, forme, ombre. Nessuna funzione cambiata. ===== */
+:root{--t-fondo:#0B1726;--t-card:#12233A;--t-card2:#173050;--t-acc:#F5B83D;--t-acc2:#C98A12;--t-testo:#F4F1E8;--t-testo2:#FFE680;--t-alone:#132B47;--t-linea:rgba(255,255,255,0.10);}
+html{background:var(--t-fondo);}
+body{background:var(--t-fondo) radial-gradient(120% 700px at 50% 0%,var(--t-alone) 0%,var(--t-fondo) 100%) no-repeat;}
+
+.btn{border-radius:14px;box-shadow:0 6px 16px rgba(0,0,0,0.3);}
+.btn:active{transform:scale(0.98);}
+.form-group select,.form-group input{border-radius:12px;}
+.istr-section{border-radius:14px;}
+.modal-box{background:var(--t-card);border-radius:18px;}
+
+.btn-sole-pp.fisso{position:fixed;}
+.btn-sole-pp.in-riga{position:static;width:40px;height:40px;font-size:20px;flex:0 0 auto;}
+.btn-sole-pp{position:absolute;right:10px;top:10px;z-index:20;width:44px;height:44px;border-radius:50%;border:2px solid #F5B83D;background:rgba(0,0,0,0.55);color:#fff;font-size:24px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,0.4);cursor:pointer;padding:0;}
+@media screen{
+ html.sole{filter:invert(1) hue-rotate(180deg) contrast(1.12);}
+ html.sole img,html.sole video,html.sole canvas,html.sole iframe,html.sole svg image,html.sole .btn-main-icon,html.sole .app-icon,html.sole .header-icon,html.sole .btn-sole-pp{filter:invert(1) hue-rotate(180deg);}
+ html.sole body,html.sole body *{text-shadow:none!important;}
+ html.sole .form-label,html.sole label,html.sole p,html.sole span,html.sole small{font-weight:700;}
+}
+@media print{.btn-sole-pp{display:none!important;}}
+</style>
+<script>/* MODALITA' SOLE (15/11): uguale per tutte le app, ognuno la sceglie sul suo telefono */
+try{if(localStorage.getItem('pp_sole')==='1')document.documentElement.classList.add('sole');}catch(e){}
+function cambiaSolePP(){var s=document.documentElement.classList.toggle('sole');try{localStorage.setItem('pp_sole',s?'1':'0');}catch(e){}var b=document.getElementById('btnSolePP');if(b){b.textContent=s?'\u{1F319}':'\u2600\uFE0F';b.setAttribute('aria-label',s?'Torna ai colori normali':'Modalita sole: scritte nere su bianco');}}
+document.addEventListener('DOMContentLoaded',function(){var b=document.createElement('button');b.type='button';b.id='btnSolePP';b.className='btn-sole-pp';b.onclick=cambiaSolePP;var r=document.querySelector('.hright'),h=document.querySelector('.header');if(r){b.classList.add('in-riga');r.insertBefore(b,r.firstChild);}else if(h){if(getComputedStyle(h).position==='static')h.style.position='relative';h.appendChild(b);}else{b.classList.add('fisso');document.body.appendChild(b);}var s=document.documentElement.classList.contains('sole');b.textContent=s?'\u{1F319}':'\u2600\uFE0F';b.setAttribute('aria-label',s?'Torna ai colori normali':'Modalita sole: scritte nere su bianco');b.title='Modalita sole';});
+</script>
 </head>
 <body>
 

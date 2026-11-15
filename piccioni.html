@@ -126,6 +126,72 @@ body{font-family:'Barlow',sans-serif;background:var(--blu);color:var(--crema);ma
 .btn-istr-close{width:100%;padding:12px;border:none;border-radius:10px;background:#f5a623;color:#1a1a2e;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;cursor:pointer;margin-top:12px;}
 </style>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
+<style id="tema2026">
+/* ===== TEMA 2026 (15/11) - solo grafica: colori, forme, ombre. Nessuna funzione cambiata. ===== */
+:root{--t-fondo:#12122A;--t-card:#1D1D3E;--t-card2:#26264F;--t-acc:#F5B83D;--t-acc2:#C98A12;--t-testo:#F4F2FA;--t-testo2:#FFE680;--t-alone:#20204A;--t-linea:rgba(255,255,255,0.10);}
+html{background:var(--t-fondo);}
+body{background:var(--t-fondo) radial-gradient(120% 700px at 50% 0%,var(--t-alone) 0%,var(--t-fondo) 100%) no-repeat;}
+
+.header{background:rgba(0,0,0,0.30);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--t-acc);box-shadow:0 6px 20px rgba(0,0,0,0.35);}
+.header h1{color:var(--t-testo);letter-spacing:4px;}
+.header h1 span{color:var(--t-acc);}
+.header p{color:var(--t-testo2);letter-spacing:2.5px;font-weight:600;}
+.section-title{display:flex;align-items:center;gap:10px;color:var(--t-acc);font-weight:700;}
+.section-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--t-acc),transparent);opacity:.6;}
+.stat-card{background:var(--t-card);border:1px solid var(--t-linea);border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,0.25);}
+.stat-card .num{color:var(--t-testo);}
+.stat-card .label{color:var(--t-testo2);font-weight:700;}
+.stat-card.highlight{background:linear-gradient(135deg,rgba(245,184,61,0.20),rgba(245,184,61,0.06));border-color:var(--t-acc);}
+.stat-card.highlight .num{color:var(--t-acc);}
+.btn-main{position:relative;border-radius:18px;box-shadow:0 8px 22px rgba(0,0,0,0.32);overflow:hidden;border:1px solid var(--t-linea);}
+.btn-main::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--t-acc);}
+.btn-main-icon{border-radius:14px;}
+.btn-main-text strong{color:#fff;}
+.btn-main-text span{color:#fff;font-weight:600;opacity:.85;}
+.btn-main:active{transform:scale(0.98);}
+.btn-report,.btn-sheet{background:var(--t-card);border:1px solid var(--t-linea);border-radius:14px;color:var(--t-testo);font-weight:600;box-shadow:0 3px 10px rgba(0,0,0,0.2);}
+.btn-report:hover,.btn-sheet:hover{background:var(--t-card2);}
+.btn-report:active{transform:scale(0.99);}
+.btn-back{background:var(--t-card);border:1px solid var(--t-linea);border-radius:14px;color:var(--t-acc);}
+.form-header-title{color:var(--t-testo);}
+.form-header-title span{color:var(--t-acc);}
+.form-label{color:var(--t-testo2);font-weight:700;}
+.form-label .req,.req{color:var(--t-acc);}
+.form-input,.form-select,.form-textarea{border-radius:14px;border:2px solid rgba(0,0,0,0.55);box-shadow:0 3px 0 rgba(0,0,0,0.30);}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--t-acc);box-shadow:0 0 0 4px rgba(245,184,61,0.40);outline:none;}
+.form-divider{color:var(--t-acc);}
+.btn-submit{border-radius:16px;min-height:56px;box-shadow:0 8px 22px rgba(0,0,0,0.35);}
+.btn-submit:active{transform:scale(0.98);}
+.tab-btn{border-radius:12px;}
+.tab-btn.active{background:var(--t-acc);border-color:var(--t-acc);color:#16202E;}
+.record-card,.report-card,.consumi-card,.search-result-card{background:var(--t-card);border-radius:14px;border:1px solid var(--t-linea);box-shadow:0 3px 10px rgba(0,0,0,0.2);}
+.record-detail,.record-data{font-weight:600;}
+.agente-btn,.sel-btn,.capi-btn,.qual-btn,.specie-btn,.piccioni-btn,.smalt-btn,.toggle-btn,.btn-giorno,.btn-oggi{border-radius:12px;}
+.modal-box{background:var(--t-card);border-color:var(--t-acc);border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,0.5);}
+.modal-title{color:var(--t-acc);}
+.modal-text{color:var(--t-testo2);}
+.modal-btn{border-radius:12px;min-height:46px;}
+.toast{border-radius:14px;box-shadow:0 10px 26px rgba(0,0,0,0.4);font-weight:600;}
+.istr-section{border-radius:14px;}
+.istr-title{color:var(--t-acc);}
+.empty-state{font-weight:600;}
+
+.btn-sole-pp.fisso{position:fixed;}
+.btn-sole-pp.in-riga{position:static;width:40px;height:40px;font-size:20px;flex:0 0 auto;}
+.btn-sole-pp{position:absolute;right:10px;top:10px;z-index:20;width:44px;height:44px;border-radius:50%;border:2px solid #F5B83D;background:rgba(0,0,0,0.55);color:#fff;font-size:24px;line-height:1;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,0.4);cursor:pointer;padding:0;}
+@media screen{
+ html.sole{filter:invert(1) hue-rotate(180deg) contrast(1.12);}
+ html.sole img,html.sole video,html.sole canvas,html.sole iframe,html.sole svg image,html.sole .btn-main-icon,html.sole .app-icon,html.sole .header-icon,html.sole .btn-sole-pp{filter:invert(1) hue-rotate(180deg);}
+ html.sole body,html.sole body *{text-shadow:none!important;}
+ html.sole .form-label,html.sole label,html.sole p,html.sole span,html.sole small{font-weight:700;}
+}
+@media print{.btn-sole-pp{display:none!important;}}
+</style>
+<script>/* MODALITA' SOLE (15/11): uguale per tutte le app, ognuno la sceglie sul suo telefono */
+try{if(localStorage.getItem('pp_sole')==='1')document.documentElement.classList.add('sole');}catch(e){}
+function cambiaSolePP(){var s=document.documentElement.classList.toggle('sole');try{localStorage.setItem('pp_sole',s?'1':'0');}catch(e){}var b=document.getElementById('btnSolePP');if(b){b.textContent=s?'\u{1F319}':'\u2600\uFE0F';b.setAttribute('aria-label',s?'Torna ai colori normali':'Modalita sole: scritte nere su bianco');}}
+document.addEventListener('DOMContentLoaded',function(){var b=document.createElement('button');b.type='button';b.id='btnSolePP';b.className='btn-sole-pp';b.onclick=cambiaSolePP;var r=document.querySelector('.hright'),h=document.querySelector('.header');if(r){b.classList.add('in-riga');r.insertBefore(b,r.firstChild);}else if(h){if(getComputedStyle(h).position==='static')h.style.position='relative';h.appendChild(b);}else{b.classList.add('fisso');document.body.appendChild(b);}var s=document.documentElement.classList.contains('sole');b.textContent=s?'\u{1F319}':'\u2600\uFE0F';b.setAttribute('aria-label',s?'Torna ai colori normali':'Modalita sole: scritte nere su bianco');b.title='Modalita sole';});
+</script>
 </head>
 <body>
 
