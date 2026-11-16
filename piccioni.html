@@ -597,7 +597,7 @@ async function syncPinMapDaSheet() {
     if (d.pinMap && typeof d.pinMap === 'object' && Object.keys(d.pinMap).length > 0) {
       PIN_MAP = Object.assign({}, DEFAULT_PIN_MAP, d.pinMap);
       salvaPinMapPiccioni();
-      if (operatoreCorrente) {
+      if (operatoreCorrente && operatoreCorrente !== nomeOperatoreGoogle) {
         var pinValido = Object.keys(PIN_MAP).some(function(p){ return PIN_MAP[p] === operatoreCorrente; });
         if (!pinValido) {
           localStorage.removeItem('piccioni_operatore_v1');
@@ -1112,7 +1112,7 @@ async function submitForm(){
   }
   const censiti=document.getElementById('fCensiti').value;
   const responsabile=document.getElementById('fResponsabile').value.trim();
-  pendingPayload={tipo:'PICCIONI',data,comune,cognome,nome,cf,email,qualifica,censiti:censiti===''?0:parseInt(censiti),piccioni:piccioni===''?'':parseInt(piccioni),responsabile,smaltimento:tipoSmaltimento,isNuovo:true,inseritoDa:operatoreCorrente};
+  pendingPayload={tipo:'PICCIONI',data,comune,cognome,nome,cf,email,qualifica,censiti:censiti===''?0:parseInt(censiti),piccioni:piccioni===''?'':parseInt(piccioni),responsabile,smaltimento:tipoSmaltimento,isNuovo:true,inseritoDa:(operatoreCorrente||nomeOperatoreGoogle||''),clientId:(clientIdInSospeso||nuovoClientIdPC())};
   if(piccioni===''){document.getElementById('confirmPiccioni').classList.add('show');return;}
   await esegui();
 }
@@ -1124,8 +1124,11 @@ async function esegui(){
   if(!pendingPayload)return;
   if(pendingPayload.isNuovo&&pendingPayload.nome){
     var nuovoCac={cognome:pendingPayload.cognome,nome:pendingPayload.nome,cf:pendingPayload.cf,email:pendingPayload.email};
-    cacciatori.push(nuovoCac);
-    cacciatori.sort(function(a,b){return a.cognome.localeCompare(b.cognome);});
+    var giaCac=cacciatori.some(function(c){return c.cognome===nuovoCac.cognome&&c.nome===nuovoCac.nome;});
+    if(!giaCac){
+      cacciatori.push(nuovoCac);
+      cacciatori.sort(function(a,b){return a.cognome.localeCompare(b.cognome);});
+    }
     // Il backend salva automaticamente nel foglio Cacciatori tramite aggiornaOInserisciCacciatore
   }
   if(pendingPayload.comune){
@@ -1136,20 +1139,99 @@ async function esegui(){
       aziende.sort(function(a,b){return a.localeCompare(b);});
     }
   }
+  // I dati si cancellano dal modulo SOLO se sono al sicuro:
+  // salvati sul foglio, oppure messi in coda sul telefono (partono da soli).
+  var alSicuro=false;
   loading(true);
   try{
     pendingPayload.idToken = idTokenCorrente;
-    const res=await fetch(URL_GS,{method:'POST',body:JSON.stringify(pendingPayload)});
+    const res=await fetchConTimeoutPC(URL_GS,{method:'POST',body:JSON.stringify(pendingPayload)},45000);
     const d=await res.json();
     if(d.status==='ok'){
       toast('✅ Dati inviati!');
       try{ localStorage.setItem('piccioni_ultima_data', pendingPayload.data); }catch(e){}
+      alSicuro=true;
+    } else if(d.message==='Accesso non autorizzato'){
+      accodaPiccioni(pendingPayload);
+      alSicuro=true;
+      toast('🔒 Accesso scaduto: dati salvati sul telefono, rifai l\'accesso e partono da soli',true);
+      if(typeof mostraLoginGoogle==='function') mostraLoginGoogle();
+    } else {
+      // Errore del server: il modulo resta compilato, basta premere di nuovo Invia
+      clientIdInSospeso=pendingPayload.clientId;
+      toast('⚠️ NON salvato ('+(d.message||'errore')+'). I dati restano nel modulo: premi di nuovo Invia',true);
     }
-    else toast('Errore: '+(d.message||'?'),true);
-  }catch(e){toast('Errore di connessione',true);}
+  }catch(e){
+    // Linea assente o troppo lenta: il dato resta sul telefono e parte da solo
+    accodaPiccioni(pendingPayload);
+    alSicuro=true;
+    toast('💾 Linea assente: dati salvati sul telefono, partono da soli appena torna la linea');
+  }
   finally{loading(false);}
-  resetForm();pendingPayload=null;vai('screenHome');
+  if(alSicuro){ clientIdInSospeso=null; resetForm(); pendingPayload=null; vai('screenHome'); }
+  else { pendingPayload=null; }
 }
+
+// ============================================================
+// CODA SUL TELEFONO — gli interventi non arrivati al server per
+// mancanza di linea restano qui e vengono reinviati da soli.
+// Il codice unico (clientId) impedisce doppioni sul foglio.
+// ============================================================
+var CODA_PC='piccioni_coda_v1', syncPCinCorso=false, clientIdInSospeso=null;
+function nuovoClientIdPC(){ return 'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
+function fetchConTimeoutPC(url,opt,ms){
+  var ctl=new AbortController(); var tm=setTimeout(function(){ ctl.abort(); },ms);
+  return fetch(url,Object.assign({},opt,{signal:ctl.signal})).finally(function(){ clearTimeout(tm); });
+}
+function leggiCodaPC(){ try{ return JSON.parse(localStorage.getItem(CODA_PC)||'[]'); }catch(e){ return []; } }
+function scriviCodaPC(c){ try{ localStorage.setItem(CODA_PC,JSON.stringify(c)); }catch(e){} badgeCodaPC(); }
+function accodaPiccioni(p){
+  var q=Object.assign({},p); delete q.idToken;
+  var c=leggiCodaPC();
+  if(!c.some(function(x){ return x.payload&&x.payload.clientId===q.clientId; })) c.push({payload:q,quando:new Date().toISOString(),tentativi:0});
+  scriviCodaPC(c);
+}
+function badgeCodaPC(){
+  if(!document.body) return;
+  var n=leggiCodaPC().length, b=document.getElementById('badgeCodaPC');
+  if(!b){
+    b=document.createElement('div'); b.id='badgeCodaPC';
+    b.style.cssText='position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:9999;background:#b45309;color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.35);cursor:pointer;display:none;text-align:center;max-width:92vw';
+    b.onclick=function(){ sincronizzaCodaPC(true); };
+    document.body.appendChild(b);
+  }
+  if(n>0){ b.style.display='block'; b.textContent='📤 '+n+(n===1?' intervento':' interventi')+' in attesa di invio — tocca per inviare'; }
+  else b.style.display='none';
+}
+async function sincronizzaCodaPC(manuale){
+  if(syncPCinCorso) return;
+  var c=leggiCodaPC(); if(!c.length) return;
+  if(!idTokenCorrente){ if(manuale&&typeof mostraLoginGoogle==='function') mostraLoginGoogle(); return; }
+  syncPCinCorso=true; var inviati=0;
+  try{
+    while(c.length){
+      var el=c[0], d=null;
+      try{
+        var pl=Object.assign({},el.payload,{idToken:idTokenCorrente});
+        var r=await fetchConTimeoutPC(URL_GS,{method:'POST',body:JSON.stringify(pl)},45000);
+        d=await r.json();
+      }catch(e){ d=null; }
+      if(d&&d.status==='ok'){ c.shift(); scriviCodaPC(c); inviati++; continue; }
+      if(d&&d.message==='Accesso non autorizzato'){
+        if(manuale&&typeof mostraLoginGoogle==='function') mostraLoginGoogle();
+        break;
+      }
+      el.tentativi=(el.tentativi||0)+1; el.ultimoErrore=d?(d.message||'errore del server'):'linea assente';
+      c[0]=el; scriviCodaPC(c);
+      if(manuale) toast('⚠️ Invio non riuscito ('+el.ultimoErrore+'), riprovo da solo più tardi',true);
+      break;
+    }
+  }finally{ syncPCinCorso=false; }
+  if(inviati) toast('✅ Inviati '+inviati+(inviati===1?' intervento rimasto':' interventi rimasti')+' sul telefono');
+}
+window.addEventListener('online',function(){ sincronizzaCodaPC(false); });
+setInterval(function(){ sincronizzaCodaPC(false); },30000);
+setTimeout(function(){ badgeCodaPC(); sincronizzaCodaPC(false); },4000);
 
 async function loadStats(){
   try{
