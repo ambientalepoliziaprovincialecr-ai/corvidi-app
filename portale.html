@@ -320,6 +320,7 @@ async function pp_fetchJson(url, ms){
 }
 
 async function controllaRelazioniMancanti(){
+  return;   // 27/11/2026: avviso "Relazione di servizio mancante" TOLTO (richiesta: inutile e fastidioso)
   if (controlloRelazioniFatto || !idTokenCorrente || !operatoreCorrente) return;
   controlloRelazioniFatto = true;
   try {
